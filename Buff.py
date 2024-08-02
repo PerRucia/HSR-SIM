@@ -25,15 +25,22 @@ atkTypes = ["BASIC", "SKILL", "ULT", "FUA", "ALL"]
 '''
 
 class Buff:
-    def __init__(self, name=str, buffType=str, val=float, target=list, atkType=list, turns=int, stackLimit=int):
+    def __init__(self, name: str, buffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int):
         self.name = name
         self.buffType = buffType
         self.val = val
         self.target = target
         self.atkType = atkType
-        self.turns = turns
+        self.storedTurns = turns
+        self.turns = self.storedTurns
         self.stackLimit = stackLimit
         self.stacks = 1
+        
+    def __str__(self) -> str:
+        res = f"{self.name} | {self.buffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val}\n"
+        res += f"Remaining Turns: {self.turns}\n"
+        res += f"Targets: {self.target} | Affects: {self.atkType}\n"
+        return res
         
     def reduceTurns(self) -> None:
         self.turns = self.turns - 1
@@ -41,17 +48,17 @@ class Buff:
     def refreshTurns(self) -> None:
         self.turns = self.storedTurns
         
-    def increaseStacks(self) -> None:
+    def incStack(self) -> None:
+        self.refreshTurns()
         if self.stacks == self.stackLimit:
             return
         self.stacks = self.stacks + 1
-        self.refreshTurns()
         
     def getBuffVal(self) -> float:
         return self.val * self.stacks
         
 class Debuff:
-    def __init__(self, name=str, debuffType=str, val=float, target=list, atkType=list, turns=int, stackLimit=int):
+    def __init__(self, name: str, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int):
         self.name = name
         self.debuffType = debuffType
         self.val = val
@@ -62,17 +69,23 @@ class Debuff:
         self.stackLimit = stackLimit
         self.stacks = 1
         
+    def __str__(self) -> str:
+        res = f"{self.name} | {self.debuffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val}\n"
+        res += f"Remaining Turns: {self.turns}\n"
+        res += f"Targets: {self.target} | Affects: {self.atkType}\n"
+        return res
+        
     def reduceTurns(self) -> None:
         self.turns = self.turns - 1
     
     def refreshTurns(self) -> None:
         self.turns = self.storedTurns
         
-    def increaseStacks(self) -> None:
+    def incStack(self) -> None:
+        self.refreshTurns()
         if self.stacks == self.stackLimit:
             return
         self.stacks = self.stacks + 1
-        self.refreshTurns()
         
     def getDebuffVal(self) -> float:
         return self.val * self.stacks
