@@ -12,5 +12,3 @@ class Lightcone(Equipment):
         
     def __str__(self):
         return f"{self.name} S{self.level}"
-    
-a = Lightcone(5)
