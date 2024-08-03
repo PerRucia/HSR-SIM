@@ -3,22 +3,22 @@ class Equipment:
         pass
     
     def equip(self): # init function to add base buffs to wearer
-        return "Default equip function called"
+        return ["DefaultBuff"], ["DefaultDebuff"]
     
     def useSkl(self):
-        return "Default useSkl function called"
+        return ["DefaultBuff"], ["DefaultDebuff"], "DefaultMove"
     
     def useBsc(self):
-        return "Default useBsc function called"
+        return ["DefaultBuff"], ["DefaultDebuff"], "DefaultMove"
     
     def useUlt(self):
-        return "Default useUlt function called"
+        return ["DefaultBuff"], ["DefaultDebuff"], "DefaultMove"
     
     def useFua(self):
-        return "Default useFua function called"
+        return ["DefaultBuff"], ["DefaultDebuff"], "DefaultMove"
     
     def useHit(self):
-        return "Default useHit function called"
+        return ["DefaultBuff"], ["DefaultDebuff"], "DefaultMove"
     
     def allyTurn(self, turn):
-        return "Default allyTurn function called"
+        return ["DefaultBuff"], ["DefaultDebuff"], "DefaultMove"
