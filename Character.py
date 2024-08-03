@@ -46,19 +46,85 @@ class Character:
         return buff_lst, debuff_lst
     
     def useSkl(self):
-        pass
+        buff_lst = []
+        debuff_lst = []
+        
+        equipment_list = [self.lightcone, self.relic1, self.planar]
+        if self.relic2:
+            equipment_list.append(self.relic2)
+        
+        for equipment in equipment_list:
+            buffs, debuffs = equipment.useSkl()
+            buff_lst.extend(buffs)
+            debuff_lst.extend(debuffs)
+        return buff_lst, debuff_lst
     
     def useBsc(self):
-        pass
+        buff_lst = []
+        debuff_lst = []
+        
+        equipment_list = [self.lightcone, self.relic1, self.planar]
+        if self.relic2:
+            equipment_list.append(self.relic2)
+        
+        for equipment in equipment_list:
+            buffs, debuffs = equipment.useBsc()
+            buff_lst.extend(buffs)
+            debuff_lst.extend(debuffs)
+        return buff_lst, debuff_lst
     
     def useUlt(self):
-        pass
+        buff_lst = []
+        debuff_lst = []
+        
+        equipment_list = [self.lightcone, self.relic1, self.planar]
+        if self.relic2:
+            equipment_list.append(self.relic2)
+        
+        for equipment in equipment_list:
+            buffs, debuffs = equipment.useUlt()
+            buff_lst.extend(buffs)
+            debuff_lst.extend(debuffs)
+        return buff_lst, debuff_lst
     
     def useFua(self):
-        pass
+        buff_lst = []
+        debuff_lst = []
+        
+        equipment_list = [self.lightcone, self.relic1, self.planar]
+        if self.relic2:
+            equipment_list.append(self.relic2)
+        
+        for equipment in equipment_list:
+            buffs, debuffs = equipment.useFua()
+            buff_lst.extend(buffs)
+            debuff_lst.extend(debuffs)
+        return buff_lst, debuff_lst
     
     def useHit(self):
-        pass
+        buff_lst = []
+        debuff_lst = []
+        
+        equipment_list = [self.lightcone, self.relic1, self.planar]
+        if self.relic2:
+            equipment_list.append(self.relic2)
+        
+        for equipment in equipment_list:
+            buffs, debuffs = equipment.useHit()
+            buff_lst.extend(buffs)
+            debuff_lst.extend(debuffs)
+        return buff_lst, debuff_lst
     
     def allyTurn(self, turn):
-        pass
+        buff_lst = []
+        debuff_lst = []
+        
+        equipment_list = [self.lightcone, self.relic1, self.planar]
+        if self.relic2:
+            equipment_list.append(self.relic2)
+        
+        for equipment in equipment_list:
+            buffs, debuffs = equipment.allyTurn(turn)
+            buff_lst.extend(buffs)
+            debuff_lst.extend(debuffs)
+        return buff_lst, debuff_lst
