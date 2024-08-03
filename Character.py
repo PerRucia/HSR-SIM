@@ -17,7 +17,7 @@ class Character:
     # Equipment
     lightcone = Lightcone(1)
     relic1 = Relic(4)
-    relic2 = Relic(2)
+    relic2 = None
     planar = Planar()
     
     def __init__(self, pos: int) -> None:
@@ -30,8 +30,20 @@ class Character:
         res += f"{self.planar}"
         return res
         
-    def equip(self) -> tuple[list, list]: # init function to add base buffs to wearer
-        pass
+    def equip(self): # function to add base buffs to wearer
+        buff_lst = []
+        debuff_lst = []
+        
+        equipment_list = [self.lightcone, self.relic1, self.planar]
+        if self.relic2:
+            equipment_list.append(self.relic2)
+        
+        for equipment in equipment_list:
+            buffs, debuffs = equipment.equip()
+            buff_lst.extend(buffs)
+            debuff_lst.extend(debuffs)
+            
+        return buff_lst, debuff_lst
     
     def useSkl(self):
         pass
@@ -50,6 +62,3 @@ class Character:
     
     def allyTurn(self, turn):
         pass
-    
-a = Character(2)
-print(a)
