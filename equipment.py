@@ -1,6 +1,6 @@
 class Equipment:
-    def __init__(self):
-        pass
+    def __init__(self, wearerRole: str):
+        self.wearerRole = wearerRole
     
     def equip(self): # init function to add base buffs to wearer
         return [], []
