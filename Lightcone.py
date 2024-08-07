@@ -7,7 +7,8 @@ class Lightcone(Equipment):
     baseATK = 0
     baseDEf = 0
     
-    def __init__(self, level: int):
+    def __init__(self, wearerRole: str, level: int):
+        super().__init__(wearerRole)
         self.level = level
         
     def __str__(self):
