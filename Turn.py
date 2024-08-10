@@ -1,6 +1,6 @@
 # src: Who is taking the turn DPS/SDPS/SUP/SUS
 # targetID: Enemy ID to be attacked, middle enemy if it is a blast attack
-# moveType: ST, BLAST, AOE, NA
+# moveType: ST, BLAST, AOE, NA | NA refers to a non-attacking move
 # atkType: BSC, SKL, ULT, FUA, NA
 # element: WIN, FIR, ICE, LNG, PHY, IMG, QUA
 # dmgSplit: Base multiplier split [main, adjacent], set adjacent to 0 for ST and AOE attacks
