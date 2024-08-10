@@ -26,7 +26,7 @@ atkTypes = ["BASIC", "SKILL", "ULT", "FUA", "ALL"]
 '''
 
 class Buff:
-    def __init__(self, name: str, buffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int):
+    def __init__(self, name: str, buffType: str, val: float, target: str, atkType: list, turns: int, stackLimit: int):
         self.name = name
         self.buffType = buffType
         self.val = val
