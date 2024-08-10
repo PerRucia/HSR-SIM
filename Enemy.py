@@ -3,7 +3,8 @@
 class Enemy:
     broken = False
     
-    def __init__(self, level: int, spd: float, toughness: int, actionOrder: list, weakness: list):
+    def __init__(self, enemyID: int, level: int, spd: float, toughness: int, actionOrder: list, weakness: list):
+        self.enemyID = enemyID
         self.level = level
         self.spd = spd
         self.toughness = toughness
