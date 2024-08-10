@@ -21,7 +21,7 @@ buffList = [
     "ERR" 
 ]
 
-targets = ["DPS", "SDPS", "SUP", "SUS", "ALL"]
+targets = ["DPS", "SDPS", "SUP1", "SUP2", "SUS", "ALL"]
 atkTypes = ["BASIC", "SKILL", "ULT", "FUA", "ALL"]
 '''
 
