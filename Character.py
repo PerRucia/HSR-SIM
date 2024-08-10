@@ -2,6 +2,7 @@ from Buff import *
 from Lightcone import Lightcone
 from Relic import Relic
 from Planar import Planar
+from Turn import Turn
 
 class Character:
     # Basic Stats
@@ -46,85 +47,47 @@ class Character:
         return buff_lst, debuff_lst
     
     def useSkl(self):
-        buff_lst = []
-        debuff_lst = []
-        
-        equipment_list = [self.lightcone, self.relic1, self.planar]
-        if self.relic2:
-            equipment_list.append(self.relic2)
-        
-        for equipment in equipment_list:
-            buffs, debuffs = equipment.useSkl()
-            buff_lst.extend(buffs)
-            debuff_lst.extend(debuffs)
-        return buff_lst, debuff_lst
+        return self.parseEquipment("BASIC"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
     
     def useBsc(self):
-        buff_lst = []
-        debuff_lst = []
-        
-        equipment_list = [self.lightcone, self.relic1, self.planar]
-        if self.relic2:
-            equipment_list.append(self.relic2)
-        
-        for equipment in equipment_list:
-            buffs, debuffs = equipment.useBsc()
-            buff_lst.extend(buffs)
-            debuff_lst.extend(debuffs)
-        return buff_lst, debuff_lst
+        return self.parseEquipment("SKILL"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
     
     def useUlt(self):
-        buff_lst = []
-        debuff_lst = []
+        return self.parseEquipment("ULT"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
         
-        equipment_list = [self.lightcone, self.relic1, self.planar]
-        if self.relic2:
-            equipment_list.append(self.relic2)
-        
-        for equipment in equipment_list:
-            buffs, debuffs = equipment.useUlt()
-            buff_lst.extend(buffs)
-            debuff_lst.extend(debuffs)
-        return buff_lst, debuff_lst
-    
     def useFua(self):
-        buff_lst = []
-        debuff_lst = []
+        return self.parseEquipment("FUA"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
         
-        equipment_list = [self.lightcone, self.relic1, self.planar]
-        if self.relic2:
-            equipment_list.append(self.relic2)
-        
-        for equipment in equipment_list:
-            buffs, debuffs = equipment.useFua()
-            buff_lst.extend(buffs)
-            debuff_lst.extend(debuffs)
-        return buff_lst, debuff_lst
-    
     def useHit(self):
-        buff_lst = []
-        debuff_lst = []
-        
-        equipment_list = [self.lightcone, self.relic1, self.planar]
-        if self.relic2:
-            equipment_list.append(self.relic2)
-        
-        for equipment in equipment_list:
-            buffs, debuffs = equipment.useHit()
-            buff_lst.extend(buffs)
-            debuff_lst.extend(debuffs)
-        return buff_lst, debuff_lst
+        return self.parseEquipment("HIT"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
     
-    def allyTurn(self, turn):
-        buff_lst = [] 
-        debuff_lst = []
+    def allyTurn(self, turn, result):
+        return self.parseEquipment("ALLY", turn, result), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
         
-        equipment_list = [self.lightcone, self.relic1, self.planar]
+    def parseEquipment(self, actionType: str, turn=None, result=None):
+        buffList, debuffList, advList, spdList = [], [], [], []
+        equipmentList = [self.lightcone, self.relic1, self.planar]
         if self.relic2:
-            equipment_list.append(self.relic2)
+            equipmentList.append(self.relic2)
+            
+        for equipment in equipmentList:
+            if actionType == "BASIC":
+                buffs, debuffs, advs, spds = equipment.useBsc()
+            elif actionType == "SKILL":
+                buffs, debuffs, advs, spds = equipment.useSkl()
+            elif actionType == "ULT":
+                buffs, debuffs, advs, spds = equipment.useUlt()
+            elif actionType == "FUA":
+                buffs, debuffs, advs, spds = equipment.useFua()
+            elif actionType == "HIT":
+                buffs, debuffs, advs, spds = equipment.useHit()    
+            elif actionType == "ALLY":
+                buffs, debuffs, advs, spds = equipment.allyTurn(turn, result)
+                
+            buffList.append(buffs)
+            debuffList.append(debuffs)
+            advList.append(advs)
+            spdList.append(spds)
         
-        for equipment in equipment_list:
-            buffs, debuffs = equipment.allyTurn(turn)
-            buff_lst.extend(buffs)
-            debuff_lst.extend(debuffs)
-        return buff_lst, debuff_lst
+        return buffList, debuffList, advList, spdList
+        
