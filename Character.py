@@ -15,14 +15,9 @@ class Character:
     baseDEF = 0
     baseSPD = 100
     
-    # Equipment
-    lightcone = Lightcone(1)
-    relic1 = Relic(4)
-    relic2 = None
-    planar = Planar()
-    
     def __init__(self, pos: int) -> None:
         self.pos = pos
+        
     
     def __str__(self) -> str:
         res = f"{self.name} | {self.path} | {self.element} | Pos:{self.pos}\n"
@@ -32,19 +27,7 @@ class Character:
         return res
         
     def equip(self): # function to add base buffs to wearer
-        buff_lst = []
-        debuff_lst = []
-        
-        equipment_list = [self.lightcone, self.relic1, self.planar]
-        if self.relic2:
-            equipment_list.append(self.relic2)
-        
-        for equipment in equipment_list:
-            buffs, debuffs = equipment.equip()
-            buff_lst.extend(buffs)
-            debuff_lst.extend(debuffs)
-            
-        return buff_lst, debuff_lst
+        return self.parseEquipment("EQUIP")
     
     def useSkl(self):
         return self.parseEquipment("BASIC"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
@@ -79,15 +62,16 @@ class Character:
                 buffs, debuffs, advs, spds = equipment.useUlt()
             elif actionType == "FUA":
                 buffs, debuffs, advs, spds = equipment.useFua()
+            elif actionType == "EQUIP":
+                buffs, debuffs, advs, spds = equipment.equip()
             elif actionType == "HIT":
                 buffs, debuffs, advs, spds = equipment.useHit()    
             elif actionType == "ALLY":
                 buffs, debuffs, advs, spds = equipment.allyTurn(turn, result)
                 
-            buffList.append(buffs)
-            debuffList.append(debuffs)
-            advList.append(advs)
-            spdList.append(spds)
-        
+            buffList.extend(buffs)
+            debuffList.extend(debuffs)
+            advList.extend(advs)
+            spdList.extend(spds)
         return buffList, debuffList, advList, spdList
         
