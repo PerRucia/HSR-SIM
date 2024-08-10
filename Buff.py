@@ -17,7 +17,8 @@ buffList = [
     "DMG%",
     "SHRED",
     "VULN",
-    "PEN"
+    "PEN",
+    "ERR" 
 ]
 
 targets = ["DPS", "SDPS", "SUP", "SUS", "ALL"]
@@ -56,6 +57,9 @@ class Buff:
         
     def getBuffVal(self) -> float:
         return self.val * self.stacks
+    
+    def atMaxStacks(self) -> bool:
+        return True if (self.stacks == self.stackLimit) else False
         
 class Debuff:
     def __init__(self, name: str, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int):
@@ -89,3 +93,6 @@ class Debuff:
         
     def getDebuffVal(self) -> float:
         return self.val * self.stacks
+
+    def atMaxStacks(self) -> bool:
+        return True if (self.stacks == self.stackLimit) else False

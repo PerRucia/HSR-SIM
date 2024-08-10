@@ -12,7 +12,7 @@ class Character:
     baseHP = 0
     baseATK = 0
     baseDEF = 0
-    baseSPD = 0
+    baseSPD = 100
     
     # Equipment
     lightcone = Lightcone(1)
@@ -116,7 +116,7 @@ class Character:
         return buff_lst, debuff_lst
     
     def allyTurn(self, turn):
-        buff_lst = []
+        buff_lst = [] 
         debuff_lst = []
         
         equipment_list = [self.lightcone, self.relic1, self.planar]
