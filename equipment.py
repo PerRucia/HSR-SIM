@@ -1,24 +1,33 @@
+'''
+Returns 4 lists:
+- list of buffs added
+- list of debuffs added
+- list of adv% adjustments
+- lsit of spd adjustments
+'''
+
+
 class Equipment:
     def __init__(self, wearerRole: str):
         self.wearerRole = wearerRole
     
     def equip(self): # init function to add base buffs to wearer
-        return [], []
+        return [], [], [], []
     
     def useSkl(self):
-        return [], []
+        return [], [], [], []
     
     def useBsc(self):
-        return [], []
+        return [], [], [], []
     
     def useUlt(self):
-        return [], []
+        return [], [], [], []
     
     def useFua(self):
-        return [], []
+        return [], [], [], []
     
     def useHit(self):
-        return [], []
+        return [], [], [], []
     
-    def allyTurn(self, turn):
-        return [], []
+    def allyTurn(self, turn, result):
+        return [], [], [], []
