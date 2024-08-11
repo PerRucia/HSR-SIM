@@ -10,6 +10,7 @@ class Character:
     path = "PATH"
     element = "ELE"
     role = "DPS" # DPS/SDPS/SUS/SUP
+    scaling = "ATK"
     baseHP = 0
     baseATK = 0
     baseDEF = 0
@@ -32,22 +33,22 @@ class Character:
         return self.parseEquipment("EQUIP")
     
     def useSkl(self, enemyID=-1):
-        return *self.parseEquipment("BASIC"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 30)
+        return *self.parseEquipment("BASIC"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 30, self.scaling)
     
     def useBsc(self, enemyID=-1):
-        return *self.parseEquipment("SKILL"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 20)
+        return *self.parseEquipment("SKILL"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 20, self.scaling)
     
     def useUlt(self, enemyID=-1):
-        return *self.parseEquipment("ULT"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5)
+        return *self.parseEquipment("ULT"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling)
         
     def useFua(self, enemyID=-1):
-        return *self.parseEquipment("FUA"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5)
+        return *self.parseEquipment("FUA"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling)
         
     def useHit(self, enemyID=-1):
-        return *self.parseEquipment("HIT"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 0)
+        return *self.parseEquipment("HIT"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling)
     
     def allyTurn(self, turn, result):
-        return *self.parseEquipment("ALLY", turn, result), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 0)
+        return *self.parseEquipment("ALLY", turn, result), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling)
         
     def parseEquipment(self, actionType: str, turn=None, result=None):
         buffList, debuffList, advList, spdList = [], [], [], []
