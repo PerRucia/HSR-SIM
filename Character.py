@@ -34,22 +34,22 @@ class Character:
         return self.parseEquipment("EQUIP")
     
     def useSkl(self, enemyID=-1):
-        return *self.parseEquipment("BASIC"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 30, self.scaling)
+        return *self.parseEquipment("BASIC"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 30, self.scaling)
     
     def useBsc(self, enemyID=-1):
-        return *self.parseEquipment("SKILL"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 20, self.scaling)
+        return *self.parseEquipment("SKILL"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 20, self.scaling)
     
     def useUlt(self, enemyID=-1):
-        return *self.parseEquipment("ULT"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling)
+        return *self.parseEquipment("ULT"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling)
         
     def useFua(self, enemyID=-1):
-        return *self.parseEquipment("FUA"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling)
+        return *self.parseEquipment("FUA"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling)
         
     def useHit(self, enemyID=-1):
-        return *self.parseEquipment("HIT"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling)
+        return *self.parseEquipment("HIT"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling)
     
     def allyTurn(self, turn, result):
-        return *self.parseEquipment("ALLY", turn, result), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling)
+        return *self.parseEquipment("ALLY", turn, result), Turn(self.name, self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling)
         
     def parseEquipment(self, actionType: str, turn=None, result=None):
         buffList, debuffList, advList = [], [], []
