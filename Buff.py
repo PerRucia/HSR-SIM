@@ -41,7 +41,7 @@ class Buff:
         
     def __str__(self) -> str:
         res = f"{self.name} | {self.buffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val}\n"
-        res += f"Remaining Turns: {self.turns}\n"
+        res += f"Remaining Turns: {self.turns}\n | TickDown: {self.tickDown}"
         res += f"Targets: {self.target} | Affects: {self.atkType}\n"
         return res
         
