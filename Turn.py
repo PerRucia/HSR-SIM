@@ -7,7 +7,7 @@
 # brkSplit: Toughness reduction split [main, adjacent], set adjacent to 0 for ST and AOE attacks
 
 class Turn:
-    def __init__(self, src: str, role: str, targetID: int, moveType: str, atkType: list, element: list, dmgSplit: list, brkSplit: list, errGain: float, scaling: str):
+    def __init__(self, src: str, role: str, targetID: int, moveType: str, atkType: list, element: list, dmgSplit: list, brkSplit: list, errGain: float, scaling: str, spChange: int):
         self.src = src
         self.role = role
         self.targetID = targetID
@@ -18,6 +18,7 @@ class Turn:
         self.brkSplit = brkSplit
         self.errGain = errGain
         self.scaling = scaling
+        self.spChange = spChange
         
     def __str__(self) -> str:
         res = f"Action by {self.src} | {self.role}"

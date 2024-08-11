@@ -20,7 +20,7 @@ class Yunli(Character):
     ultCost = 120
     currEnergy = 240 / 2
     currAV = 0
-    rotation = ["E"]
+    rotation = ["E", "A", "A"]
     
     # Unique Character Properties
     cullActive = False
@@ -47,24 +47,24 @@ class Yunli(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, *_ = super().useBsc(enemyID)
-        return bl, dbl, al, Turn(self.name, self.role, -1, "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling)
+        return bl, dbl, al, Turn(self.name, self.role, -1, "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1)
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, *_ = super().useSkl(enemyID)
-        return bl, dbl, al, Turn(self.name, self.role, -1, "BLAST", ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling)
+        return bl, dbl, al, Turn(self.name, self.role, -1, "BLAST", ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling, -1)
     
     def useUlt(self, enemyID=-1):
         self.currEnergy = self.currEnergy - self.ultCost
         self.cullActive = True
         bl, dbl, al, *_ = super().useSkl(enemyID)
-        return bl, dbl, al, Turn(self.name, self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling)
+        return bl, dbl, al, Turn(self.name, self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling, 0)
     
     def useFua(self, enemyID=-1):
         bl, dbl, al, *_ = super().useFua(enemyID)
         if self.cullActive:
             self.cullActive = False
-            return bl, dbl, al, Turn(self.name, self.role, enemyID, "BLAST", ["FUA", "ULT"], [self.element], [6.52 , 1.1], [25, 10], 10, self.scaling)
-        return bl, dbl, al, Turn(self.name, self.role, enemyID, "BLAST", ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling)
+            return bl, dbl, al, Turn(self.name, self.role, enemyID, "BLAST", ["FUA", "ULT"], [self.element], [6.52 , 1.1], [25, 10], 10, self.scaling, 0)
+        return bl, dbl, al, Turn(self.name, self.role, enemyID, "BLAST", ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0)
     
     def useHit(self, enemyID=-1):
         return self.useFua(enemyID)

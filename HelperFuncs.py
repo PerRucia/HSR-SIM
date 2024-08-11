@@ -74,3 +74,76 @@ def findBuffs(charRole: str, buffType: str, buffList: list) -> list:
 
 def sumBuffs(buffList):
     return sum([x.val for x in buffList])
+
+def findNextTurn(units: list):
+    minAV = 10000
+    minAVUnit = None
+    for unit in units:
+        if unit.currAV < minAV:
+            minAV = unit.currAV
+            minAVUnit = unit
+    return minAVUnit.isChar(), minAV, minAVUnit
+
+def addEnergy(playerTeam: list, numAttacks: int, attackTypeRatio: list):
+    dct = {"HUN": 3, "ERU": 3, "NIH": 4, "HAR": 4, "ABU": 4, "DES": 5, "PRE": 6}
+    aggroLst = []
+    for char in playerTeam:
+        aggro = dct[char.path]
+        if char.path == "DES":
+            if char.lightcone.name == "Dance at Sunset":
+                aggro += dct["DES"] * 5
+            if checkInTeam("Lynx", playerTeam) and char.role == "DPS":
+                aggro += dct["DES"] * 5
+            if checkInTeam("March7th", playerTeam) and char.role == "DPS":
+                aggro += dct["DES"] * 5
+        elif char.path == "PRE":
+            if char.name == "Gepard":
+                aggro += dct["PRE"] * 3
+            if char.lightcone.name == "Landau's Choice" or char.lightcone.name == "Moment of Victory":
+                aggro += dct["PRE"] * 3
+        elif char.path == "HUN":
+            if char.name == "Dan Heng" or char.name == "Seele" or char.name == "Sushang":
+                aggro -= dct["HUN"] * 0.5
+            if char.name == "Yanqing":
+                aggro -= dct["HUN"] * 0.6
+        aggroLst.append(aggro)
+    aggroSum = sum(aggroLst)
+    chanceST = [a * numAttacks * 10 * attackTypeRatio[0] / aggroSum for a in aggroLst]
+    chanceBlast = [aggroLst[i] + (aggroLst[i - 1] if i - 1 >= 0 else 0) + (aggroLst[i + 1] if i + 1 < len(aggroLst) else 0) for i in range(len(aggroLst))]
+    chanceBlast = [a * numAttacks * 10 * attackTypeRatio[1] / aggroSum for a in chanceBlast]
+    chanceAOE = [10 * numAttacks * attackTypeRatio[2] for _ in aggroLst]
+    finalEnergy = [sum(values) for values in zip(chanceAOE, chanceBlast, chanceST)]
+    for i in range(len(playerTeam)):
+        char = playerTeam[i]
+        char.addEnergy(finalEnergy[i]) 
+    return
+
+def checkInTeam(name, team) -> bool:
+    for char in team:
+        if char.name == name:
+            return True
+    return False
+
+def tickDebuffs(enemyID: int, debuffList: list) -> list:
+    newLst = []
+    for debuff in debuffList:
+        if debuff.enemyID != enemyID:
+            newLst.append(debuff)
+        else:
+            if debuff.turns == 1:
+                continue
+            newLst.append(debuff.reduceTurns())
+    return newLst
+
+def tickBuffs(charRole: str, buffList: list) -> list:
+    newLst = []
+    for buff in buffList:
+        if buff.target != charRole:
+            newLst.append(buff)
+        else:
+            if buff.turns == 1:
+                continue
+            newLst.append(buff.reduceTurns())
+    return newLst
+        
+    

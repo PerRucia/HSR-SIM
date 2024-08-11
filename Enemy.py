@@ -26,9 +26,16 @@ class Enemy:
         return False
     
     def recover(self):
-        self.gauge = self.toughness
-        self.broken = False
+        if self.broken:
+            self.gauge = self.toughness
+            self.broken = False
         
-    def takeTurn(self):
+    def takeTurn(self) -> int:
         self.recover()
+        res = self.turn
+        self.turn = self.turn + 1
+        return self.actionOrder[res % len(self.actionOrder)]
+    
+    def isChar(self) -> bool:
+        return False
         
