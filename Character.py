@@ -16,6 +16,7 @@ class Character:
     baseSPD = 100
     maxEnergy = 100
     currEnergy = maxEnergy / 2
+    currAV = 100.0
     
     def __init__(self, pos: int, role: str) -> None:
         self.pos = pos

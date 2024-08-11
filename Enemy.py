@@ -3,7 +3,7 @@
 class Enemy:
     broken = False
     
-    def __init__(self, enemyID: int, level: int, spd: float, toughness: int, actionOrder: list, weakness: list):
+    def __init__(self, enemyID: int, level: int, spd: float, toughness: int, actionOrder: list, weakness: list, adjacent: list):
         self.enemyID = enemyID
         self.level = level
         self.spd = spd
@@ -11,6 +11,7 @@ class Enemy:
         self.gauge = self.toughness
         self.actionOrder = actionOrder
         self.weakness = weakness
+        self.adjacent = adjacent
         
     def getUniMul(self) -> float:
         return 1.0 if self.broken else 0.9
