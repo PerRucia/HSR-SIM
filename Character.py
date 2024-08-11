@@ -23,7 +23,7 @@ class Character:
         
     
     def __str__(self) -> str:
-        res = f"{self.name} | {self.path} | {self.element} | Pos:{self.pos}\n"
+        res = f"{self.name} | {self.element}-{self.path} | POS:{self.pos}\n"
         res += f"{self.lightcone}\n"
         res += f"{self.relic1}" + (f"| {self.relic2}\n" if self.relic2 != None else "\n")
         res += f"{self.planar}"
