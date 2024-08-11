@@ -23,10 +23,11 @@ buffList = [
 
 targets = ["DPS", "SDPS", "SUP1", "SUP2", "SUS", "ALL"]
 atkTypes = ["BASIC", "SKILL", "ULT", "FUA", "ALL"]
+tickDown = ["ENEMY", "SELF", "DPS", "SUP1", "SUP2", "SUS"] | determines on whose turn this buff ticks down on, if set to "TARGET", will tick down on "TARGET"'s turn
 '''
 
 class Buff:
-    def __init__(self, name: str, buffType: str, val: float, target: str, atkType: list, turns: int, stackLimit: int):
+    def __init__(self, name: str, buffType: str, val: float, target: str, atkType: list, turns: int, stackLimit: int, tickDown: str):
         self.name = name
         self.buffType = buffType
         self.val = val
@@ -36,6 +37,7 @@ class Buff:
         self.turns = self.storedTurns
         self.stackLimit = stackLimit
         self.stacks = 1
+        self.tickDown = tickDown
         
     def __str__(self) -> str:
         res = f"{self.name} | {self.buffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val}\n"

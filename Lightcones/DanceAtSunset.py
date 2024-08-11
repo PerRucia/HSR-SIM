@@ -13,13 +13,13 @@ class Sunset(Lightcone):
     
     def equip(self):
         cdBuff = self.level * 0.06 + 0.3
-        buff_lst = [Buff("SunsetCD", "CD%", cdBuff, self.wearerRole, ["ALL"], 1000, 1)]
-        return buff_lst, [], [], []
+        buff_lst = [Buff("SunsetCD", "CD%", cdBuff, self.wearerRole, ["ALL"], 1000, 1, "SELF")]
+        return buff_lst, [], []
     
     def useUlt(self):
         buff_lst, debuff_lst = super().useUlt()
         dmgBuff = self.level * 0.06 + 0.3
-        buff_lst.append(Buff("SunsetDMG", "DMG%", dmgBuff, self.wearerRole, ["ULT", "FUA"], 2, 2))
-        return buff_lst, debuff_lst, [], []
+        buff_lst.append(Buff("SunsetDMG", "DMG%", dmgBuff, self.wearerRole, ["ULT", "FUA"], 2, 2, "SELF"))
+        return buff_lst, debuff_lst, []
     
     

@@ -82,3 +82,6 @@ class Character:
     def addEnergy(self, amount: float):
         self.currEnergy = min(self.maxEnergy, self.currEnergy + amount)
         
+    def adjustAV(self, adjPercent: float, currSPD: float):
+        avAdjustment = (10000 / currSPD) * adjPercent
+        self.currAV = max(0, self.currAV - avAdjustment)
