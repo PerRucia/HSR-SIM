@@ -42,7 +42,7 @@ class Buff:
     def __str__(self) -> str:
         res = f"{self.name} | {self.buffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val}\n"
         res += f"Remaining Turns: {self.turns} | TickDown: {self.tickDown}\n"
-        res += f"Targets: {self.target} | Affects: {self.atkType}\n"
+        res += f"Target: {self.target} | Affects: {self.atkType}\n"
         return res
         
     def reduceTurns(self) -> None:
@@ -78,7 +78,7 @@ class Debuff:
     def __str__(self) -> str:
         res = f"{self.name} | {self.debuffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val}\n"
         res += f"Remaining Turns: {self.turns}\n"
-        res += f"Targets: {self.target} | Affects: {self.atkType}\n"
+        res += f"Target: {self.target} | Affects: {self.atkType}\n"
         return res
         
     def reduceTurns(self) -> None:
