@@ -14,6 +14,8 @@ class Character:
     baseATK = 0
     baseDEF = 0
     baseSPD = 100
+    maxEnergy = 100
+    currEnergy = maxEnergy / 2
     
     def __init__(self, pos: int) -> None:
         self.pos = pos
@@ -29,23 +31,23 @@ class Character:
     def equip(self): # function to add base buffs to wearer
         return self.parseEquipment("EQUIP")
     
-    def useSkl(self):
-        return self.parseEquipment("BASIC"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
+    def useSkl(self, enemyID=-1):
+        return *self.parseEquipment("BASIC"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 30)
     
-    def useBsc(self):
-        return self.parseEquipment("SKILL"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
+    def useBsc(self, enemyID=-1):
+        return *self.parseEquipment("SKILL"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 20)
     
-    def useUlt(self):
-        return self.parseEquipment("ULT"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
+    def useUlt(self, enemyID=-1):
+        return *self.parseEquipment("ULT"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5)
         
-    def useFua(self):
-        return self.parseEquipment("FUA"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
+    def useFua(self, enemyID=-1):
+        return *self.parseEquipment("FUA"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5)
         
-    def useHit(self):
-        return self.parseEquipment("HIT"), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
+    def useHit(self, enemyID=-1):
+        return *self.parseEquipment("HIT"), Turn(self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 0)
     
     def allyTurn(self, turn, result):
-        return self.parseEquipment("ALLY", turn, result), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0])
+        return *self.parseEquipment("ALLY", turn, result), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 0)
         
     def parseEquipment(self, actionType: str, turn=None, result=None):
         buffList, debuffList, advList, spdList = [], [], [], []
@@ -74,4 +76,7 @@ class Character:
             advList.extend(advs)
             spdList.extend(spds)
         return buffList, debuffList, advList, spdList
+    
+    def addEnergy(self, amount: float):
+        self.currEnergy = min(self.maxEnergy, self.currEnergy + amount)
         
