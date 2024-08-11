@@ -1,6 +1,7 @@
 from Buff import *
 from Lightcone import Lightcone
 from Relic import Relic
+from RelicStats import RelicStats
 from Planar import Planar
 from Turn import Turn
 
@@ -17,6 +18,8 @@ class Character:
     maxEnergy = 100
     currEnergy = maxEnergy / 2
     currAV = 100.0
+    
+    relicStats = RelicStats(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, "HP%", "HP%", "HP%", "HP%")
     
     def __init__(self, pos: int, role: str) -> None:
         self.pos = pos
@@ -84,3 +87,6 @@ class Character:
     def adjustAV(self, adjPercent: float, currSPD: float):
         avAdjustment = (10000 / currSPD) * adjPercent
         self.currAV = max(0, self.currAV - avAdjustment)
+        
+    def getRelicScalingStats(self) -> tuple[float, float]:
+        return self.relicStats.getScalingValue(self.scaling)

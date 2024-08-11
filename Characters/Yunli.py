@@ -2,6 +2,7 @@ from Character import Character
 from Lightcones.DanceAtSunset import Sunset
 from Relics.WindSoaring import WindSoaring
 from Planars.Duran import Duran
+from RelicStats import RelicStats
 from Buff import Buff
 from Turn import Turn
 
@@ -17,6 +18,8 @@ class Yunli(Character):
     maxEnergy = 240
     currEnergy = 240 / 2
     cullActive = False
+    
+    relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 12, 12, "CR%", "ATK%", "DMG%", "ATK%")
     
     def __init__(self, pos: int, role: str) -> None:
         super().__init__(pos, role)
