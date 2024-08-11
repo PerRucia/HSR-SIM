@@ -52,32 +52,31 @@ class Character:
         return *self.parseEquipment("ALLY", turn, result), Turn(self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling)
         
     def parseEquipment(self, actionType: str, turn=None, result=None):
-        buffList, debuffList, advList, spdList = [], [], [], []
+        buffList, debuffList, advList = [], [], []
         equipmentList = [self.lightcone, self.relic1, self.planar]
         if self.relic2:
             equipmentList.append(self.relic2)
             
         for equipment in equipmentList:
             if actionType == "BASIC":
-                buffs, debuffs, advs, spds = equipment.useBsc()
+                buffs, debuffs, advs = equipment.useBsc()
             elif actionType == "SKILL":
-                buffs, debuffs, advs, spds = equipment.useSkl()
+                buffs, debuffs, advs = equipment.useSkl()
             elif actionType == "ULT":
-                buffs, debuffs, advs, spds = equipment.useUlt()
+                buffs, debuffs, advs = equipment.useUlt()
             elif actionType == "FUA":
-                buffs, debuffs, advs, spds = equipment.useFua()
+                buffs, debuffs, advs = equipment.useFua()
             elif actionType == "EQUIP":
-                buffs, debuffs, advs, spds = equipment.equip()
+                buffs, debuffs, advs = equipment.equip()
             elif actionType == "HIT":
-                buffs, debuffs, advs, spds = equipment.useHit()    
+                buffs, debuffs, advs = equipment.useHit()    
             elif actionType == "ALLY":
-                buffs, debuffs, advs, spds = equipment.allyTurn(turn, result)
+                buffs, debuffs, advs = equipment.allyTurn(turn, result)
                 
             buffList.extend(buffs)
             debuffList.extend(debuffs)
             advList.extend(advs)
-            spdList.extend(spds)
-        return buffList, debuffList, advList, spdList
+        return buffList, debuffList, advList
     
     def addEnergy(self, amount: float):
         self.currEnergy = min(self.maxEnergy, self.currEnergy + amount)
