@@ -9,7 +9,6 @@ class Yunli(Character):
     name = "Yunli"
     path = "DES"
     element = "PHY"
-    role = "DPS"
     scaling = "ATK"
     baseHP = 1358.3
     baseATK = 679.14
@@ -19,11 +18,13 @@ class Yunli(Character):
     currEnergy = 240 / 2
     cullActive = False
     
-    lightcone = Sunset(role, 1)
-    relic1 = WindSoaring(role, 4)
-    relic2 = None
-    planar = Duran(role)
-    
+    def __init__(self, pos: int, role: str) -> None:
+        super().__init__(pos, role)
+        self.lightcone = Sunset(role, 1)
+        self.relic1 = WindSoaring(role, 4)
+        self.relic2 = None
+        self.planar = Duran(role)
+        
     def equip(self):
         buffList, debuffList, advList, spdList = super().equip()
         buffList.extend([Buff("YunliSelfATK", "ATK%", 0.3, self.role, ["ALL"], 1000, 1),
