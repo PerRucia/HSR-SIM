@@ -9,7 +9,6 @@ class Character:
     name = "Character"
     path = "PATH"
     element = "ELE"
-    role = "DPS" # DPS/SDPS/SUS/SUP
     scaling = "ATK"
     baseHP = 0
     baseATK = 0
@@ -18,8 +17,9 @@ class Character:
     maxEnergy = 100
     currEnergy = maxEnergy / 2
     
-    def __init__(self, pos: int) -> None:
+    def __init__(self, pos: int, role: str) -> None:
         self.pos = pos
+        self.role = role
         
     
     def __str__(self) -> str:
