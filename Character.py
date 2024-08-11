@@ -6,7 +6,7 @@ from Planar import Planar
 from Turn import Turn
 
 class Character:
-    # Basic Stats
+    # Standard Character Properties
     name = "Character"
     path = "PATH"
     element = "ELE"
@@ -19,6 +19,9 @@ class Character:
     currEnergy = maxEnergy / 2
     currAV = 100.0
     
+    # Unique Character Properties
+    
+    # Relic Settings
     relicStats = RelicStats(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, "HP%", "HP%", "HP%", "HP%")
     
     def __init__(self, pos: int, role: str) -> None:
