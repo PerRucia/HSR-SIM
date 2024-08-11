@@ -7,6 +7,7 @@ from Buff import Buff
 from Turn import Turn
 
 class Yunli(Character):
+    # Standard Character Settings
     name = "Yunli"
     path = "DES"
     element = "PHY"
@@ -16,9 +17,15 @@ class Yunli(Character):
     baseDEF = 460.85
     baseSPD = 94
     maxEnergy = 240
+    ultCost = 120
     currEnergy = 240 / 2
+    currAV = 0
+    rotation = ["E"]
+    
+    # Unique Character Properties
     cullActive = False
     
+    # Relic Settings
     relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 12, 12, "CR%", "ATK%", "DMG%", "ATK%")
     
     def __init__(self, pos: int, role: str) -> None:
@@ -47,6 +54,7 @@ class Yunli(Character):
         return bl, dbl, al, Turn(self.name, self.role, -1, "BLAST", ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling)
     
     def useUlt(self, enemyID=-1):
+        self.currEnergy = self.currEnergy - self.ultCost
         self.cullActive = True
         bl, dbl, al, *_ = super().useSkl(enemyID)
         return bl, dbl, al, Turn(self.name, self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling)

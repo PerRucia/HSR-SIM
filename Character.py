@@ -16,8 +16,10 @@ class Character:
     baseDEF = 0
     baseSPD = 100
     maxEnergy = 100
+    ultCost = 100
     currEnergy = maxEnergy / 2
     currAV = 100.0
+    rotation = ["E", "A", "A"]
     
     # Unique Character Properties
     
@@ -27,6 +29,7 @@ class Character:
     def __init__(self, pos: int, role: str) -> None:
         self.pos = pos
         self.role = role
+        self.currSPD = 0
         
     
     def __str__(self) -> str:
@@ -87,9 +90,18 @@ class Character:
     def addEnergy(self, amount: float):
         self.currEnergy = min(self.maxEnergy, self.currEnergy + amount)
         
-    def adjustAV(self, adjPercent: float, currSPD: float):
+    def advanceAV(self, adjPercent: float, currSPD: float):
         avAdjustment = (10000 / currSPD) * adjPercent
         self.currAV = max(0, self.currAV - avAdjustment)
         
+    def reduceAV(self, reduceValue: float):
+        self.currAV = max(0, self.currAV - reduceValue)
+        
     def getRelicScalingStats(self) -> tuple[float, float]:
         return self.relicStats.getScalingValue(self.scaling)
+    
+    def getSPD(self) -> float:
+        return self.relicStats.getSPD()
+    
+    def canUseUlt(self) -> bool:
+        return self.currEnergy >= self.ultCost

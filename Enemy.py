@@ -13,6 +13,7 @@ class Enemy:
         self.weakness = weakness
         self.adjacent = adjacent
         self.currAV = 10000 / self.spd
+        self.turn = 0
         
     def getUniMul(self) -> float:
         return 1.0 if self.broken else 0.9
@@ -27,4 +28,7 @@ class Enemy:
     def recover(self):
         self.gauge = self.toughness
         self.broken = False
+        
+    def takeTurn(self):
+        self.recover()
         
