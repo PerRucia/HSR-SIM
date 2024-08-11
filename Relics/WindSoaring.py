@@ -2,6 +2,8 @@ from Relic import Relic
 from Buff import Buff
 
 class WindSoaring(Relic):
+    name = "The Wind-Soaring Valorous"
+    
     def __init__(self, wearerRole, setType):
         super().__init__(wearerRole, setType)
         
