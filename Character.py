@@ -4,6 +4,7 @@ from Relic import Relic
 from RelicStats import RelicStats
 from Planar import Planar
 from Turn import Turn
+from Result import Result
 
 class Character:
     # Standard Character Properties
@@ -20,6 +21,7 @@ class Character:
     currEnergy = maxEnergy / 2
     currAV = 100.0
     rotation = ["E", "A", "A"]
+    dmgDct = {"BSC": 0, "SKL": 0, "ULT": 0}
     
     # Unique Character Properties
     
@@ -33,7 +35,7 @@ class Character:
         
     
     def __str__(self) -> str:
-        res = f"{self.name} | {self.element}-{self.path} | POS:{self.pos}\n"
+        res = f"{self.name} | {self.element}-{self.path} | {self.role} | POS:{self.pos}\n"
         res += f"{self.lightcone}\n"
         res += f"{self.relic1}" + (f"| {self.relic2}\n" if self.relic2 != None else "\n")
         res += f"{self.planar}"
@@ -57,7 +59,12 @@ class Character:
     def useHit(self, enemyID=-1):
         return *self.parseEquipment("HIT"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling, 0)
     
-    def allyTurn(self, turn, result):
+    def ownTurn(self, result: Result):
+        if result.atkType in self.dmgDct:
+            self.dmgDct[result.atkType] = self.dmgDct[result.atkType] + result.turnDmg
+        return *self.parseEquipment("OWN", result), Turn(self.name, self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling, 0)
+    
+    def allyTurn(self, turn: Turn, result: Result):
         return *self.parseEquipment("ALLY", turn, result), Turn(self.name, self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling, 0)
         
     def parseEquipment(self, actionType: str, turn=None, result=None):
@@ -78,7 +85,9 @@ class Character:
             elif actionType == "EQUIP":
                 buffs, debuffs, advs = equipment.equip()
             elif actionType == "HIT":
-                buffs, debuffs, advs = equipment.useHit()    
+                buffs, debuffs, advs = equipment.useHit()
+            elif actionType == "OWN":
+                buffs, debuffs, advs = equipment.ownTurn(result)    
             elif actionType == "ALLY":
                 buffs, debuffs, advs = equipment.allyTurn(turn, result)
                 
@@ -113,3 +122,10 @@ class Character:
         res = self.turn
         self.turn = self.turn + 1
         return self.rotation[res % len(self.rotation)]
+    
+    def gettotalDMG(self) -> float:
+        res = 0
+        for key, val in self.dmgDct.items():
+            print(key, val)
+            res += val
+        return res

@@ -30,3 +30,6 @@ class Equipment:
     
     def allyTurn(self, turn, result):
         return [], [], []
+    
+    def ownTurn(self, result):
+        return [], [], []

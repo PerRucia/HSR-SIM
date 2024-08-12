@@ -4,6 +4,7 @@ from Relics.WindSoaring import WindSoaring
 from Planars.Duran import Duran
 from RelicStats import RelicStats
 from Buff import Buff
+from Result import Result
 from Turn import Turn
 
 class Yunli(Character):
@@ -21,6 +22,7 @@ class Yunli(Character):
     currEnergy = 240 / 2
     currAV = 0
     rotation = ["E", "A", "A"]
+    dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0}
     
     # Unique Character Properties
     cullActive = False
@@ -63,11 +65,14 @@ class Yunli(Character):
         bl, dbl, al, *_ = super().useFua(enemyID)
         if self.cullActive:
             self.cullActive = False
-            return bl, dbl, al, Turn(self.name, self.role, enemyID, "BLAST", ["FUA", "ULT"], [self.element], [6.52 , 1.1], [25, 10], 10, self.scaling, 0)
+            return bl, dbl, al, Turn(self.name, self.role, enemyID, "BLAST", ["ULT", "FUA"], [self.element], [6.52 , 1.1], [25, 10], 10, self.scaling, 0)
         return bl, dbl, al, Turn(self.name, self.role, enemyID, "BLAST", ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0)
     
     def useHit(self, enemyID=-1):
         return self.useFua(enemyID)
+    
+    def ownTurn(self, result: Result):
+        return super().ownTurn(result)
     
     def allyTurn(self, turn, result):
         return super().allyTurn(turn, result)
