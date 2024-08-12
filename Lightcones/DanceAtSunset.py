@@ -17,9 +17,9 @@ class Sunset(Lightcone):
         return buff_lst, [], []
     
     def useUlt(self):
-        buff_lst, debuff_lst = super().useUlt()
+        buff_lst, debuff_lst, advList = super().useUlt()
         dmgBuff = self.level * 0.06 + 0.3
         buff_lst.append(Buff("SunsetDMG", "DMG%", dmgBuff, self.wearerRole, ["ULT", "FUA"], 2, 2, "SELF"))
-        return buff_lst, debuff_lst, []
+        return buff_lst, debuff_lst, advList
     
     

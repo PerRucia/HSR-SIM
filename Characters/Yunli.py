@@ -1,6 +1,6 @@
 from Character import Character
 from Lightcones.DanceAtSunset import Sunset
-from Relics.WindSoaring import WindSoaring
+from Relics.WindSoaring import WindSoaringYunli
 from Planars.Duran import Duran
 from RelicStats import RelicStats
 from Buff import Buff
@@ -19,23 +19,23 @@ class Yunli(Character):
     baseSPD = 94
     maxEnergy = 240
     ultCost = 120
-    currEnergy = 240 / 2
     currAV = 0
     rotation = ["E", "A", "A"]
-    dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0}
+    dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0, "BREAK": 0}
     
     # Unique Character Properties
     cullActive = False
     
     # Relic Settings
-    relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 12, 12, "CR%", "ATK%", "DMG%", "ATK%")
+    relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 13, 11, "CR%", "ATK%", "DMG%", "ATK%")
     
     def __init__(self, pos: int, role: str) -> None:
         super().__init__(pos, role)
         self.lightcone = Sunset(role, 1)
-        self.relic1 = WindSoaring(role, 4)
+        self.relic1 = WindSoaringYunli(role, 4)
         self.relic2 = None
         self.planar = Duran(role)
+        self.currEnergy = self.maxEnergy / 2
         
     def equip(self):
         buffList, debuffList, advList = super().equip()
@@ -49,24 +49,27 @@ class Yunli(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, *_ = super().useBsc(enemyID)
-        return bl, dbl, al, Turn(self.name, self.role, -1, "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1)
+        return bl, dbl, al, [Turn(self.name, self.role, enemyID, "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "Basic")]
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, *_ = super().useSkl(enemyID)
-        return bl, dbl, al, Turn(self.name, self.role, -1, "BLAST", ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling, -1)
+        return bl, dbl, al, [Turn(self.name, self.role, enemyID, "BLAST", ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling, -1, "Skill")]
     
     def useUlt(self, enemyID=-1):
         self.currEnergy = self.currEnergy - self.ultCost
         self.cullActive = True
-        bl, dbl, al, *_ = super().useSkl(enemyID)
-        return bl, dbl, al, Turn(self.name, self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling, 0)
+        bl, dbl, al, *_ = super().useUlt(enemyID)
+        return bl, dbl, al, [Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "Ult")]
     
     def useFua(self, enemyID=-1):
         bl, dbl, al, *_ = super().useFua(enemyID)
         if self.cullActive:
             self.cullActive = False
-            return bl, dbl, al, Turn(self.name, self.role, enemyID, "BLAST", ["ULT", "FUA"], [self.element], [6.52 , 1.1], [25, 10], 10, self.scaling, 0)
-        return bl, dbl, al, Turn(self.name, self.role, enemyID, "BLAST", ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0)
+            turnList = [Turn(self.name, self.role, enemyID, "BLAST", ["ULT", "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "CullMain")]
+            for _ in range(6):
+                turnList.append(Turn(self.name, self.role, enemyID, "ST", ["ULT", "FUA"], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "CullBounce"))
+            return bl, dbl, al, turnList
+        return bl, dbl, al, [Turn(self.name, self.role, enemyID, "BLAST", ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0, "FUA")]
     
     def useHit(self, enemyID=-1):
         return self.useFua(enemyID)

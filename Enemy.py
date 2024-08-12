@@ -15,17 +15,18 @@ class Enemy:
         self.adjacent = adjacent
         self.currAV = 10000 / self.spd
         self.turn = 0
+        self.maxToughnessMul = 0.5 + (self.toughness / 40)
         
     def __str__(self) -> str:
         res = f"Enemy {self.enemyID} | LVL: {self.level} | SPD: {self.spd} | "
-        res += f"Weakness: {self.weakness} | Toughness: {self.toughness}"
+        res += f"Weakness: {self.weakness} | Toughness: {self.gauge}"
         return res
     
     def getUniMul(self) -> float:
         return 1.0 if self.broken else 0.9
     
-    def redToughness(self, toughness: int) -> bool:
-        self.guage = max(self.gauge - toughness, 0)
+    def redToughness(self, toughness: float) -> bool:
+        self.gauge = max(self.gauge - toughness, 0)
         if self.gauge == 0:
             self.broken = True
             return True
@@ -48,5 +49,11 @@ class Enemy:
     
     def reduceAV(self, reduceValue: float):
         self.currAV = max(0, self.currAV - reduceValue)
+        
+    def hasAdj(self) -> bool:
+        return len(self.adjacent) > 0
+    
+    def getRes(self, element) -> float:
+        return 0 if element in self.weakness else 0.2
         
         

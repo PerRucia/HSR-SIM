@@ -21,12 +21,12 @@ class Character:
     currEnergy = maxEnergy / 2
     currAV = 100.0
     rotation = ["E", "A", "A"]
-    dmgDct = {"BSC": 0, "SKL": 0, "ULT": 0}
+    dmgDct = {"BSC": 0, "SKL": 0, "ULT": 0, "BREAK": 0}
     
     # Unique Character Properties
     
     # Relic Settings
-    relicStats = RelicStats(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, "HP%", "HP%", "HP%", "HP%")
+    relicStats = RelicStats(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, "HP%", "HP%", "HP%", "HP%") # Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: str) -> None:
         self.pos = pos
@@ -45,27 +45,28 @@ class Character:
         return self.parseEquipment("EQUIP")
     
     def useSkl(self, enemyID=-1):
-        return *self.parseEquipment("BASIC"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 30, self.scaling, -1)
+        return *self.parseEquipment("BASIC"), []
     
     def useBsc(self, enemyID=-1):
-        return *self.parseEquipment("SKILL"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 20, self.scaling, 1)
+        return *self.parseEquipment("SKILL"), []
     
     def useUlt(self, enemyID=-1):
-        return *self.parseEquipment("ULT"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling, 0)
+        return *self.parseEquipment("ULT"), []
         
     def useFua(self, enemyID=-1):
-        return *self.parseEquipment("FUA"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling, 0)
+        return *self.parseEquipment("FUA"), []
         
     def useHit(self, enemyID=-1):
-        return *self.parseEquipment("HIT"), Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling, 0)
+        return *self.parseEquipment("HIT"), []
     
     def ownTurn(self, result: Result):
         if result.atkType in self.dmgDct:
             self.dmgDct[result.atkType] = self.dmgDct[result.atkType] + result.turnDmg
-        return *self.parseEquipment("OWN", result), Turn(self.name, self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling, 0)
+        self.dmgDct["BREAK"] = self.dmgDct["BREAK"] + result.wbDmg
+        return *self.parseEquipment("OWN", result), []
     
     def allyTurn(self, turn: Turn, result: Result):
-        return *self.parseEquipment("ALLY", turn, result), Turn(self.name, self.role, -1, "NA", [], [self.element], [0, 0], [0, 0], 0, self.scaling, 0)
+        return *self.parseEquipment("ALLY", turn, result), []
         
     def parseEquipment(self, actionType: str, turn=None, result=None):
         buffList, debuffList, advList = [], [], []
@@ -124,8 +125,16 @@ class Character:
         return self.rotation[res % len(self.rotation)]
     
     def gettotalDMG(self) -> float:
-        res = 0
+        ttl = sum(self.dmgDct.values())
         for key, val in self.dmgDct.items():
-            print(key, val)
-            res += val
-        return res
+            print(f"{key}: {val:.2f}, {val / ttl * 100:.2f}%")
+        return ttl
+    
+    def getBaseStat(self) -> tuple[float, float, float]:
+        if self.scaling == "ATK":
+            baseStat = self.baseATK + self.lightcone.baseATK
+        if self.scaling == "HP":
+            baseStat = self.baseATK + self.lightcone.baseHP
+        if self.scaling == "DEF":
+            baseStat = self.baseDEF + self.lightcone.baseDEF
+        return baseStat, *self.getRelicScalingStats()

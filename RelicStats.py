@@ -71,4 +71,7 @@ class RelicStats:
     def getDMG(self) -> float:
         return self.findMains("DMG%") * 0.388803
     
+    def getERR(self) -> float:
+        return self.findMains("ERR%") * 0.194394 + 1
+    
         
