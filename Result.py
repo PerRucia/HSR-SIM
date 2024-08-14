@@ -1,5 +1,5 @@
 class Result:
-    def __init__(self, charName: str, charRole: str, atkType: list, eleType: list, broken: bool, turnDmg: float, wbDmg: float):
+    def __init__(self, charName: str, charRole: str, atkType: list, eleType: list, broken: bool, turnDmg: float, wbDmg: float, errGain: float):
         self.charName = charName
         self.charRole = charRole
         self.atkType = atkType[0]
@@ -7,6 +7,7 @@ class Result:
         self.brokenEnemy = broken
         self.turnDmg = turnDmg
         self.wbDmg = wbDmg
+        self.errGain = errGain
         
     def __str__(self) -> str:
-        return f"DMG: {self.turnDmg} | WB: {self.brokenEnemy} | WB DMG: {self.wbDmg}"
+        return f"{self.charName} | {self.charRole} | DMG: {self.turnDmg:.3f} | WB: {self.brokenEnemy} | WB DMG: {self.wbDmg:.3f} | Energy: {self.errGain:.3f}"

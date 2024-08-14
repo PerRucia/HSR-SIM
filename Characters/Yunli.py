@@ -59,7 +59,7 @@ class Yunli(Character):
         self.currEnergy = self.currEnergy - self.ultCost
         self.cullActive = True
         bl, dbl, al, dl, *_ = super().useUlt(enemyID)
-        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "YunliUlt")]
+        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "YunliUlt")]
     
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl, *_ = super().useFua(enemyID)

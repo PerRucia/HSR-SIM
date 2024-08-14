@@ -45,16 +45,15 @@ for i in range(numEnemies):
 logging.critical("Enemy Team:")
 for enemy in eTeam:
     logging.critical(enemy)
-logging.critical("")
 
 # Print Char Info
-logging.critical("Player Team:")
+logging.critical("\nPlayer Team:")
 for char in playerTeam:
     logging.critical(char)
     logging.critical("")
 
 # Setup equipment and char traces
-teamBuffs, enemyDebuffs, advList, delayList = [], [], [], []
+teamBuffs, enemyDebuffs, advList, delayList = [], [], [], [Delay("TestDelay", 0.2, 0, False, False)]
 for char in playerTeam:
     tempBuffs, tempDebuffs, tempAdv, tempDelay = char.equip()
     teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, tempBuffs, tempDebuffs, tempAdv, tempDelay)
@@ -62,18 +61,48 @@ for char in playerTeam:
 for char in playerTeam:
     initCharAV(char, teamBuffs) # apply any pre-existing speed buffs
 
+logging.info("\nInitial AV Adjustments")
 avAdjustment(playerTeam, advList) # apply any "on battle start" advances
 advList = [] # clear advList after applying
 
+logging.info("\nInitial Enemy Delays")
 delayList = delayAdjustment(eTeam, delayList, enemyDebuffs) # apply any "on battle start" delays
 
 allUnits = sortUnits(playerTeam + eTeam)
 setPriority(allUnits)
     
 # Simulator Loop
+logging.critical("\n==========COMBAT SIMULATION STARTED==========")
 simAV = 0
+
+def processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList):
+    while turnList:
+        turn = turnList[0]
+        logging.warning(turn)
+        logging.debug("\n----------Team Buffs----------")
+        [logging.debug(buff) for buff in teamBuffs]
+        logging.debug("----------End of Buff List----------")
+        logging.debug("\n----------Enemy Debuffs----------")
+        [logging.debug(debuff) for debuff in enemyDebuffs]
+        logging.debug("----------End of Debuff List----------")
+
+        res, newDebuffs, newDelays = handleTurn(turn, playerTeam, eTeam, teamBuffs, enemyDebuffs)
+        logging.warning(res)
+        teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, [], newDebuffs, [], newDelays)
+        for char in playerTeam:
+            if char.role == turn.charRole:
+                tempB, tempDB, tempA, tempD, newTurns = char.ownTurn(res)
+            else:
+                tempB, tempDB, tempA, tempD, newTurns = char.allyTurn(turn, res)
+            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, tempB, tempDB, tempA, tempD)
+            turnList.extend(newTurns)
+
+        turnList = turnList[1:]
+    
+    return teamBuffs, enemyDebuffs, advList, delayList
+
 while simAV < avLimit:
-    logging.critical("")
+    logging.critical("\n==========NEW TURN==========")
     # Find next turn
     unit = allUnits[0]
     av = unit.currAV
@@ -106,19 +135,24 @@ while simAV < avLimit:
         teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, tempBuffs, tempDebuffs, tempAdv, tempDelay)
         turnList.extend(tempT)
         logging.critical(f"CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
+        
     # Handle any pending attacks:
-    while turnList:
-        turn = turnList[0]
-        logging.warning(turn)
-        turnList = turnList[1:]
+    teamBuffs, enemyDebuffs, advList, delayList = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+    turnList = []
         
     # Check if any unit can ult
     for char in playerTeam:
         if char.canUseUlt():
             tempBuffs, tempDebuffs, tempAdvs, tempDelays, tempTurns = char.useUlt()
-    
+            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, tempBuffs, tempDebuffs, tempAdv, tempDelay)
+            turnList.extend(tempTurns)
+
+    # Handle any new attacks from unit ults  
+    teamBuffs, enemyDebuffs, advList, delayList = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+        
     # Apply any speed adjustments
     spdAdjustment(playerTeam, teamBuffs)
+    enemySPDAdjustment(eTeam, enemyDebuffs)
     
     # Reset the AV of the current unit by checking its current speed
     resetUnitAV(unit, teamBuffs, enemyDebuffs)
@@ -135,3 +169,14 @@ while simAV < avLimit:
     
     allUnits = sortUnits(allUnits)
     
+logging.critical("\n==========COMBAT SIMULATION ENDED==========")
+
+logging.critical("\n==========CHARACTER STATS==========")
+totalDMG = 0
+for char in playerTeam:
+    logging.critical(char.name)
+    res, dmg = char.gettotalDMG()
+    logging.critical(res)
+    totalDMG += dmg
+
+logging.critical(f"DPAV: {totalDMG / avLimit:.3f}")

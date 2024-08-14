@@ -65,6 +65,7 @@ class Character:
         if result.atkType in self.dmgDct:
             self.dmgDct[result.atkType] = self.dmgDct[result.atkType] + result.turnDmg
         self.dmgDct["BREAK"] = self.dmgDct["BREAK"] + result.wbDmg
+        self.currEnergy = self.currEnergy + result.errGain
         return *self.parseEquipment("OWN", result), []
     
     def allyTurn(self, turn: Turn, result: Result):
@@ -123,11 +124,12 @@ class Character:
         self.turn = self.turn + 1
         return self.rotation[res % len(self.rotation)]
     
-    def gettotalDMG(self) -> float:
+    def gettotalDMG(self) -> tuple[str, float]:
         ttl = sum(self.dmgDct.values())
+        res = ""
         for key, val in self.dmgDct.items():
-            print(f"{key}: {val:.2f}, {val / ttl * 100:.2f}%")
-        return ttl
+            res += f"{key}: {val:.2f}, {val / ttl * 100:.2f}%\n"
+        return res, ttl
     
     def getBaseStat(self) -> tuple[float, float, float]:
         if self.scaling == "ATK":

@@ -8,6 +8,7 @@ class Enemy:
         self.name = f"Enemy {self.enemyID}"
         self.level = level
         self.spd = spd
+        self.currSPD = self.spd
         self.toughness = toughness
         self.gauge = self.toughness
         self.actionOrder = actionOrder
@@ -28,7 +29,9 @@ class Enemy:
     
     def redToughness(self, toughness: float) -> bool:
         self.gauge = max(self.gauge - toughness, 0)
-        if self.gauge == 0:
+        if self.gauge > 0:
+            return False
+        if not self.broken:
             self.broken = True
             return True
         return False
