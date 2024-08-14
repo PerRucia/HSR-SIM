@@ -8,14 +8,13 @@ class WindSoaringYunli(Relic):
         super().__init__(wearerRole, setType)
         
     def equip(self):
-        buff_lst = [Buff("WindSoaringDMG", "DMG%", 0.36, self.wearerRole, ["ULT"], 1000, 1, "SELF")]
-        buff_lst.append(Buff("WindSoaringATK", "ATK%", 0.12, self.wearerRole, ["ALL"], 1000, 1, "SELF"))
+        buff_lst = [(Buff("WindSoaringATK", "ATK%", 0.12, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))]
         if self.setType == 4:
-            buff_lst.append(Buff("WindSoaringCR", "CR%", 0.06, self.wearerRole, ["ALL"], 1000, 1, "SELF"))
-        return buff_lst, [], []
+            buff_lst.append(Buff("WindSoaringCR", "CR%", 0.06, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+        return buff_lst, [], [], []
     
     def useFua(self):
         if self.setType == 4:
-            buff_lst = [Buff("WindSoaringDMG", "DMG%", 0.36, self.wearerRole, ["ULT"], 1, 1, "SELF")]
-            return buff_lst, [], []
+            buff_lst = [Buff("WindSoaringDMG", "DMG%", 0.36, self.wearerRole, ["ULT"], 1, 1, "SELF", "END")]
+            return buff_lst, [], [], []
         return super().useFua()

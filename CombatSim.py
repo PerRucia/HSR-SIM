@@ -23,7 +23,6 @@ for i in range(numEnemies):
 
 # Character Settings
 playerTeam = [Yunli(0, "DPS")]
-teamBuffs, enemyDebuffs = [], []
 
 # Simulation Settings
 cycleLimit = 5
@@ -51,75 +50,45 @@ for char in playerTeam:
     logging.critical("")
 
 # Setup equipment and char traces
+teamBuffs, enemyDebuffs, enemyDelay = [], [], []
+
 for char in playerTeam:
-    tempBuffList, tempDebuffList, tempAdvList = char.equip()
+    tempBuffList, tempDebuffList, tempAdvList, tempDelayList = char.equip()
     buffList = parseBuffs(tempBuffList, playerTeam)
     debuffList = parseDebuffs(tempDebuffList, enemyTeam)
     advList = parseAdvance(tempAdvList, playerTeam)
+    delayList = parseDebuffs(tempDelayList, enemyTeam)
     addBuffs(teamBuffs, buffList)
     addBuffs(enemyDebuffs, debuffList)
 
 # Setup initial AV
 for char in playerTeam:
-    resetCharAV(char, teamBuffs) # Apply any pre-existing speed buffs
+    initCharAV(char, teamBuffs) # apply any pre-existing speed buffs
 
-for adv in advList:
-    advanceChar(adv[0], adv[1], playerTeam, buffList) # Apply any "on battle start" action advance
+avAdjustment(playerTeam, advList) # apply any "on battle start" advances
 advList = [] # clear advList after applying
 
-allUnits = enemyTeam + playerTeam
+allUnits = sortUnits(playerTeam + enemyTeam)
+setPriority(allUnits)
+
+for u in allUnits:
+    print(u.name, u.priority, u.currAV)
 # Simulator Loop
 simAV = 0
 while simAV < avLimit:
-    # Check whether its enemy/char turn
-    turnType, av, unit = findNextTurn(enemyTeam + playerTeam)
-    turnList = []
-    simAV += av
-    logging.warning(f"CumAV: {simAV:.3f} | AV: {av:.3f} | {unit.name}")
-    
-    # Enemy Turn logic
-    if not turnType:
-        numAttacks = unit.takeTurn()
-        addEnergy(playerTeam, numAttacks, attackTypeRatio, teamBuffs)
-        tempBuffList, tempDebuffList, advList = [], [], []
-        for char in playerTeam:
-            bl, dbl, al, turnList = char.useHit(unit.enemyID)
-            for i in range(numAttacks):
-                turnList.extend(turnList)
-                tempBuffList.extend(parseBuffs(bl, playerTeam))
-                tempDebuffList.extend(parseDebuffs(dbl, enemyTeam))
-                advList.extend(parseAdvance(al, playerTeam))
-                    
-        # Parse any character turns collected so far
-        while turnList:
-            turn = turnList[0]
-            turnList.remove(turn)
-            result = handleTurn(turnList[0], enemyTeam, playerTeam, buffList, debuffList)
-            for char in playerTeam:
-                bl, dbl, al, turn = char.allyTurn(turn, result)
-        enemyDebuffs = tickDebuffs(unit.enemyID, enemyDebuffs) # end of enemy turn, tick down debuffs
-        addBuffs(enemyDebuffs, tempDebuffList) # add new buffs to team buffs
-        addBuffs(teamBuffs, tempBuffList) # add new debuffs to enemy
+    # Find next turn
+    unit = allUnits[0]
+    break
+    # Handle the turn
+        # Check whether its character or enemy turn
         
-    # Char Turn Logic
-    elif turnType:
-        teamBuffs = tickBuffs(unit.role, teamBuffs) # start of char turn, tick down buffs
-        atkType = unit.takeTurn()
-        resetCharAV(unit, teamBuffs)
-        if atkType == "E":
-            bl, dbl, al, turn = unit.useSkl()
-        elif atkType == "A":
-            bl, dbl, al, turn = unit.useBsc()
-
-    # Reduce AV of all units
-    for u in allUnits:
-        if u == unit:
-            continue
-        u.reduceAV(av)
+        # Enemy Turn
         
-    # Check if any ults can be used
-
+        # Character Turn
+        
     # Apply any speed adjustments
     
+        # After speed adjustments applied
+        
     # Apply any AV adjustments
-
+        # Add 10 to priority if any char is forwarded

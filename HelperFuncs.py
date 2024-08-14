@@ -2,6 +2,7 @@ from Buff import *
 from Turn import Turn
 from Result import Result
 from Enemy import Enemy
+from Delay import Delay
 
 wbMultiplier = 3767.5533
 
@@ -14,10 +15,10 @@ def parseBuffs(lst: list, playerTeam: list) -> list:
         if buff.target == "ALL": #teamwide buff, need to add 4 instances
             for char in playerTeam:
                 target = char.role if (buff.tickDown == "SELF") else buff.tickDown
-                buffList.append(Buff(buff.name, buff.buffType, buff.val, char.role, buff.atkType, buff.turns, buff.stackLimit, target))
+                buffList.append(Buff(buff.name, buff.buffType, buff.val, char.role, buff.atkType, buff.turns, buff.stackLimit, target, buff.tdType))
         else: #single target buff, only add one instance
             target = buff.target if (buff.tickDown == "SELF") else buff.tickDown
-            buffList.append(Buff(buff.name, buff.buffType, buff.val, buff.target, buff.atkType, buff.turns, buff.stackLimit, target))
+            buffList.append(Buff(buff.name, buff.buffType, buff.val, buff.target, buff.atkType, buff.turns, buff.stackLimit, target, buff.tdType))
     return buffList
 
 def parseDebuffs(lst: list[Debuff], enemyTeam: list[Enemy]) -> list:
@@ -40,6 +41,16 @@ def parseAdvance(lst: list, playerTeam: list) -> list:
             advList.append(a)
     return advList
 
+def parseDelay(lst: list[Delay], enemyTeam: list[Enemy]):
+    delayList = []
+    for delay in lst:
+        if delay.target == "ALL":
+            for enemy in enemyTeam:
+                delayList.append(Delay(delay.name, delay.delayPercent, enemy.enemyID, delay.reqBroken, delay.stackable))
+        else:
+            delayList.append(delay)
+    return delayList
+
 def addBuffs(currList: list, newList: list) -> list:
     def checkValidAdd(buff: Buff, currList: list) -> tuple[bool, int]:
         for i in range(len(currList)):
@@ -60,35 +71,49 @@ def addBuffs(currList: list, newList: list) -> list:
             currList[buffID].refreshTurns()
     return currList
 
-def getCharSPD(char, buffList: list[Buff]) -> float:
-    baseSPD = char.baseSPD
-    spdPercent = sumBuffs(findBuffs(char.role, "SPD%", buffList))
-    spdFlat = sumBuffs(findBuffs(char.role, "SPD", buffList)) + char.getSPD()
-    return baseSPD * (1 + spdPercent) + spdFlat
-
-def resetCharAV(char, buffList: list[Buff]) -> float:
-    char.currAV = 10000 / getCharSPD(char, buffList)
-    
-def advanceChar(target: str, advPercent: float, playerTeam: list, buffList: list[Buff]):
-    for char in playerTeam:
-        if char.role == target:
-            char.advanceAV(advPercent, getCharSPD(char, buffList))
-    
 def findBuffs(charRole: str, buffType: str, buffList: list) -> list:
     return [x for x in buffList if (x.buffType == buffType and x.target == charRole)]
 
 def sumBuffs(buffList: list[Buff]):
     return sum([x.getBuffVal() for x in buffList])
 
-def findNextTurn(units: list):
-    minAV = 10000
-    minAVUnit = None
-    for unit in units:
-        if unit.currAV < minAV:
-            minAV = unit.currAV
-            minAVUnit = unit
-    return minAVUnit.isChar(), minAV, minAVUnit
+def getCharSPD(char, buffList: list[Buff]) -> float:
+    baseSPD = char.baseSPD
+    spdPercent = sumBuffs(findBuffs(char.role, "SPD%", buffList))
+    spdFlat = sumBuffs(findBuffs(char.role, "SPD", buffList)) + char.getSPD()
+    return baseSPD * (1 + spdPercent) + spdFlat
 
+def initCharAV(char, buffList: list[Buff]):
+    charSPD = getCharSPD(char, buffList)
+    char.currAV = 10000 / charSPD
+    char.currSPD = charSPD
+    
+def spdAdjustment(teamList: list, buffList: list[Buff]):
+    for char in teamList:
+        newSPD = getCharSPD(char, buffList)
+        if newSPD != char.currSPD:
+            char.currAV = char.currAV * char.currSPD / newSPD
+        char.currSPD = newSPD
+    return
+
+def avAdjustment(teamList: list, avList: list[list]):
+    for av in avList:
+        role = av[0]
+        advPercent = av[1]
+        for char in teamList:
+            if char.role == role:
+                avRed = (10000 / char.currSPD)  * advPercent
+                char.reduceAV(avRed)
+                char.priority = char.priority + 10
+    return
+                
+def sortUnits(allUnits: list) -> list:
+    return sorted(allUnits, key=lambda x: (x.currAV, -x.priority))
+
+def setPriority(allUnits: list) -> list:
+    for i in range(len(allUnits)):
+        allUnits[i].priority = len(allUnits) - i
+        
 def addEnergy(playerTeam: list, numAttacks: int, attackTypeRatio: list[float], buffList: list[Buff]):
     dct = {"HUN": 3, "ERU": 3, "NIH": 4, "HAR": 4, "ABU": 4, "DES": 5, "PRE": 6}
     aggroLst = []

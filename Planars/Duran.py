@@ -7,6 +7,7 @@ class Duran(Planar):
         super().__init__(wearerRole)
         
     def equip(self):
-        buff_lst = [Buff("DuranDMG", "DMG%", 0.25, self.wearerRole, ["FUA"], 1000, 1, "SELF")]
-        buff_lst.append(Buff("DuranCD", "CD%", 0.25, self.wearerRole, ["ALL"], 1000, 1, "SELF"))
-        return buff_lst, [], []
+        buffList, debuffList, advList, delayList = super().equip()
+        buffList.append(Buff("DuranDMG", "DMG%", 0.25, self.wearerRole, ["FUA"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("DuranCD", "CD%", 0.25, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+        return buffList, debuffList, advList, delayList

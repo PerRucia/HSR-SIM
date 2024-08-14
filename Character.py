@@ -32,6 +32,8 @@ class Character:
         self.pos = pos
         self.role = role
         self.turn = 0
+        self.priority = 0
+        self.currSPD = 100
         
     
     def __str__(self) -> str:
@@ -69,40 +71,37 @@ class Character:
         return *self.parseEquipment("ALLY", turn, result), []
         
     def parseEquipment(self, actionType: str, turn=None, result=None):
-        buffList, debuffList, advList = [], [], []
+        buffList, debuffList, advList, delayList = [], [], [], []
         equipmentList = [self.lightcone, self.relic1, self.planar]
         if self.relic2:
             equipmentList.append(self.relic2)
             
         for equipment in equipmentList:
             if actionType == "BASIC":
-                buffs, debuffs, advs = equipment.useBsc()
+                buffs, debuffs, advs, delays = equipment.useBsc()
             elif actionType == "SKILL":
-                buffs, debuffs, advs = equipment.useSkl()
+                buffs, debuffs, advs, delays = equipment.useSkl()
             elif actionType == "ULT":
-                buffs, debuffs, advs = equipment.useUlt()
+                buffs, debuffs, advs, delays = equipment.useUlt()
             elif actionType == "FUA":
-                buffs, debuffs, advs = equipment.useFua()
+                buffs, debuffs, advs, delays = equipment.useFua()
             elif actionType == "EQUIP":
-                buffs, debuffs, advs = equipment.equip()
+                buffs, debuffs, advs, delays = equipment.equip()
             elif actionType == "HIT":
-                buffs, debuffs, advs = equipment.useHit()
+                buffs, debuffs, advs, delays = equipment.useHit()
             elif actionType == "OWN":
-                buffs, debuffs, advs = equipment.ownTurn(result)    
+                buffs, debuffs, advs, delays = equipment.ownTurn(result)    
             elif actionType == "ALLY":
-                buffs, debuffs, advs = equipment.allyTurn(turn, result)
+                buffs, debuffs, advs, delays = equipment.allyTurn(turn, result)
                 
             buffList.extend(buffs)
             debuffList.extend(debuffs)
             advList.extend(advs)
-        return buffList, debuffList, advList
+            delayList.extend(delays)
+        return buffList, debuffList, advList, delayList
     
     def addEnergy(self, amount: float):
         self.currEnergy = min(self.maxEnergy, self.currEnergy + amount)
-        
-    def advanceAV(self, adjPercent: float, currSPD: float):
-        avAdjustment = (10000 / currSPD) * adjPercent
-        self.currAV = max(0, self.currAV - avAdjustment)
         
     def reduceAV(self, reduceValue: float):
         self.currAV = max(0, self.currAV - reduceValue)

@@ -16,6 +16,7 @@ class Enemy:
         self.currAV = 10000 / self.spd
         self.turn = 0
         self.maxToughnessMul = 0.5 + (self.toughness / 40)
+        self.priority = 0
         
     def __str__(self) -> str:
         res = f"Enemy {self.enemyID} | LVL: {self.level} | SPD: {self.spd} | "

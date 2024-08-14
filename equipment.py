@@ -1,8 +1,9 @@
 '''
-Returns 3 lists:
+Returns 4 lists:
 - list of buffs added
 - list of debuffs added
 - list of adv% adjustments
+- list of enemy debuffs to be applied
 '''
 
 
@@ -11,25 +12,25 @@ class Equipment:
         self.wearerRole = wearerRole
     
     def equip(self): # init function to add base buffs to wearer
-        return [], [], []
+        return [], [], [], []
     
     def useSkl(self):
-        return [], [], []
+        return [], [], [], []
     
     def useBsc(self):
-        return [], [], []
+        return [], [], [], []
     
     def useUlt(self):
-        return [], [], []
+        return [], [], [], []
     
     def useFua(self):
-        return [], [], []
+        return [], [], [], []
     
     def useHit(self):
-        return [], [], []
+        return [], [], [], []
     
     def allyTurn(self, turn, result):
-        return [], [], []
+        return [], [], [], []
     
     def ownTurn(self, result):
-        return [], [], []
+        return [], [], [], []
