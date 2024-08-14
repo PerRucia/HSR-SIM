@@ -2,7 +2,7 @@ from Buff import *
 from Turn import Turn
 from Result import Result
 from Enemy import Enemy
-from Delay import Delay
+from Delay import *
 
 wbMultiplier = 3767.5533
 
@@ -31,14 +31,14 @@ def parseDebuffs(lst: list[Debuff], enemyTeam: list[Enemy]) -> list:
             debuffList.append(debuffList)
     return debuffList
 
-def parseAdvance(lst: list, playerTeam: list) -> list:
+def parseAdvance(lst: list[Advance], playerTeam: list) -> list:
     advList = []
-    for a in lst:
-        if a[0] == "ALL": # Teamwide advance
+    for adv in lst:
+        if adv.targetRole == "ALL": # Teamwide advance
             for char in playerTeam:
-                advList.append([char.role, a[1]])
+                advList.append(Advance(adv.name, char.role, adv.advPercent))
         else: # Single advance
-            advList.append(a)
+            advList.append(adv)
     return advList
 
 def parseDelay(lst: list[Delay], enemyTeam: list[Enemy]):
@@ -50,6 +50,20 @@ def parseDelay(lst: list[Delay], enemyTeam: list[Enemy]):
         else:
             delayList.append(delay)
     return delayList
+
+def addDelay(currList: list[Delay], newList: list[Delay]) -> list[Delay]:
+    def checkValidAdd(delay: Delay, currList: list[Delay]) -> bool:
+        return all(delay.name != existingDelay.name or delay.stackable for existingDelay in currList)
+
+    for delay in newList:
+        if checkValidAdd(delay, currList):
+            currList.append(delay)
+    
+    return currList
+
+def addAdvance(currList: list[Advance], newList: list[Advance]) -> list[Advance]:
+    currList.extend(newList)
+    return currList
 
 def addBuffs(currList: list, newList: list) -> list:
     def checkValidAdd(buff: Buff, currList: list) -> tuple[bool, int]:
@@ -83,11 +97,27 @@ def getCharSPD(char, buffList: list[Buff]) -> float:
     spdFlat = sumBuffs(findBuffs(char.role, "SPD", buffList)) + char.getSPD()
     return baseSPD * (1 + spdPercent) + spdFlat
 
+def getEnemySPD(enemy: Enemy, debuffList: list[Debuff]) -> float:
+    baseSPD = enemy.spd
+    debuffSum = 0
+    for debuff in debuffList:
+        if (debuff.debuffType == "SPD%") and (debuff.target == enemy.enemyID):
+            debuffSum += debuff.getDebuffVal()
+    return baseSPD * (1 - debuffSum)
+
 def initCharAV(char, buffList: list[Buff]):
     charSPD = getCharSPD(char, buffList)
     char.currAV = 10000 / charSPD
     char.currSPD = charSPD
     
+def resetUnitAV(unit, buffList: list[Buff], debuffList: list[Debuff]):
+    # check if unit is a char or enemy
+    if unit.isChar(): # Character, check buffList for spd buffs
+        initCharAV(unit, buffList)
+    else: # Enemy, check debuffList for spd debuffs
+        eSPD = getEnemySPD(unit, debuffList)
+        unit.currAV = 10000 / eSPD
+        
 def spdAdjustment(teamList: list, buffList: list[Buff]):
     for char in teamList:
         newSPD = getCharSPD(char, buffList)
@@ -96,24 +126,40 @@ def spdAdjustment(teamList: list, buffList: list[Buff]):
         char.currSPD = newSPD
     return
 
-def avAdjustment(teamList: list, avList: list[list]):
-    for av in avList:
-        role = av[0]
-        advPercent = av[1]
-        for char in teamList:
-            if char.role == role:
-                avRed = (10000 / char.currSPD)  * advPercent
-                char.reduceAV(avRed)
-                char.priority = char.priority + 10
+def avAdjustment(teamList: list, advList: list[Advance]):
+    for adv in advList:
+        role = adv.targetRole
+        advPercent = adv.advPercent
+        char = findChar(teamList, role)
+        avRed = (10000 / char.currSPD)  * advPercent
+        char.reduceAV(avRed)
+        char.priority = char.priority + 10
     return
                 
 def sortUnits(allUnits: list) -> list:
     return sorted(allUnits, key=lambda x: (x.currAV, -x.priority))
 
-def setPriority(allUnits: list) -> list:
+def setPriority(allUnits: list):
     for i in range(len(allUnits)):
         allUnits[i].priority = len(allUnits) - i
         
+def delayAdjustment(enemyTeam: list[Enemy], delayList: list[Delay], debuffList: list[Debuff]) -> list[Delay]:
+    def findEnemy(enemyID: int) -> Enemy:
+        return next((enemy for enemy in enemyTeam if enemy.enemyID == enemyID), None)
+    
+    res = []
+    for delay in delayList:
+        enemy = findEnemy(delay.target)
+        if not enemy:
+            continue
+            
+        enemyAV = 10000 / getEnemySPD(enemy, debuffList)
+        if not delay.reqBroken or (delay.reqBroken and enemy.broken):
+            enemy.reduceAV(enemyAV * delay.delayPercent * -1)
+        else:
+            res.append(delay) # keep the delay in delayList until it can be applied
+    return res
+
 def addEnergy(playerTeam: list, numAttacks: int, attackTypeRatio: list[float], buffList: list[Buff]):
     dct = {"HUN": 3, "ERU": 3, "NIH": 4, "HAR": 4, "ABU": 4, "DES": 5, "PRE": 6}
     aggroLst = []
@@ -184,77 +230,15 @@ def findChar(playerTeam: list, charRole: str):
         if char.role == charRole:
             return char
         
-def handleTurn(turn: Turn, enemyTeam: list[Enemy], playerTeam: list, buffList: list[Buff], debuffList: list[Debuff]) -> Result:
-    char = findChar(playerTeam, turn.charRole)
-    scalingVal = getScalingValues(char, buffList, turn.atkType)
-    dmgMul = getDmgMul(char, buffList, turn.atkType)
-    wbe = getWBE(char, buffList, turn.atkType)
-    cd = getCritMul(char, buffList, turn.atkType)
-    cr = getCritChance(char, buffList, turn.atkType)
-    err = getERR(char, buffList, turn.atkType)
-    char.addEnergy(turn.errGain * err)
-    be = 1 + getBE(char, buffList, turn.atkType)
+def handleAdditions(playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], advList: list[Advance], delayList: list[Delay], 
+                    buffToAdd: list[Buff], DebuffToAdd: list[Debuff], advToAdd: list[Advance], delayToAdd: list[Delay]) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay]]:
+    buffs, debuffs, advs, delays = parseBuffs(buffToAdd, playerTeam), parseDebuffs(DebuffToAdd, enemyTeam), parseAdvance(advToAdd, playerTeam), parseDelay(delayToAdd, enemyTeam)
+    buffList = addBuffs(buffList, buffs)
+    debuffList = addBuffs(debuffList, debuffs)
+    advList = addAdvance(advList, advs)
+    delayList = addDelay(delayList, delays)
     
-    dmgDealt = 0
-    wbDmgDealt = 0
-    anyBroken = False
-    
-    def processEnemy(enemy: Enemy, brk: float, dmg: float):
-        nonlocal dmgDealt, wbDmgDealt, anyBroken
-        
-        enemyBroken = enemy.redToughness(brk * wbe)
-        penMul = getPenMul(char, enemy, buffList, turn.atkType, turn.element[0])
-        enemyMul = getEnemyMul(enemy.enemyID, enemyTeam, debuffList, turn.atkType)
-        dmgDealt += expectedDMG(dmg * scalingVal * dmgMul * penMul * enemyMul, cr, cd)
-        
-        if enemyBroken:
-            anyBroken = True
-            wbDmgDealt += getWBDmg(turn.element[0], wbMultiplier, enemy.maxToughnessMul) * be * penMul * enemyMul
-            
-    if turn.moveType == "AOE": # AOE attack, don't need to select enemy
-        for enemy in enemyTeam:
-            processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0])
-    else: # ST and Blast attacks
-        if turn.targetID == -1: # automatically determine best enemy to attack
-            enemy, _ = findBestEnemy(enemyTeam, debuffList, turn.atkType)
-        else:
-            enemy = enemyTeam[turn.targetID]
-        
-        # Main Targets
-        processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0])    
-            
-        # Adjacent Targets
-        if enemy.hasAdj and turn.dmgSplit[1] > 0:
-            for enemyID in enemy.adjacent:
-                adj_enemy = enemyTeam[enemyID]
-                processEnemy(adj_enemy, turn.brkSplit[1], turn.dmgSplit[1])
-                
-    return Result(turn.charName, turn.charRole, turn.atkType, turn.element, anyBroken, dmgDealt, wbDmgDealt)
-
-def getWBDmg(element: str, wbMultiplier: float, maxToughnessMul: float) -> float:
-    match element:
-        case "PHY":
-            breakMul = 2 * wbMultiplier * maxToughnessMul
-            debuffMul = 4 * wbMultiplier * maxToughnessMul
-        case "FIR":
-            breakMul = 2 * wbMultiplier * maxToughnessMul
-            debuffMul = 2 * wbMultiplier
-        case "WIN":
-            breakMul = 1.5 * wbMultiplier * maxToughnessMul
-            debuffMul = 6 * wbMultiplier
-        case "ICE":
-            breakMul = 1 * wbMultiplier * maxToughnessMul
-            debuffMul = 1 * wbMultiplier
-        case "LNG":
-            breakMul = 1 * wbMultiplier * maxToughnessMul
-            debuffMul = 4 * wbMultiplier
-        case "QUA":
-            breakMul = 0.5 * wbMultiplier * maxToughnessMul
-            debuffMul = 2.4 * wbMultiplier * maxToughnessMul
-        case "IMG":
-            breakMul = 0.5 * wbMultiplier * maxToughnessMul
-            debuffMul = 0
-    return breakMul + debuffMul
+    return buffList, debuffList, advList, delayList
 
 def findBestEnemy(enemyTeam: list[Enemy], debuffList: list[Debuff], atkType: list[str]) -> tuple[Enemy, float]:
     bestMul = 0

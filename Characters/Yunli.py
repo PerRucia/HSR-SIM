@@ -49,29 +49,30 @@ class Yunli(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, *_ = super().useBsc(enemyID)
-        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "Basic")]
+        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "YunliBasic")]
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, *_ = super().useSkl(enemyID)
-        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "BLAST", ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling, -1, "Skill")]
+        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "BLAST", ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling, -1, "YunliSkill")]
     
     def useUlt(self, enemyID=-1):
         self.currEnergy = self.currEnergy - self.ultCost
         self.cullActive = True
         bl, dbl, al, dl, *_ = super().useUlt(enemyID)
-        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "Ult")]
+        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "NA", [], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "YunliUlt")]
     
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl, *_ = super().useFua(enemyID)
         if self.cullActive:
             self.cullActive = False
-            turnList = [Turn(self.name, self.role, enemyID, "BLAST", ["ULT", "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "CullMain")]
+            turnList = [Turn(self.name, self.role, enemyID, "BLAST", ["ULT", "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain")]
             for _ in range(6):
-                turnList.append(Turn(self.name, self.role, enemyID, "ST", ["ULT", "FUA"], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "CullBounce"))
+                turnList.append(Turn(self.name, self.role, enemyID, "ST", ["ULT", "FUA"], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
             return bl, dbl, al, dl, turnList
-        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "BLAST", ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0, "FUA")]
+        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "BLAST", ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0, "YunliFUA")]
     
     def useHit(self, enemyID=-1):
+        self.currEnergy = self.currEnergy + 15
         return self.useFua(enemyID)
     
     def ownTurn(self, result: Result):

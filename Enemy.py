@@ -42,7 +42,6 @@ class Enemy:
         self.recover()
         res = self.turn
         self.turn = self.turn + 1
-        self.currAV = 10000 / self.spd
         return self.actionOrder[res % len(self.actionOrder)]
     
     def isChar(self) -> bool:

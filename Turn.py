@@ -23,10 +23,10 @@ class Turn:
         self.moveName = moveName
         
     def __str__(self) -> str:
-        res = f"{self.moveName} | {self.charName} | {self.charRole}\n"
-        res += f"{self.moveType} attack | {self.element} | {self.atkType}\n"
-        res += f"Scaling: {self.scaling} | Enemy Target: {self.targetID}\n"
-        res += f"DMG/BREAK Splits: {self.dmgSplit}/{self.brkSplit}\n"
-        res += f"Energy Gained: {self.errGain}\n"
+        res = f"{self.moveName} | {self.charName} | {self.charRole} | "
+        res += f"{self.moveType} attack | {self.element} | {self.atkType} | "
+        res += f"Scaling: {self.scaling} | Enemy Target: {self.targetID} | "
+        res += f"DMG/BREAK Splits: {self.dmgSplit}/{self.brkSplit} | "
+        res += f"Energy Gained: {self.errGain}"
         return res
     

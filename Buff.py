@@ -42,9 +42,9 @@ class Buff:
         self.tdType = tdType
         
     def __str__(self) -> str:
-        res = f"{self.name} | {self.buffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val}\n"
-        res += f"Remaining Turns: {self.turns} | TickDown: {self.tickDown}, {self.tdType}\n"
-        res += f"Target: {self.target} | Affects: {self.atkType}\n"
+        res = f"{self.name} | {self.buffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val} | "
+        res += f"Remaining Turns: {self.turns} | TickDown: {self.tickDown}, {self.tdType} | "
+        res += f"Target: {self.target} | Affects: {self.atkType}"
         return res
         
     def reduceTurns(self) -> None:
@@ -66,7 +66,7 @@ class Buff:
         return True if (self.stacks == self.stackLimit) else False
         
 class Debuff:
-    def __init__(self, name: str, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int):
+    def __init__(self, name: str, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int, isDot: bool):
         self.name = name
         self.debuffType = debuffType
         self.val = val
@@ -76,11 +76,12 @@ class Debuff:
         self.turns = self.storedTurns
         self.stackLimit = stackLimit
         self.stacks = 1
+        self.isDot = isDot
         
     def __str__(self) -> str:
-        res = f"{self.name} | {self.debuffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val}\n"
-        res += f"Remaining Turns: {self.turns}\n"
-        res += f"Target: {self.target} | Affects: {self.atkType}\n"
+        res = f"{self.name} | {self.debuffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val} | "
+        res += f"Remaining Turns: {self.turns} | "
+        res += f"Target: {self.target} | Affects: {self.atkType} | DOT: {self.isDot}"
         return res
         
     def reduceTurns(self) -> None:
