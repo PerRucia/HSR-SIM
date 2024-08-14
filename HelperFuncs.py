@@ -12,7 +12,7 @@ eleDct = {"PHY": 2.0, "FIR": 2.0, "WIN": 1.5, "ICE": 1.0, "LNG": 1.0, "QUA": 0.5
 def matchBuff(char, buff) -> bool:
     return True if (char.role == buff.target) else False
 
-def parseBuffs(lst: list, playerTeam: list) -> list:
+def parseBuffs(lst: list[Buff], playerTeam: list) -> list:
     buffList = []
     for buff in lst:
         if buff.target == "ALL": #teamwide buff, need to add 4 instances
@@ -350,6 +350,22 @@ def handleTurn(turn: Turn, playerTeam: list, enemyTeam: list[Enemy], buffList: l
                 newDelay.extend(b)
                 
     return Result(turn.charName, turn.charRole, turn.atkType, turn.element, anyBroken, turnDmg, wbDmg, errGain), newDebuff, newDelay
+
+def handleEnergyFromBuffs(buffList: list[Buff], playerTeam: list) -> list[Buff]:
+    errBuffs, newList = [], []
+    for buff in buffList:
+        if buff.buffType == "ERR_T" or buff.buffType == "ERR_F":
+            errBuffs.append(buff)
+        else:
+            newList.append(buff)
+    for eb in errBuffs:
+        char = findChar(playerTeam, eb.target)
+        charERR = getERR(char, newList, ["ALL"])
+        if eb.buffType == "ERR_T":
+            char.addEnergy(eb.getBuffVal() * charERR)
+        elif eb.buffType == "ERR_F":
+            char.addEnergy(eb.getBuffVal())
+    return newList
 
 def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:
     res = [Delay("STDBreakDelay", 0.25, enemy.enemyID, True, False)]

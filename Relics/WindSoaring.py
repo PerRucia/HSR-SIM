@@ -14,7 +14,13 @@ class WindSoaringYunli(Relic):
         return buff_lst, [], [], []
     
     def useFua(self):
+        buffList, debuffList, advList, delayList = super().useFua()
         if self.setType == 4:
-            buff_lst = [Buff("WindSoaringDMG", "DMG%", 0.36, self.wearerRole, ["ULT"], 1, 1, "SELF", "END")]
-            return buff_lst, [], [], []
-        return super().useFua()
+            buffList.append(Buff("WindSoaringDMG", "DMG%", 0.36, self.wearerRole, ["ULT"], 1, 1, "SELF", "END"))
+        return buffList, debuffList, advList, delayList
+    
+    def useUlt(self):
+        buffList, debuffList, advList, delayList = super().useUlt()
+        if self.setType == 4:
+            buffList.append(Buff("WindSoaringDMG", "DMG%", 0.36, self.wearerRole, ["ULT"], 1, 1, "SELF", "END"))
+        return buffList, debuffList, advList, delayList

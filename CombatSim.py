@@ -21,13 +21,14 @@ avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
 spUsed = 0
+totalEnemyAttacks = 0
 
 # =============== END OF SETTINGS ===============
 log_folder = "Output"
 teamInfo = "".join([char.name for char in playerTeam])
 enemyInfo = f"_{numEnemies}-Enemies"
 logging.basicConfig(filename=f"{log_folder}/{teamInfo}{enemyInfo}.log", 
-                    level=logging.CRITICAL,
+                    level=logging.WARNING,
                     format="%(message)s",
                     filemode="w")
 
@@ -125,6 +126,7 @@ while simAV < avLimit:
     # Handle unit Turns
     if not unit.isChar(): # Enemy turn
         numAttacks = unit.takeTurn()
+        totalEnemyAttacks += numAttacks
         logging.critical(f"CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {numAttacks} attacks")
         for i in range(numAttacks):
             for char in playerTeam:
@@ -152,6 +154,8 @@ while simAV < avLimit:
     spGain += spPlus
     spUsed += spMinus
     
+    # Handle any errGain from unit ults
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)
     # Check if any unit can ult
     for char in playerTeam:
         if char.canUseUlt():
@@ -163,6 +167,9 @@ while simAV < avLimit:
     teamBuffs, enemyDebuffs, advList, delayList, spPlus, spMinus = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
     spGain += spPlus
     spUsed += spMinus
+    
+    # Handle any errGain from unit ults
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)
     
     # Apply any speed adjustments
     spdAdjustment(playerTeam, teamBuffs)
@@ -198,7 +205,7 @@ totalDMG = dotDMG + charDMG
 logging.critical(f"TOTAL TEAM DMG: {totalDMG:.3f} | AV: {avLimit}")
 logging.critical(f"TEAM DPAV: {totalDMG / avLimit:.3f}")
 logging.critical(f"DOT DMG: {dotDMG:.3f} | CHAR DMG: {charDMG:.3f}")
-logging.critical(f"SP GAINED: {spGain} | SP USED: {spUsed}")
+logging.critical(f"SP GAINED: {spGain} | SP USED: {spUsed} | Enemy Attacks: {totalEnemyAttacks}")
 
 for char in playerTeam:
     res, dmg = char.gettotalDMG()
