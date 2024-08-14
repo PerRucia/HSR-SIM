@@ -20,14 +20,14 @@ cycleLimit = 5
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
-spSpent = 0
+spUsed = 0
 
 # =============== END OF SETTINGS ===============
 log_folder = "Output"
 teamInfo = "".join([char.name for char in playerTeam])
 enemyInfo = f"_{numEnemies}-Enemies"
 logging.basicConfig(filename=f"{log_folder}/{teamInfo}{enemyInfo}.log", 
-                    level=logging.INFO,
+                    level=logging.CRITICAL,
                     format="%(message)s",
                     filemode="w")
 
@@ -76,8 +76,14 @@ logging.critical("\n==========COMBAT SIMULATION STARTED==========")
 simAV = 0
 
 def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList):
+    spGain = 0
+    spUsed = 0
     while turnList:
         turn = turnList[0]
+        if turn.spChange < 0:
+            spUsed = spUsed - turn.spChange
+        elif turn.spChange > 0:
+            spGain = spUsed + turn.spChange
         logging.warning(turn)
         logging.debug("\n----------Char Buffs----------")
         [logging.debug(buff) for buff in teamBuffs if buff.target == turn.charRole]
@@ -99,7 +105,7 @@ def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDeb
 
         turnList = turnList[1:]
     
-    return teamBuffs, enemyDebuffs, advList, delayList
+    return teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed
 
 while simAV < avLimit:
     if simAV > avLimit: # don't parse turn once over avLimit
@@ -141,9 +147,11 @@ while simAV < avLimit:
         turnList.extend(tempT)
         
     # Handle any pending attacks:
-    teamBuffs, enemyDebuffs, advList, delayList = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+    teamBuffs, enemyDebuffs, advList, delayList, spPlus, spMinus = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
     turnList = []
-        
+    spGain += spPlus
+    spUsed += spMinus
+    
     # Check if any unit can ult
     for char in playerTeam:
         if char.canUseUlt():
@@ -152,8 +160,10 @@ while simAV < avLimit:
             turnList.extend(tempTurns)
 
     # Handle any new attacks from unit ults  
-    teamBuffs, enemyDebuffs, advList, delayList = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
-        
+    teamBuffs, enemyDebuffs, advList, delayList, spPlus, spMinus = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+    spGain += spPlus
+    spUsed += spMinus
+    
     # Apply any speed adjustments
     spdAdjustment(playerTeam, teamBuffs)
     enemySPDAdjustment(eTeam, enemyDebuffs)
@@ -188,6 +198,7 @@ totalDMG = dotDMG + charDMG
 logging.critical(f"TOTAL TEAM DMG: {totalDMG:.3f} | AV: {avLimit}")
 logging.critical(f"TEAM DPAV: {totalDMG / avLimit:.3f}")
 logging.critical(f"DOT DMG: {dotDMG:.3f} | CHAR DMG: {charDMG:.3f}")
+logging.critical(f"SP GAINED: {spGain} | SP USED: {spUsed}")
 
 for char in playerTeam:
     res, dmg = char.gettotalDMG()
