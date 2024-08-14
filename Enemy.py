@@ -18,6 +18,7 @@ class Enemy:
         self.turn = 0
         self.maxToughnessMul = 0.5 + (self.toughness / 40)
         self.priority = 0
+        self.dotDMG = 0
         
     def __str__(self) -> str:
         res = f"Enemy {self.enemyID} | LVL: {self.level} | SPD: {self.spd} | "

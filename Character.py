@@ -34,7 +34,10 @@ class Character:
         self.turn = 0
         self.priority = 0
         self.currSPD = 100
-        
+        self.basics = 0
+        self.skills = 0
+        self.ults = 0
+        self.fuas = 0
     
     def __str__(self) -> str:
         res = f"{self.name} | {self.element}-{self.path} | {self.role} | POS:{self.pos}\n"
@@ -47,15 +50,19 @@ class Character:
         return self.parseEquipment("EQUIP")
     
     def useSkl(self, enemyID=-1):
+        self.skills = self.skills + 1
         return *self.parseEquipment("BASIC"), []
     
     def useBsc(self, enemyID=-1):
+        self.basics = self.basics + 1
         return *self.parseEquipment("SKILL"), []
     
     def useUlt(self, enemyID=-1):
+        self.ults = self.ults + 1
         return *self.parseEquipment("ULT"), []
         
     def useFua(self, enemyID=-1):
+        self.fuas = self.fuas + 1
         return *self.parseEquipment("FUA"), []
         
     def useHit(self, enemyID=-1):
@@ -128,7 +135,7 @@ class Character:
         ttl = sum(self.dmgDct.values())
         res = ""
         for key, val in self.dmgDct.items():
-            res += f"{key}: {val:.2f}, {val / ttl * 100:.2f}%\n"
+            res += f"{key}: {val:.3f} | {val / ttl * 100:.3f}%\n"
         return res, ttl
     
     def getBaseStat(self) -> tuple[float, float, float]:

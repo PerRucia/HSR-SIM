@@ -29,7 +29,7 @@ def parseDebuffs(lst: list[Debuff], enemyTeam: list[Enemy]) -> list[Debuff]:
     for d in lst:
         if d.target == "ALL": # AoE debuff, need to add 1 instace per enemy
             for i in range(len(enemyTeam)):
-                debuffList.append(Debuff(d.name, d.debuffType, d.val, i, d.atkType, d.turns, d.stackLimit, d.isDot, d.isBlast))
+                debuffList.append(Debuff(d.name, d.charRole, d.debuffType, d.val, i, d.atkType, d.turns, d.stackLimit, d.isDot, d.isBlast))
         elif d.isBlast: # Blast-type debuff, need to add to up to three enemies
             if d.target == -1:
                 if len(enemyTeam) == 3 or len(enemyTeam) == 4:
@@ -40,10 +40,10 @@ def parseDebuffs(lst: list[Debuff], enemyTeam: list[Enemy]) -> list[Debuff]:
                     enemy = enemyTeam[0]
             else:
                 enemy = enemyTeam[d.target]
-            debuffList.append(Debuff(d.name, d.debuffType, d.val, enemy.enemyID, d.atkType, d.turns, d.stackLimit, d.isDot, d.isBlast))
+            debuffList.append(Debuff(d.name, d.charRole, d.debuffType, d.val, enemy.enemyID, d.atkType, d.turns, d.stackLimit, d.isDot, d.isBlast))
             if enemy.hasAdj:
                 for adjID in enemy.adjacent:
-                    debuffList.append(Debuff(d.name, d.debuffType, d.val, adjID, d.atkType, d.turns, d.stackLimit, d.isDot, d.isBlast))
+                    debuffList.append(Debuff(d.name, d.charRole, d.debuffType, d.val, adjID, d.atkType, d.turns, d.stackLimit, d.isDot, d.isBlast))
         else: # Just add debuff normally
             debuffList.append(d)
     return debuffList
@@ -238,11 +238,42 @@ def checkInTeam(name, team) -> bool:
             return True
     return False
 
-def tickDebuffs(enemyID: int, debuffList: list) -> list:
-    pass
+def tickDebuffs(enemy: Enemy, debuffList: list[Debuff]) -> list[Debuff]:
+    newList = []
+    for debuff in debuffList:
+        if debuff.target == enemy.enemyID:
+            if debuff.turns > 1:
+                debuff.reduceTurns()
+                newList.append(debuff)
+            else:
+                logging.info(f"{debuff.name} expired")
+        else:
+            newList.append(debuff)
+    return newList
 
-def tickBuffs(charRole: str, buffList: list, tdType: str) -> list:
-    pass
+def tickBuffs(charRole: str, buffList: list[Buff], tdType: str) -> list[Buff]:
+    newList = []
+    for buff in buffList:
+        if buff.tdType == tdType: # must match tdType to tickdown
+            if buff.tickDown == charRole: # must match charRole to tickdown
+                if buff.turns <= 1:
+                    logging.info(f"{buff.name} expired")
+                    continue
+                buff.reduceTurns()
+        newList.append(buff)
+    return newList
+
+def takeDot(enemy: Enemy, enemyTeam: list[Enemy], playerTeam: list, buffList: list[Buff], debuffList: list[Debuff]):
+    dmg = 0
+    dotList = [debuff for debuff in debuffList if (debuff.isDot and debuff.target == enemy.enemyID)]
+    enemyMul = getEnemyMul(enemy.enemyID, enemyTeam, debuffList, ["DOT"])
+    for dot in dotList:
+        char = findChar(playerTeam, dot.charRole)
+        penMul = getPenMul(char, enemy, buffList, ["DOT"], "DOT")
+        dmg += dot.getDebuffVal() * enemyMul * penMul
+        logging.warning(f"{enemy.name} took {dmg:.3f} DOT-dmg from {dot.name}")
+    enemy.dotDMG = enemy.dotDMG + dmg
+    return
 
 def findChar(playerTeam: list, charRole: str):
     for char in playerTeam:
@@ -292,7 +323,7 @@ def handleTurn(turn: Turn, playerTeam: list, enemyTeam: list[Enemy], buffList: l
             for ele in turn.element:
                 wbDmg += eleDct[ele] * wbMultiplier * enemy.maxToughnessMul * charBE * enemyMul
                 newDelays.extend(wbDelay(ele, charBE, enemy))
-                newDebuff.append(wbDebuff(ele, charBE, enemy))
+                newDebuff.append(wbDebuff(ele, char.role, charBE, enemy))
         return newDebuffs, newDelays
     
     if turn.moveType == "AOE":
@@ -333,22 +364,22 @@ def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:
         res.append(Delay(breakName, 0.3 * charBE, enemy.enemyID, True, False))
     return res
 
-def wbDebuff(ele: str, charBE: float, enemy: Enemy) -> Debuff:
+def wbDebuff(ele: str, charRole: str, charBE: float, enemy: Enemy) -> Debuff:
     debuffName = f"{enemy.name} {ele}-break"
     if ele == "PHY":
-        return Debuff(debuffName, "BLEED", 2 * wbMultiplier * enemy.maxToughnessMul * charBE, enemy.enemyID, ["ALL"], 2, 1, True, False)
+        return Debuff(debuffName, charRole, "BLEED", 2 * wbMultiplier * enemy.maxToughnessMul * charBE, enemy.enemyID, ["ALL"], 2, 1, True, False)
     elif ele == "FIR":
-        return Debuff(debuffName, "BURN", 1 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 2, 1, True, False)
+        return Debuff(debuffName, charRole, "BURN", 1 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 2, 1, True, False)
     elif ele == "ICE":
-        return Debuff(debuffName, "FREEZE", 1 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 1, 1, False, False)
+        return Debuff(debuffName, charRole, "FREEZE", 1 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 1, 1, False, False)
     elif ele == "WIN":
-        return Debuff(debuffName, "WINDSHEAR", 3 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 2, 1, True, False)
+        return Debuff(debuffName, charRole, "WINDSHEAR", 3 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 2, 1, True, False)
     elif ele == "LNG":
-        return Debuff(debuffName, "SHOCK", 2 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 2, 1, True, False)
+        return Debuff(debuffName, charRole, "SHOCK", 2 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 2, 1, True, False)
     elif ele == "QUA":
-        return Debuff(debuffName, "ENTANGLE", 1.8 * wbMultiplier * enemy.maxToughnessMul * charBE, enemy.enemyID, ["ALL"], 1, 1, False, False)
+        return Debuff(debuffName, charRole, "ENTANGLE", 1.8 * wbMultiplier * enemy.maxToughnessMul * charBE, enemy.enemyID, ["ALL"], 1, 1, False, False)
     elif ele == "IMG":
-        return Debuff(debuffName, "SPD%", -0.1, enemy.enemyID, ["ALL"], 1, 1, False, False)
+        return Debuff(debuffName, charRole, "SPD%", -0.1, enemy.enemyID, ["ALL"], 1, 1, False, False)
     
 def findBestEnemy(enemyTeam: list[Enemy], debuffList: list[Debuff], atkType: list[str]) -> Enemy:
     bestEnemy = None

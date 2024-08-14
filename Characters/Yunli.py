@@ -20,7 +20,7 @@ class Yunli(Character):
     maxEnergy = 240
     ultCost = 120
     currAV = 0
-    rotation = ["E", "A", "A"]
+    rotation = ["E"]
     dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0, "BREAK": 0}
     
     # Unique Character Properties
@@ -64,6 +64,7 @@ class Yunli(Character):
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl, *_ = super().useFua(enemyID)
         if self.cullActive:
+            self.fuas = self.fuas - 1
             self.cullActive = False
             turnList = [Turn(self.name, self.role, enemyID, "BLAST", ["ULT", "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain")]
             for _ in range(6):

@@ -27,7 +27,7 @@ log_folder = "Output"
 teamInfo = "".join([char.name for char in playerTeam])
 enemyInfo = f"_{numEnemies}-Enemies"
 logging.basicConfig(filename=f"{log_folder}/{teamInfo}{enemyInfo}.log", 
-                    level=logging.WARNING,
+                    level=logging.INFO,
                     format="%(message)s",
                     filemode="w")
 
@@ -75,12 +75,12 @@ setPriority(allUnits)
 logging.critical("\n==========COMBAT SIMULATION STARTED==========")
 simAV = 0
 
-def processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList):
+def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList):
     while turnList:
         turn = turnList[0]
         logging.warning(turn)
-        logging.debug("\n----------Team Buffs----------")
-        [logging.debug(buff) for buff in teamBuffs]
+        logging.debug("\n----------Char Buffs----------")
+        [logging.debug(buff) for buff in teamBuffs if buff.target == turn.charRole]
         logging.debug("----------End of Buff List----------")
         logging.debug("\n----------Enemy Debuffs----------")
         [logging.debug(debuff) for debuff in enemyDebuffs]
@@ -102,13 +102,13 @@ def processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advLis
     return teamBuffs, enemyDebuffs, advList, delayList
 
 while simAV < avLimit:
-    logging.critical("\n==========NEW TURN==========")
-    # Find next turn
-    unit = allUnits[0]
-    av = unit.currAV
-    simAV += av
     if simAV > avLimit: # don't parse turn once over avLimit
         break
+    logging.critical("\n==========NEW TURN==========")
+    unit = allUnits[0] # Find next turn
+    av = unit.currAV
+    simAV += av
+
     turnList = []
     
     # Reduce AV of all chars
@@ -119,22 +119,26 @@ while simAV < avLimit:
     # Handle unit Turns
     if not unit.isChar(): # Enemy turn
         numAttacks = unit.takeTurn()
+        logging.critical(f"CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {numAttacks} attacks")
         for i in range(numAttacks):
             for char in playerTeam:
                 tempB, tempDB, tempA, tempD, tempT = char.useHit(unit.enemyID)
                 teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, tempBuffs, tempDebuffs, tempAdv, tempDelay)
                 turnList.extend(tempT)
         addEnergy(playerTeam, numAttacks, attackTypeRatio, teamBuffs)
-        logging.critical(f"CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {numAttacks} attacks")
+        takeDot(unit, eTeam, playerTeam, teamBuffs, enemyDebuffs)
+        enemyDebuffs = tickDebuffs(enemy, enemyDebuffs)
     else: # Character Turn
         moveType = unit.takeTurn()
+        logging.critical(f"CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
+        teamBuffs = tickBuffs(unit.role, teamBuffs, "START")
         if moveType == "E":
             tempB, tempDB, tempA, tempD, tempT = char.useSkl()
         elif moveType == "A":
             tempB, tempDB, tempA, tempD, tempT = char.useBsc()
+        teamBuffs = tickBuffs(unit.role, teamBuffs, "END")
         teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, tempBuffs, tempDebuffs, tempAdv, tempDelay)
         turnList.extend(tempT)
-        logging.critical(f"CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
         
     # Handle any pending attacks:
     teamBuffs, enemyDebuffs, advList, delayList = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
@@ -171,12 +175,23 @@ while simAV < avLimit:
     
 logging.critical("\n==========COMBAT SIMULATION ENDED==========")
 
-logging.critical("\n==========CHARACTER STATS==========")
-totalDMG = 0
+logging.critical("\n==========SIMULATION RESULTS==========")
+dotDMG = 0
+charDMG = 0
+for enemy in eTeam:
+    dotDMG += enemy.dotDMG
 for char in playerTeam:
-    logging.critical(char.name)
     res, dmg = char.gettotalDMG()
-    logging.critical(res)
-    totalDMG += dmg
+    charDMG += dmg
+totalDMG = dotDMG + charDMG
 
-logging.critical(f"DPAV: {totalDMG / avLimit:.3f}")
+logging.critical(f"TOTAL TEAM DMG: {totalDMG:.3f} | AV: {avLimit}")
+logging.critical(f"TEAM DPAV: {totalDMG / avLimit:.3f}")
+logging.critical(f"DOT DMG: {dotDMG:.3f} | CHAR DMG: {charDMG:.3f}")
+
+for char in playerTeam:
+    res, dmg = char.gettotalDMG()
+    logging.critical(f"\n{char.name} | Total DMG: {dmg:.3f} | Team%: {dmg / totalDMG * 100:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas}")
+    logging.critical(f"Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
+    logging.critical(res)
+
