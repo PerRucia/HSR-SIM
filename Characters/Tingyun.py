@@ -49,7 +49,7 @@ class Tingyun(Character):
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         tl.append(Turn(self.name, self.role, enemyID, "ST", ["BSC"], [self.element], [1.1, 0], [10, 0], 25, self.scaling, 1, "TingyunBasic"))
-        tl.append(Turn(self.name, self.beneTarget, -1, "ST", ["BSC"], self.element, [0.66, 0], [0, 0], 0, "ATK", 0, "BenedictionAllyBonus"))
+        tl.append(Turn(self.name, self.beneTarget, -1, "ST", ["BSC"], [self.element], [0.66, 0], [0, 0], 0, "ATK", 0, "TYAllyBonus"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -69,9 +69,9 @@ class Tingyun(Character):
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        beneFilter = ["BenedictionTingyunBonus", "YunliCullBounce"]
+        beneFilter = ["TYAllyBonus", "TYBeneBonus", "YunliCullBounce"]
         if (turn.charRole == self.beneTarget) and (turn.moveName not in beneFilter) and (turn.moveType != "NA"):
-            tl.append(Turn(self.name, self.beneTarget, -1, "ST", ["BSC"], self.element, [0.64, 0], [0, 0], 0, "ATK", 0, "BenedictionTingyunBonus"))
+            tl.append(Turn(self.name, self.beneTarget, -1, "ST", ["BSC"], [self.element], [0.64, 0], [0, 0], 0, "ATK", 0, "TYBeneBonus"))
         return bl, dbl, al, dl, tl
     
     
