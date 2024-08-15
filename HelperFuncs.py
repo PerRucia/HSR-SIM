@@ -154,8 +154,8 @@ def spdAdjustment(teamList: list, buffList: list[Buff]):
     for char in teamList:
         newSPD = getCharSPD(char, buffList)
         if newSPD != char.currSPD:
-            char.currAV = char.currAV * char.currSPD / newSPD
-        char.currSPD = newSPD
+            avChange = char.currAV - (char.currAV * char.currSPD / newSPD)
+            char.reduceAV(avChange)
     return
 
 def enemySPDAdjustment(enemyTeam: list[Enemy], debuffList: list[Debuff]):
@@ -307,7 +307,7 @@ def handleTurn(turn: Turn, playerTeam: list, enemyTeam: list[Enemy], buffList: l
     wbDmg = 0
     newDebuff, newDelay = [], []
     
-    def processEnemy(enemy: Enemy, breakUnits: float, dmgMul) -> tuple[list[Debuff], list[Delay]]:
+    def processEnemy(enemy: Enemy, breakUnits: float, dmgMul, cr: float, cd: float) -> tuple[list[Debuff], list[Delay]]:
         nonlocal turnDmg, wbDmg, anyBroken
         
         enemyBroken = False
@@ -316,7 +316,7 @@ def handleTurn(turn: Turn, playerTeam: list, enemyTeam: list[Enemy], buffList: l
             enemyBroken = enemy.redToughness(breakUnits * wbe)
         penMul = getPenMul(char, enemy, buffList, turn.atkType, turn.element[0])
         enemyMul = getEnemyMul(enemy.enemyID, enemyTeam, debuffList, turn.atkType)
-        turnDmg += expectedDMG(dmgMul * baseValue * charDMG * penMul * enemyMul, charCR, charCD)
+        turnDmg += expectedDMG(dmgMul * baseValue * charDMG * penMul * enemyMul, cr, cd)
         
         if enemyBroken:
             anyBroken = True
@@ -329,27 +329,30 @@ def handleTurn(turn: Turn, playerTeam: list, enemyTeam: list[Enemy], buffList: l
     if turn.moveType == "AOE":
         # AOE Attack
         for enemy in enemyTeam:
-            a, b = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0])
+            a, b = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0], charCR, charCD)
             newDebuff.extend(a)
             newDelay.extend(b)
     elif turn.moveType == "NA":
-        pass # Do nothing (for now)
+        if turn.moveName == "RobinConcertoDMG":
+            _, _ = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0], 1.0, 2.5)
+        elif turn.moveName == "RobinUlt":
+            turn.charRole = baseValue
     else :
         if turn.targetID == -1:
             enemy = findBestEnemy(enemyTeam, debuffList, turn.atkType)
         else:
             enemy = enemyTeam[turn.targetID]  
-        a, b = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0])
+        a, b = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0], charCR, charCD)
         newDebuff.extend(a)
         newDelay.extend(b)
         if enemy.hasAdj and (turn.brkSplit[1] > 0 or (turn.dmgSplit[1] > 0)):
             for enemyID in enemy.adjacent:
                 adj_enemy = enemyTeam[enemyID]
-                a, b = processEnemy(adj_enemy, turn.brkSplit[1], turn.dmgSplit[1])
+                a, b = processEnemy(adj_enemy, turn.brkSplit[1], turn.dmgSplit[1], charCR, charCD)
                 newDebuff.extend(a)
                 newDelay.extend(b)
                 
-    return Result(turn.charName, turn.charRole, turn.atkType, turn.element, anyBroken, turnDmg, wbDmg, errGain), newDebuff, newDelay
+    return Result(turn.charName, turn.charRole, turn.atkType, turn.element, anyBroken, turnDmg, wbDmg, errGain, turn.moveName), newDebuff, newDelay
 
 def handleEnergyFromBuffs(buffList: list[Buff], playerTeam: list) -> list[Buff]:
     errBuffs, newList = [], []
@@ -452,9 +455,9 @@ def getEnemyMul(enemyID: int, enemyTeam: list, debuffList: list[Debuff], atkType
 def getBaseValue(char, buffList: list[Buff], turn: Turn): 
     if turn.scaling == "ATK" or turn.scaling == "DEF" or turn.scaling == "HP": # normal scaling attacks
         return getScalingValues(char, buffList, turn.atkType)
-    # reserved for weird stuff like firefly
-    else:
-        return 
+    else: # for turns with weird/hybrid scaling effects (FF, Robin, etc.)
+        if turn.moveName == "RobinULT":
+            return getScalingValues(char, buffList, turn.atkType) 
     
 def getScalingValues(char, buffList: list[Buff], atkType: list[str]) -> float:
     base, mul, flat = char.getBaseStat()

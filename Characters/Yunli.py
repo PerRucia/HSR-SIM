@@ -25,6 +25,7 @@ class Yunli(Character):
     
     # Unique Character Properties
     cullActive = False
+    aggroMultiplier = 1.0
     
     # Relic Settings
     relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 13, 11, "CR%", "ATK%", "DMG%", "ATK%")
@@ -75,13 +76,26 @@ class Yunli(Character):
         return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "BLAST", ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0, "YunliFUA")]
     
     def useHit(self, enemyID=-1):
-        self.currEnergy = self.currEnergy + 15
-        return self.useFua(enemyID)
+        bl, dbl, al, dl, tl = self.useFua(enemyID)
+        tl.append(Turn(self.name, self.role, enemyID, "NA", ["FUA"], [self.element], [0, 0], [0, 0], 15, self.scaling, 0, "YunliCounterERR"))
+        return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
         return super().ownTurn(result)
     
     def allyTurn(self, turn, result):
         return super().allyTurn(turn, result)
+    
+    def gettotalDMG(self) -> tuple[str, float]:
+        ttl = 0
+        res = ""
+        for key, val in self.dmgDct.items():
+            if key == "FUA" or key == "ULT":
+                ttl += val * self.aggroMultiplier
+            else:
+                ttl += val
+        for key, val in self.dmgDct.items():
+            res += f"{key}: {val:.3f} | {val / ttl * 100:.3f}%\n"
+        return res, ttl
     
     

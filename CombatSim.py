@@ -110,19 +110,34 @@ def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDeb
     return teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed
 
 while simAV < avLimit:
-    if simAV > avLimit: # don't parse turn once over avLimit
-        break
-    logging.critical("\n==========NEW TURN==========")
+
     unit = allUnits[0] # Find next turn
     av = unit.currAV
     simAV += av
-
+    if simAV > avLimit: # don't parse turn once over avLimit
+        break
+    logging.critical("\n==========NEW TURN==========")
     turnList = []
     
     # Reduce AV of all chars
     for u in allUnits:
         u.reduceAV(av)
         
+    # Check if any unit can ult
+    for char in playerTeam:
+        if char.canUseUlt():
+            bl, dbl, al, dl, tl = char.useUlt()
+            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
+            turnList.extend(tl)
+
+    # Handle any new attacks from unit ults  
+    teamBuffs, enemyDebuffs, advList, delayList, spPlus, spMinus = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+    spGain += spPlus
+    spUsed += spMinus
+    
+    # Handle any errGain from unit ults
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)
+    
     # Handle unit Turns
     if not unit.isChar(): # Enemy turn
         numAttacks = unit.takeTurn()
@@ -154,8 +169,9 @@ while simAV < avLimit:
     spGain += spPlus
     spUsed += spMinus
     
-    # Handle any errGain from unit ults
+    # Handle any errGain from unit turns
     teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)
+    
     # Check if any unit can ult
     for char in playerTeam:
         if char.canUseUlt():
