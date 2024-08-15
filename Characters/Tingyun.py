@@ -9,9 +9,9 @@ from Turn import Turn
 
 class Tingyun(Character):
     # Standard Character Settings
-    name = "Yunli"
-    path = "DES"
-    element = "PHY"
+    name = "Tingyun"
+    path = "HAR"
+    element = "LNG"
     scaling = "ATK"
     baseHP = 846.70
     baseATK = 529.20
@@ -36,7 +36,6 @@ class Tingyun(Character):
         self.relic1 = Musketeer(role, 4)
         self.relic2 = None
         self.planar = Vonwacq(role)
-        self.currEnergy = self.maxEnergy / 2
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
@@ -50,6 +49,7 @@ class Tingyun(Character):
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         tl.append(Turn(self.name, self.role, enemyID, "ST", ["BSC"], [self.element], [1.1, 0], [10, 0], 25, self.scaling, 1, "TingyunBasic"))
+        tl.append(Turn(self.name, self.beneTarget, -1, "ST", ["BSC"], self.element, [0.66, 0], [0, 0], 0, "ATK", 0, "BenedictionAllyBonus"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -67,15 +67,11 @@ class Tingyun(Character):
         bl.append(Buff("TingyunUltDMG", "DMG%", 0.56, self.beneTarget, ["ALL"], 2, 1, self.beneTarget, "END"))
         return bl, dbl, al, dl, tl
     
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl, tl = super().ownTurn(result)
-        tl.append(Turn(self.name, self.beneTarget, -1, "ST", ["BSC"], self.element, [0.66, 0], [0, 0], 0, "ATK", 0, "BenedictionAllyBonus"))
-        return bl, dbl, al, dl, tl
-    
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if turn.charRole == self.beneTarget:
-            tl.append(Turn(self.name, self.beneTarget, -1, "ST", ["BSC"], self.element, [0.66, 0], [0, 0], 0, "ATK", 0, "BenedictionTingyunBonus"))
+        beneFilter = ["BenedictionTingyunBonus", "YunliCullBounce"]
+        if (turn.charRole == self.beneTarget) and (turn.moveName not in beneFilter) and (turn.moveType != "NA"):
+            tl.append(Turn(self.name, self.beneTarget, -1, "ST", ["BSC"], self.element, [0.64, 0], [0, 0], 0, "ATK", 0, "BenedictionTingyunBonus"))
         return bl, dbl, al, dl, tl
     
     

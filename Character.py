@@ -22,6 +22,11 @@ class Character:
     currAV = 100.0
     rotation = ["E", "A", "A"]
     dmgDct = {"BSC": 0, "SKL": 0, "ULT": 0, "BREAK": 0}
+    basics = 0
+    skills = 0
+    ults = 0
+    fuas = 0
+    turn = 0
     
     # Unique Character Properties
     
@@ -31,13 +36,8 @@ class Character:
     def __init__(self, pos: int, role: str) -> None:
         self.pos = pos
         self.role = role
-        self.turn = 0
         self.priority = 0
         self.currSPD = 100
-        self.basics = 0
-        self.skills = 0
-        self.ults = 0
-        self.fuas = 0
     
     def __str__(self) -> str:
         res = f"{self.name} | {self.element}-{self.path} | {self.role} | POS:{self.pos}\n"

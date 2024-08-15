@@ -48,12 +48,14 @@ class Yunli(Character):
         return buffList, debuffList, advList, delayList
     
     def useBsc(self, enemyID=-1):
-        bl, dbl, al, dl, *_ = super().useBsc(enemyID)
-        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "YunliBasic")]
+        bl, dbl, al, dl, tl = super().useBsc(enemyID)
+        tl.append(Turn(self.name, self.role, enemyID, "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "YunliBasic"))
+        return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
-        bl, dbl, al, dl, *_ = super().useSkl(enemyID)
-        return bl, dbl, al, dl, [Turn(self.name, self.role, enemyID, "BLAST", ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling, -1, "YunliSkill")]
+        bl, dbl, al, dl, tl = super().useSkl(enemyID)
+        tl.append(Turn(self.name, self.role, enemyID, "BLAST", ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling, -1, "YunliSkill"))
+        return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         self.currEnergy = self.currEnergy - self.ultCost
