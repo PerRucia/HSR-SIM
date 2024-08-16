@@ -168,7 +168,7 @@ while simAV < avLimit:
         enemyDebuffs = tickDebuffs(enemy, enemyDebuffs)
     else: # Character Turn
         moveType = unit.takeTurn()
-        logging.critical(f"ACTION > CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
+        logging.critical(f"ACTION > TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
         teamBuffs = tickBuffs(unit.role, teamBuffs, "START")
         if moveType == "E":
             bl, dbl, al, dl, tl = unit.useSkl()
