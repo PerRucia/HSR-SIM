@@ -18,7 +18,7 @@ actionOrder = [1,1,2]
 playerTeam = [Robin(0, "SUP1"), Yunli(1, "DPS"), Tingyun(2, "SUP2")]
 
 # Simulation Settings
-cycleLimit = 5
+cycleLimit = 50
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0

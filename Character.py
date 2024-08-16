@@ -74,16 +74,16 @@ class Character:
             self.dmgDct[result.atkType] = self.dmgDct[result.atkType] + result.turnDmg
         self.dmgDct["BREAK"] = self.dmgDct["BREAK"] + result.wbDmg
         self.currEnergy = self.currEnergy + result.errGain
-        return *self.parseEquipment("OWN", result), []
+        return *self.parseEquipment("OWN", result=result), []
     
     def special(self):
         return ""
     
     def handleSpecial(self, specialRes: Special):
-        return self.parseEquipment("SPECIAL")
+        return self.parseEquipment("SPECIAL", special=specialRes)
     
     def allyTurn(self, turn: Turn, result: Result):
-        return *self.parseEquipment("ALLY", turn, result), []
+        return *self.parseEquipment("ALLY", turn=turn, result=result), []
         
     def parseEquipment(self, actionType: str, turn=None, result=None, special=None):
         buffList, debuffList, advList, delayList = [], [], [], []

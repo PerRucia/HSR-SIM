@@ -77,13 +77,13 @@ class Yunli(Character):
     
     def useHit(self, enemyID=-1):
         bl, dbl, al, dl, tl = self.useFua(enemyID)
-        tl.append(Turn(self.name, self.role, enemyID, "NA", ["FUA"], [self.element], [0, 0], [0, 0], 15, self.scaling, 0, "YunliCounterERR"))
+        tl.append(Turn(self.name, self.role, enemyID, "NA", ["ALL"], [self.element], [0, 0], [0, 0], 15, self.scaling, 0, "YunliCounterERR"))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
         return super().ownTurn(result)
     
-    def allyTurn(self, turn, result):
+    def allyTurn(self, turn: Result, result: Result):
         return super().allyTurn(turn, result)
     
     def gettotalDMG(self) -> tuple[str, float]:
