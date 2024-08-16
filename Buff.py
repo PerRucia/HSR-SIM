@@ -64,6 +64,9 @@ class Buff:
     
     def atMaxStacks(self) -> bool:
         return True if (self.stacks == self.stackLimit) else False
+    
+    def updateBuffVal(self, val: float):
+        self.val = val
         
 class Debuff:
     def __init__(self, name: str, charRole: str, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int, isDot: bool, isBlast: bool):

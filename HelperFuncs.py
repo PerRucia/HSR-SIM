@@ -1,6 +1,6 @@
 from Buff import *
 from Turn import Turn
-from Result import Result
+from Result import *
 from Enemy import Enemy
 from Delay import *
 import logging
@@ -96,12 +96,13 @@ def addAdvance(currList: list[Advance], newList: list[Advance]) -> list[Advance]
     currList.extend(newList)
     return currList
 
-def addBuffs(currList: list, newList: list) -> list:
-    def checkValidAdd(buff: Buff, currList: list) -> tuple[bool, int]:
+def addBuffs(currList: list, newList: list) -> tuple[bool, int, float]:
+    def checkValidAdd(buff: Buff, currList: list[Buff]) -> tuple[bool, int]:
         for i in range(len(currList)):
             checkAgainst = currList[i]
             if buff.name == checkAgainst.name:
                 if buff.target == checkAgainst.target:
+                    checkAgainst.val = buff.val
                     return False, i
         return True, -1
     
@@ -138,7 +139,7 @@ def getEnemySPD(enemy: Enemy, debuffList: list[Debuff]) -> float:
 
 def initCharAV(char, buffList: list[Buff]):
     charSPD = getCharSPD(char, buffList)
-    char.currAV = 10000 / charSPD
+    char.reduceAV(char.currAV - (10000 / charSPD))
     char.currSPD = charSPD
     
 def resetUnitAV(unit, buffList: list[Buff], debuffList: list[Debuff]):
@@ -154,8 +155,7 @@ def spdAdjustment(teamList: list, buffList: list[Buff]):
     for char in teamList:
         newSPD = getCharSPD(char, buffList)
         if newSPD != char.currSPD:
-            avChange = char.currAV - (char.currAV * char.currSPD / newSPD)
-            char.reduceAV(avChange)
+            char.reduceAV(char.currAV - (char.currAV * char.currSPD / newSPD))
     return
 
 def enemySPDAdjustment(enemyTeam: list[Enemy], debuffList: list[Debuff]):
@@ -334,9 +334,8 @@ def handleTurn(turn: Turn, playerTeam: list, enemyTeam: list[Enemy], buffList: l
             newDelay.extend(b)
     elif turn.moveType == "NA":
         if turn.moveName == "RobinConcertoDMG":
+            enemy = findBestEnemy(enemyTeam, debuffList, ["ULT"])
             _, _ = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0], 1.0, 2.5)
-        elif turn.moveName == "RobinUlt":
-            turn.charRole = baseValue
     else :
         if turn.targetID == -1:
             enemy = findBestEnemy(enemyTeam, debuffList, turn.atkType)
@@ -369,6 +368,18 @@ def handleEnergyFromBuffs(buffList: list[Buff], playerTeam: list) -> list[Buff]:
         elif eb.buffType == "ERR_F":
             char.addEnergy(eb.getBuffVal())
     return newList
+
+def handleSpec(specStr: str, playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff]) -> Special:
+    if specStr == "":
+        return Special()
+    elif specStr == "updateRobinATK":
+        for p in playerTeam:
+            if p.name == "Robin":
+                role = p.role
+                break
+        char = findChar(playerTeam, role)
+        res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
+        return Special(res)
 
 def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:
     res = [Delay("STDBreakDelay", 0.25, enemy.enemyID, True, False)]

@@ -5,7 +5,7 @@ from Relics.Prisoner import Prisoner
 from Planars.Penacony import Penacony
 from RelicStats import RelicStats
 from Buff import Buff
-from Result import Result
+from Result import Result, Special
 from Turn import Turn
 from Delay import *
 
@@ -24,7 +24,8 @@ class Robin(Character):
     currEnergy = 85
     currAV = 0
     rotation = ["E", "A"]
-    dmgDct = {"BSC": 0, "BREAK": 0}
+    dmgDct = {"BSC": 0, "ULT": 0, "BREAK": 0}
+    hasSpecial = True
     
     # Unique Character Properties
     canBeAdv = True
@@ -68,7 +69,7 @@ class Robin(Character):
         self.currAV = 10000 / 90
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         tl.append(Turn(self.name, self.role, enemyID, "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinUlt"))
-
+        al.append(Advance("RobinUltADV", "ALL", 1.0))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
@@ -83,14 +84,22 @@ class Robin(Character):
     
     def ownTurn(self, result: Result):
         bl, dbl, al, dl, tl = super().ownTurn(result)
-        if result.turnName == "RobinUlt":
-            self.atkStat = result.charRole
-            bl.append(Buff("RobinUltATK", "ATK", self.atkStat * 0.228 + 200, "ALL", ["ALL"], 1, 1, self.role, "START"))
-            bl.append(Buff("RobinFuaCD", "CD%", 0.25, "ALL", ["FUA"], 1, 1, self.role, "START"))
         return bl, dbl, al, dl, tl
     
     def reduceAV(self, reduceValue: float):
         if self.canBeAdv:
             self.currAV = max(0, self.currAV - reduceValue)
     
+    def takeTurn(self) -> str:
+        self.canBeAdv = True
+        return super().takeTurn()
     
+    def special(self):
+        return "updateRobinATK"
+    
+    def handleSpecial(self, special: Special):
+        self.atkStat = special.attr1
+        bl, dbl, al, dl = super().handleSpecial(special)
+        if not self.canBeAdv:
+            bl.append(Buff("RobinUltBuff", "ATK", self.atkStat * 0.228 + 200, "ALL", ["ALL"], 1, 1, self.role, "START"))
+        return bl, dbl, al, dl

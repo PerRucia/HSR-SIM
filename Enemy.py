@@ -59,5 +59,10 @@ class Enemy:
     
     def getRes(self, element) -> float:
         return 0 if element in self.weakness else 0.2
+    
+    def standardAVred(self, av: float):
+        self.currAV = max(0, self.currAV - av)
+        
+        
         
         

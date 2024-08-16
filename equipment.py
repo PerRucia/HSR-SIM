@@ -34,3 +34,6 @@ class Equipment:
     
     def ownTurn(self, result):
         return [], [], [], []
+    
+    def special(self):
+        return [], [], [], []

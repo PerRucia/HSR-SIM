@@ -2,6 +2,7 @@ import logging
 from Enemy import Enemy
 from Characters.Yunli import Yunli
 from Characters.Tingyun import Tingyun
+from Characters.Robin import Robin
 from HelperFuncs import *
 
 # Enemy Settings
@@ -14,7 +15,7 @@ weaknesses = ["PHY"]
 actionOrder = [1,1,2]
 
 # Character Settings
-playerTeam = [Yunli(0, "DPS"), Tingyun(1, "SUP1")]
+playerTeam = [Robin(0, "SUP1"), Yunli(1, "DPS"), Tingyun(2, "SUP2")]
 
 # Simulation Settings
 cycleLimit = 5
@@ -29,7 +30,7 @@ log_folder = "Output"
 teamInfo = "".join([char.name for char in playerTeam])
 enemyInfo = f"_{numEnemies}-Enemies"
 logging.basicConfig(filename=f"{log_folder}/{teamInfo}{enemyInfo}.log", 
-                    level=logging.WARNING,
+                    level=logging.CRITICAL,
                     format="%(message)s",
                     filemode="w")
 
@@ -55,7 +56,7 @@ for char in playerTeam:
     logging.critical("")
 
 # Setup equipment and char traces
-teamBuffs, enemyDebuffs, advList, delayList = [], [], [], [Delay("TestDelay", 0.2, 0, False, False)]
+teamBuffs, enemyDebuffs, advList, delayList = [], [], [], []
 for char in playerTeam:
     initBuffs, initDebuffs, initAdv, initDelay = char.equip()
     teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, initBuffs, initDebuffs, initAdv, initDelay)
@@ -121,11 +122,23 @@ while simAV < avLimit:
     
     # Reduce AV of all chars
     for u in allUnits:
-        u.reduceAV(av)
+        u.standardAVred(av)
         
+    # Apply any special effects
+    for char in playerTeam:
+        if char.hasSpecial:
+            spec = char.special()
+            specRes = handleSpec(spec, playerTeam, eTeam, teamBuffs, enemyDebuffs)
+            bl, dbl, al, dl = char.handleSpecial(specRes)
+            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
+    
+    # Add Energy if any was provided from special effects
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)
+    
     # Check if any unit can ult
     for char in playerTeam:
         if char.canUseUlt():
+            logging.critical(f"{char.name} used their ultimate")
             bl, dbl, al, dl, tl = char.useUlt()
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
@@ -175,6 +188,7 @@ while simAV < avLimit:
     # Check if any unit can ult
     for char in playerTeam:
         if char.canUseUlt():
+            logging.critical(f"{char.name} used their ultimate")
             bl, dbl, al, dl, tl = char.useUlt()
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)

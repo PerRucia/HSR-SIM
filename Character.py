@@ -4,7 +4,7 @@ from Relic import Relic
 from RelicStats import RelicStats
 from Planar import Planar
 from Turn import Turn
-from Result import Result
+from Result import *
 
 class Character:
     # Standard Character Properties
@@ -22,6 +22,7 @@ class Character:
     currAV = 100.0
     rotation = ["E", "A", "A"]
     dmgDct = {"BSC": 0, "SKL": 0, "ULT": 0, "BREAK": 0}
+    hasSpecial = False
     basics = 0
     skills = 0
     ults = 0
@@ -75,6 +76,12 @@ class Character:
         self.currEnergy = self.currEnergy + result.errGain
         return *self.parseEquipment("OWN", result), []
     
+    def special(self):
+        return ""
+    
+    def handleSpecial(self, specialRes: Special):
+        return self.parseEquipment("SPECIAL")
+    
     def allyTurn(self, turn: Turn, result: Result):
         return *self.parseEquipment("ALLY", turn, result), []
         
@@ -97,6 +104,8 @@ class Character:
                 buffs, debuffs, advs, delays = equipment.equip()
             elif actionType == "HIT":
                 buffs, debuffs, advs, delays = equipment.useHit()
+            elif actionType == "SPECIAL":
+                buffs, debuffs, advs, delays = equipment.special()
             elif actionType == "OWN":
                 buffs, debuffs, advs, delays = equipment.ownTurn(result)    
             elif actionType == "ALLY":
@@ -146,3 +155,8 @@ class Character:
         if self.scaling == "DEF":
             baseStat = self.baseDEF + self.lightcone.baseDEF
         return baseStat, *self.getRelicScalingStats()
+    
+    def standardAVred(self, av: float):
+        self.currAV = max(0, self.currAV - av)
+    
+        
