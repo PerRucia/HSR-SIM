@@ -85,7 +85,7 @@ class Character:
     def allyTurn(self, turn: Turn, result: Result):
         return *self.parseEquipment("ALLY", turn, result), []
         
-    def parseEquipment(self, actionType: str, turn=None, result=None):
+    def parseEquipment(self, actionType: str, turn=None, result=None, special=None):
         buffList, debuffList, advList, delayList = [], [], [], []
         equipmentList = [self.lightcone, self.relic1, self.planar]
         if self.relic2:
@@ -105,7 +105,7 @@ class Character:
             elif actionType == "HIT":
                 buffs, debuffs, advs, delays = equipment.useHit()
             elif actionType == "SPECIAL":
-                buffs, debuffs, advs, delays = equipment.special()
+                buffs, debuffs, advs, delays = equipment.special(special)
             elif actionType == "OWN":
                 buffs, debuffs, advs, delays = equipment.ownTurn(result)    
             elif actionType == "ALLY":

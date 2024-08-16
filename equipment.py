@@ -5,7 +5,8 @@ Returns 4 lists:
 - list of adv% adjustments
 - list of enemy debuffs to be applied
 '''
-
+from Turn import *
+from Result import *
 
 class Equipment:
     def __init__(self, wearerRole: str):
@@ -29,11 +30,11 @@ class Equipment:
     def useHit(self):
         return [], [], [], []
     
-    def allyTurn(self, turn, result):
+    def allyTurn(self, turn: Turn, result: Result):
         return [], [], [], []
     
-    def ownTurn(self, result):
+    def ownTurn(self, result: Result):
         return [], [], [], []
     
-    def special(self):
+    def special(self, special: Special):
         return [], [], [], []
