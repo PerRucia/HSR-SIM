@@ -89,7 +89,7 @@ def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDeb
             spUsed = spUsed - turn.spChange
         elif turn.spChange > 0:
             spGain = spUsed + turn.spChange
-        logging.warning(f"    TURN   -  {turn}")
+        logging.warning(f"    TURN   - {turn}")
         logging.debug("\n----------Char Buffs----------")
         [logging.debug(buff) for buff in teamBuffs if buff.target == turn.charRole]
         logging.debug("----------End of Buff List----------")
