@@ -19,13 +19,13 @@ actionOrder = [1,1,2]
 playerTeam = [Robin(0, "SUP1"), Yunli(1, "DPS"), HuoHuo(2, "SUS"), Tingyun(3, "SUP2")]
 
 # Simulation Settings
-cycleLimit = 100
+cycleLimit = 5
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
 spUsed = 0
 totalEnemyAttacks = 0
-logLevel = logging.CRITICAL
+logLevel = logging.WARNING
 
 # =============== END OF SETTINGS ===============
 log_folder = "Output"
@@ -89,7 +89,7 @@ def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDeb
             spUsed = spUsed - turn.spChange
         elif turn.spChange > 0:
             spGain = spUsed + turn.spChange
-        logging.warning(f"TURN   |  {turn}")
+        logging.warning(f"    TURN   -  {turn}")
         logging.debug("\n----------Char Buffs----------")
         [logging.debug(buff) for buff in teamBuffs if buff.target == turn.charRole]
         logging.debug("----------End of Buff List----------")
@@ -98,7 +98,7 @@ def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDeb
         logging.debug("----------End of Debuff List----------")
 
         res, newDebuffs, newDelays = handleTurn(turn, playerTeam, eTeam, teamBuffs, enemyDebuffs)
-        logging.warning(f"RESULT | {res}")
+        logging.warning(f"    RESULT - {res}")
         teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, [], newDebuffs, [], newDelays)
         for char in playerTeam:
             if char.role == turn.charRole:
@@ -119,7 +119,7 @@ while simAV < avLimit:
     simAV += av
     if simAV > avLimit: # don't parse turn once over avLimit
         break
-    logging.critical("\n==========NEW TURN==========")
+    logging.critical("\n<<< NEW TURN >>>")
     turnList = []
     
     # Reduce AV of all chars
@@ -140,7 +140,7 @@ while simAV < avLimit:
     # Check if any unit can ult
     for char in playerTeam:
         if char.canUseUlt():
-            logging.critical(f"{char.name} used their ultimate")
+            logging.critical(f"ULT    > {char.name} used their ultimate")
             bl, dbl, al, dl, tl = char.useUlt()
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
@@ -157,7 +157,7 @@ while simAV < avLimit:
     if not unit.isChar(): # Enemy turn
         numAttacks = unit.takeTurn()
         totalEnemyAttacks += numAttacks
-        logging.critical(f"CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {numAttacks} attacks")
+        logging.critical(f"ENEMY  > CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {numAttacks} attacks")
         for i in range(numAttacks):
             for char in playerTeam:
                 bl, dbl, al, dl, tl = char.useHit(unit.enemyID)
@@ -168,7 +168,7 @@ while simAV < avLimit:
         enemyDebuffs = tickDebuffs(enemy, enemyDebuffs)
     else: # Character Turn
         moveType = unit.takeTurn()
-        logging.critical(f"CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
+        logging.critical(f"ACTION > CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
         teamBuffs = tickBuffs(unit.role, teamBuffs, "START")
         if moveType == "E":
             bl, dbl, al, dl, tl = unit.useSkl()
@@ -190,7 +190,7 @@ while simAV < avLimit:
     # Check if any unit can ult
     for char in playerTeam:
         if char.canUseUlt():
-            logging.critical(f"{char.name} used their ultimate")
+            logging.critical(f"ULT    > {char.name} used their ultimate")
             bl, dbl, al, dl, tl = char.useUlt()
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
@@ -209,7 +209,7 @@ while simAV < avLimit:
     
     # Reset the AV of the current unit by checking its current speed
     resetUnitAV(unit, teamBuffs, enemyDebuffs)
-    logging.warning(f"{unit.name} AV reset to {unit.currAV:.3f} | {unit.currSPD:.3f} SPD")
+    logging.warning(f"AV     > {unit.name} AV reset to {unit.currAV:.3f} | {unit.currSPD:.3f} SPD")
     
     # Reset priorities
     setPriority(allUnits)
