@@ -157,7 +157,7 @@ while simAV < avLimit:
     if not unit.isChar(): # Enemy turn
         numAttacks = unit.takeTurn()
         totalEnemyAttacks += numAttacks
-        logging.critical(f"ENEMY  > CumAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {numAttacks} attacks")
+        logging.critical(f"ENEMY  > TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {numAttacks} attacks")
         for i in range(numAttacks):
             for char in playerTeam:
                 bl, dbl, al, dl, tl = char.useHit(unit.enemyID)
