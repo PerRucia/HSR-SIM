@@ -16,7 +16,11 @@ weaknesses = ["PHY"]
 actionOrder = [1,1,2]
 
 # Character Settings
-playerTeam = [Robin(0, "SUP1"), Yunli(1, "DPS"), HuoHuo(2, "SUS"), Tingyun(3, "SUP2")]
+slot1 = Robin(0, "SUP1")
+slot2 = Yunli(1, "DPS")
+slot3 = HuoHuo(2, "SUS")
+slot4 = Tingyun(3, "SUP2")
+playerTeam = [slot1, slot2, slot3, slot4]
 
 # Simulation Settings
 cycleLimit = 5
@@ -62,6 +66,7 @@ teamBuffs, enemyDebuffs, advList, delayList = [], [], [], []
 for char in playerTeam:
     initBuffs, initDebuffs, initAdv, initDelay = char.equip()
     teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, initBuffs, initDebuffs, initAdv, initDelay)
+
 # Setup initial AV
 for char in playerTeam:
     initCharAV(char, teamBuffs) # apply any pre-existing speed buffs
@@ -149,6 +154,7 @@ while simAV < avLimit:
     teamBuffs, enemyDebuffs, advList, delayList, spPlus, spMinus = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
     spGain += spPlus
     spUsed += spMinus
+    turnList = []
     
     # Handle any errGain from unit ults
     teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)

@@ -199,7 +199,7 @@ def delayAdjustment(enemyTeam: list[Enemy], delayList: list[Delay], debuffList: 
             res.append(delay) # keep the delay in delayList until it can be applied
     return res
 
-def addEnergy(playerTeam: list, numAttacks: int, attackTypeRatio: list[float], buffList: list[Buff]):
+def addEnergy(playerTeam: list[Character], numAttacks: int, attackTypeRatio: list[float], buffList: list[Buff]):
     aggroLst = []
     for char in playerTeam:
         aggro = aggroDct[char.path]
@@ -229,7 +229,7 @@ def addEnergy(playerTeam: list, numAttacks: int, attackTypeRatio: list[float], b
     finalEnergy = [sum(values) for values in zip(chanceAOE, chanceBlast, chanceST)]
     for i in range(len(playerTeam)):
         char = playerTeam[i]
-        errMul = getERR(char, buffList, ["ALL"])
+        errMul = getERR(char, buffList, ["ALL"]) if not char.specialEnergy else 0
         char.addEnergy(finalEnergy[i]* errMul) 
     return [i / (numAttacks * 10) for i in finalEnergy]
 
@@ -364,10 +364,11 @@ def handleEnergyFromBuffs(buffList: list[Buff], playerTeam: list) -> list[Buff]:
     for eb in errBuffs:
         char = findChar(playerTeam, eb.target)
         charERR = getERR(char, newList, ["ALL"])
-        if eb.buffType == "ERR_T":
-            char.addEnergy(eb.getBuffVal() * charERR)
-        elif eb.buffType == "ERR_F":
-            char.addEnergy(eb.getBuffVal())
+        if not char.specialEnergy:
+            if eb.buffType == "ERR_T":
+                char.addEnergy(eb.getBuffVal() * charERR)
+            elif eb.buffType == "ERR_F":
+                char.addEnergy(eb.getBuffVal())
     return newList
 
 def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff]) -> Special:
@@ -392,6 +393,8 @@ def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy]
         yunliSlot = findChar(playerTeam, "DPS").pos
         lst = addEnergy(playerTeam, 1, [0.55, 0.2, 0.25], buffList)
         return Special(attr1=lst[yunliSlot])
+    elif specStr == "FeixiaoStartFUA":
+        return Special()
     
 def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:
     res = [Delay("STDBreakDelay", 0.25, enemy.enemyID, True, False)]

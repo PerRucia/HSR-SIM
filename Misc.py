@@ -1,0 +1,1 @@
+bonusDMG = ["TYAllyBonus", "TYBeneBonus", "YunliCullBounce", "FeixiaoUlt", "RobinConcertoDMG"]

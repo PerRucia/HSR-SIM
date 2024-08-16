@@ -2,6 +2,7 @@ from Buff import Buff
 from Planar import Planar
 from Result import Result
 from Turn import Turn
+from Misc import *
 
 class Duran(Planar):
     name = "Duran, Dynasty of Running Wolves"
@@ -23,8 +24,7 @@ class Duran(Planar):
     
     def ownTurn(self, result: Result):
         bl, dbl, al, dl = super().ownTurn(result)
-        filterFUA = ["YunliCullBounce"]
-        if "FUA" in result.atkType and result.turnName not in filterFUA:
+        if "FUA" in result.atkType and result.turnName not in bonusDMG:
             self.procs = self.procs + 1
             bl.append(Buff("DuranATK", "ATK%", 0.05, self.wearerRole, ["FUA"], 1, 5, "SELF", "PERM"))
             if self.procs == 5 and not self.appliedCDBuff:

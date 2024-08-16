@@ -8,6 +8,7 @@ from Buff import Buff
 from Result import Result, Special
 from Turn import Turn
 from Delay import *
+from Misc import *
 
 class Robin(Character):
     # Standard Character Settings
@@ -74,8 +75,7 @@ class Robin(Character):
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        concertoFilter = ["TYAllyBonus", "TYBeneBonus", "YunliCullBounce"]
-        if (turn.moveName not in concertoFilter) and (turn.moveType != "NA"):
+        if (turn.moveName not in bonusDMG) and (turn.moveType != "NA"):
             if self.canBeAdv: # not in concerto state, only provide extra ERR
                 tl.append(Turn(self.name, self.role, turn.targetID, "NA", ["ULT"], self.element, [0, 0], [0, 0], 2, self.scaling, 0, "RobinBonusERR"))
             else: # in concerto state, provide both additional dmg and extra ERR

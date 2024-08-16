@@ -6,6 +6,7 @@ from RelicStats import RelicStats
 from Buff import *
 from Result import *
 from Turn import Turn
+from Misc import *
 
 class Template(Character):
     # Standard Character Settings
