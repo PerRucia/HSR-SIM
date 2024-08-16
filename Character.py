@@ -145,7 +145,7 @@ class Character:
         ttl = sum(self.dmgDct.values())
         res = ""
         for key, val in self.dmgDct.items():
-            res += f"{key}: {val:.3f} | {val / ttl * 100:.3f}%\n"
+            res += f"-{key}: {val:.3f} | {val / ttl * 100:.3f}%\n"
         return res, ttl
     
     def getBaseStat(self) -> tuple[float, float, float]:

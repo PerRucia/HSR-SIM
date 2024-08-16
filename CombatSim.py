@@ -19,7 +19,7 @@ actionOrder = [1,1,2]
 playerTeam = [Robin(0, "SUP1"), Yunli(1, "DPS"), HuoHuo(2, "SUS"), Tingyun(3, "SUP2")]
 
 # Simulation Settings
-cycleLimit = 50
+cycleLimit = 5
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
@@ -247,7 +247,6 @@ logging.critical(f"SP GAINED: {spGain} | SP USED: {spUsed} | Enemy Attacks: {tot
 
 for char in playerTeam:
     res, dmg = char.gettotalDMG()
-    logging.critical(f"\n{char.name} | Total DMG: {dmg:.3f} | Team%: {dmg / totalDMG * 100:.3f}% | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas}")
-    logging.critical(f"Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
+    logging.critical(f"\n{char.name} > Total DMG: {dmg:.3f} | Team%: {dmg / totalDMG * 100:.3f}% | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
     logging.critical(res)
 

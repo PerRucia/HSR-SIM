@@ -99,7 +99,7 @@ class Yunli(Character):
             else:
                 ttl += val
         for key, val in self.dmgDct.items():
-            res += f"{key}: {val:.3f} | {val / ttl * 100:.3f}%\n"
+            res += f"-{key}: {val:.3f} | {val / ttl * 100:.3f}%\n"
         return res, ttl
     
     def special(self):
