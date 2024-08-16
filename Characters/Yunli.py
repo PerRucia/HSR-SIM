@@ -35,7 +35,7 @@ class Yunli(Character):
     
     def __init__(self, pos: int, role: str) -> None:
         super().__init__(pos, role)
-        self.lightcone = Aeon(role, 5, 0.5)
+        self.lightcone = Sunset(role, 1)
         self.relic1 = WindSoaringYunli(role, 4)
         self.relic2 = None
         self.planar = Duran(role)
