@@ -19,19 +19,20 @@ actionOrder = [1,1,2]
 playerTeam = [Robin(0, "SUP1"), Yunli(1, "DPS"), HuoHuo(2, "SUS"), Tingyun(3, "SUP2")]
 
 # Simulation Settings
-cycleLimit = 50
+cycleLimit = 100
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
 spUsed = 0
 totalEnemyAttacks = 0
+logLevel = logging.CRITICAL
 
 # =============== END OF SETTINGS ===============
 log_folder = "Output"
 teamInfo = "".join([char.name for char in playerTeam])
-enemyInfo = f"_{numEnemies}-Enemies"
+enemyInfo = f"_{numEnemies}Enemies_{cycleLimit}Cycles"
 logging.basicConfig(filename=f"{log_folder}/{teamInfo}{enemyInfo}.log", 
-                    level=logging.CRITICAL,
+                    level=logLevel,
                     format="%(message)s",
                     filemode="w")
 
@@ -88,7 +89,7 @@ def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDeb
             spUsed = spUsed - turn.spChange
         elif turn.spChange > 0:
             spGain = spUsed + turn.spChange
-        logging.warning(turn)
+        logging.warning(f"TURN   |  {turn}")
         logging.debug("\n----------Char Buffs----------")
         [logging.debug(buff) for buff in teamBuffs if buff.target == turn.charRole]
         logging.debug("----------End of Buff List----------")
@@ -97,7 +98,7 @@ def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDeb
         logging.debug("----------End of Debuff List----------")
 
         res, newDebuffs, newDelays = handleTurn(turn, playerTeam, eTeam, teamBuffs, enemyDebuffs)
-        logging.warning(res)
+        logging.warning(f"RESULT | {res}")
         teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, [], newDebuffs, [], newDelays)
         for char in playerTeam:
             if char.role == turn.charRole:
@@ -224,6 +225,11 @@ while simAV < avLimit:
     
 logging.critical("\n==========COMBAT SIMULATION ENDED==========")
 
+# Extra calculations
+for char in playerTeam:
+    if char.name == "Yunli":
+        char.hitMultiplier = char.ults / totalEnemyAttacks
+
 logging.critical("\n==========SIMULATION RESULTS==========")
 dotDMG = 0
 charDMG = 0
@@ -244,7 +250,4 @@ for char in playerTeam:
     logging.critical(f"\n{char.name} | Total DMG: {dmg:.3f} | Team%: {dmg / totalDMG * 100:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas}")
     logging.critical(f"Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
     logging.critical(res)
-    
-    
-print(playerTeam[1].aggroMultiplier)
 

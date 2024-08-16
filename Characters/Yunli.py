@@ -1,5 +1,6 @@
 from Character import Character
 from Lightcones.DanceAtSunset import Sunset
+from Lightcones.Aeon import Aeon
 from Relics.WindSoaring import WindSoaringYunli
 from Planars.Duran import Duran
 from RelicStats import RelicStats
@@ -27,13 +28,14 @@ class Yunli(Character):
     # Unique Character Properties
     cullActive = False
     aggroMultiplier = 0
+    hitMultiplier = 0
     
     # Relic Settings
     relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 13, 11, "CR%", "ATK%", "DMG%", "ATK%")
     
     def __init__(self, pos: int, role: str) -> None:
         super().__init__(pos, role)
-        self.lightcone = Sunset(role, 1)
+        self.lightcone = Aeon(role, 5, 0.5)
         self.relic1 = WindSoaringYunli(role, 4)
         self.relic2 = None
         self.planar = Duran(role)
@@ -90,9 +92,10 @@ class Yunli(Character):
     def gettotalDMG(self) -> tuple[str, float]:
         ttl = 0
         res = ""
+        actMul = self.hitMultiplier + self.aggroMultiplier * (1 - self.hitMultiplier)
         for key, val in self.dmgDct.items():
             if key == "FUA" or key == "ULT":
-                ttl += val * self.aggroMultiplier
+                ttl += val * actMul
             else:
                 ttl += val
         for key, val in self.dmgDct.items():

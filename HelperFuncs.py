@@ -391,8 +391,7 @@ def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy]
     elif specStr == "getYunliAggro":
         yunliSlot = findChar(playerTeam, "DPS").pos
         lst = addEnergy(playerTeam, 1, [0.55, 0.2, 0.25], buffList)
-        otherLst = [0.2 if char.name == "Yunli" else 0 for char in playerTeam]
-        return Special(attr1=(lst[yunliSlot] * 0.8 + otherLst[yunliSlot]))
+        return Special(attr1=lst[yunliSlot])
     
 def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:
     res = [Delay("STDBreakDelay", 0.25, enemy.enemyID, True, False)]
