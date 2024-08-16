@@ -1,5 +1,5 @@
 from Character import Character
-from Lightcones.DanceAtSunset import Sunset
+from Lightcones.Aeon import Sunset
 from Relics.WindSoaring import WindSoaringYunli
 from Planars.Duran import Duran
 from RelicStats import RelicStats

@@ -23,6 +23,7 @@ class Character:
     rotation = ["E", "A", "A"]
     dmgDct = {"BSC": 0, "SKL": 0, "ULT": 0, "BREAK": 0}
     hasSpecial = False
+    specialEnergy = False
     basics = 0
     skills = 0
     ults = 0
@@ -80,7 +81,7 @@ class Character:
         return ""
     
     def handleSpecial(self, specialRes: Special):
-        return self.parseEquipment("SPECIAL", special=specialRes)
+        return *self.parseEquipment("SPECIAL", special=specialRes), []
     
     def allyTurn(self, turn: Turn, result: Result):
         return *self.parseEquipment("ALLY", turn=turn, result=result), []

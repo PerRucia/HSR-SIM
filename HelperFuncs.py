@@ -3,11 +3,13 @@ from Turn import Turn
 from Result import *
 from Enemy import Enemy
 from Delay import *
+from Character import *
 import logging
 
 logger = logging.getLogger(__name__)
 wbMultiplier = 3767.5533
 eleDct = {"PHY": 2.0, "FIR": 2.0, "WIN": 1.5, "ICE": 1.0, "LNG": 1.0, "QUA": 0.5, "IMG": 0.5}
+aggroDct = {"HUN": 3, "ERU": 3, "NIH": 4, "HAR": 4, "ABU": 4, "DES": 5, "PRE": 6}
 
 def matchBuff(char, buff) -> bool:
     return True if (char.role == buff.target) else False
@@ -198,27 +200,26 @@ def delayAdjustment(enemyTeam: list[Enemy], delayList: list[Delay], debuffList: 
     return res
 
 def addEnergy(playerTeam: list, numAttacks: int, attackTypeRatio: list[float], buffList: list[Buff]):
-    dct = {"HUN": 3, "ERU": 3, "NIH": 4, "HAR": 4, "ABU": 4, "DES": 5, "PRE": 6}
     aggroLst = []
     for char in playerTeam:
-        aggro = dct[char.path]
+        aggro = aggroDct[char.path]
         if char.path == "DES":
             if char.lightcone.name == "Dance at Sunset":
-                aggro += dct["DES"] * 5
+                aggro += aggroDct["DES"] * 5
             if checkInTeam("Lynx", playerTeam) and char.role == "DPS":
-                aggro += dct["DES"] * 5
+                aggro += aggroDct["DES"] * 5
             if checkInTeam("March7th", playerTeam) and char.role == "DPS":
-                aggro += dct["DES"] * 5
+                aggro += aggroDct["DES"] * 5
         elif char.path == "PRE":
             if char.name == "Gepard":
-                aggro += dct["PRE"] * 3
+                aggro += aggroDct["PRE"] * 3
             if char.lightcone.name == "Landau's Choice" or char.lightcone.name == "Moment of Victory":
-                aggro += dct["PRE"] * 3
+                aggro += aggroDct["PRE"] * 3
         elif char.path == "HUN":
             if char.name == "Dan Heng" or char.name == "Seele" or char.name == "Sushang":
-                aggro -= dct["HUN"] * 0.5
+                aggro -= aggroDct["HUN"] * 0.5
             if char.name == "Yanqing":
-                aggro -= dct["HUN"] * 0.6
+                aggro -= aggroDct["HUN"] * 0.6
         aggroLst.append(aggro)
     aggroSum = sum(aggroLst)
     chanceST = [a * numAttacks * 10 * attackTypeRatio[0] / aggroSum for a in aggroLst]
@@ -230,7 +231,7 @@ def addEnergy(playerTeam: list, numAttacks: int, attackTypeRatio: list[float], b
         char = playerTeam[i]
         errMul = getERR(char, buffList, ["ALL"])
         char.addEnergy(finalEnergy[i]* errMul) 
-    return
+    return [i / (numAttacks * 10) for i in finalEnergy]
 
 def checkInTeam(name, team) -> bool:
     for char in team:
@@ -275,7 +276,7 @@ def takeDot(enemy: Enemy, enemyTeam: list[Enemy], playerTeam: list, buffList: li
     enemy.dotDMG = enemy.dotDMG + dmg
     return
 
-def findChar(playerTeam: list, charRole: str):
+def findChar(playerTeam: list, charRole: str) -> Character:
     for char in playerTeam:
         if char.role == charRole:
             return char
@@ -369,7 +370,7 @@ def handleEnergyFromBuffs(buffList: list[Buff], playerTeam: list) -> list[Buff]:
             char.addEnergy(eb.getBuffVal())
     return newList
 
-def handleSpec(specStr: str, playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff]) -> Special:
+def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff]) -> Special:
     if specStr == "":
         return Special()
     elif specStr == "updateRobinATK":
@@ -379,8 +380,20 @@ def handleSpec(specStr: str, playerTeam: list, enemyTeam: list[Enemy], buffList:
                 break
         char = findChar(playerTeam, role)
         res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
-        return Special(res)
-
+        return Special(attr1=res)
+    elif specStr == "HuoHuoUlt":
+        lst = []
+        for char in playerTeam:
+            if char.name != "HuoHuo":
+                charMaxEnergy = 0 if char.specialEnergy else char.maxEnergy
+                lst.append([charMaxEnergy * 0.2, char.role])
+        return Special(attr1=lst[0], attr2=lst[1], attr3=lst[2])
+    elif specStr == "getYunliAggro":
+        yunliSlot = findChar(playerTeam, "DPS").pos
+        lst = addEnergy(playerTeam, 1, [0.55, 0.2, 0.25], buffList)
+        otherLst = [0.2 if char.name == "Yunli" else 0 for char in playerTeam]
+        return Special(attr1=(lst[yunliSlot] * 0.8 + otherLst[yunliSlot]))
+    
 def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:
     res = [Delay("STDBreakDelay", 0.25, enemy.enemyID, True, False)]
     breakName = f"{ele}-break"

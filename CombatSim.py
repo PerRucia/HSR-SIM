@@ -3,19 +3,20 @@ from Enemy import Enemy
 from Characters.Yunli import Yunli
 from Characters.Tingyun import Tingyun
 from Characters.Robin import Robin
+from Characters.HuoHuo import HuoHuo
 from HelperFuncs import *
 
 # Enemy Settings
 enemyLevel = 95
-enemySPD = [158.4, 145.2]
+enemySPD = [158.4, 145.2, 150] # make sure that the number of entries in this list is the same as "numEnemies"
 attackTypeRatio = [0.55, 0.20, 0.25] # ST/BLAST/AOE splits for enemy attacks
 toughness = 100
-numEnemies = 2
+numEnemies = 3
 weaknesses = ["PHY"]
 actionOrder = [1,1,2]
 
 # Character Settings
-playerTeam = [Robin(0, "SUP1"), Yunli(1, "DPS"), Tingyun(2, "SUP2")]
+playerTeam = [Robin(0, "SUP1"), Yunli(1, "DPS"), HuoHuo(2, "SUS"), Tingyun(3, "SUP2")]
 
 # Simulation Settings
 cycleLimit = 50
@@ -129,9 +130,9 @@ while simAV < avLimit:
         if char.hasSpecial:
             spec = char.special()
             specRes = handleSpec(spec, playerTeam, eTeam, teamBuffs, enemyDebuffs)
-            bl, dbl, al, dl = char.handleSpecial(specRes)
+            bl, dbl, al, dl, tl = char.handleSpecial(specRes)
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
-    
+            turnList.extend(tl)
     # Add Energy if any was provided from special effects
     teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)
     
@@ -243,4 +244,7 @@ for char in playerTeam:
     logging.critical(f"\n{char.name} | Total DMG: {dmg:.3f} | Team%: {dmg / totalDMG * 100:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas}")
     logging.critical(f"Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
     logging.critical(res)
+    
+    
+print(playerTeam[1].aggroMultiplier)
 

@@ -23,7 +23,7 @@ class Robin(Character):
     ultCost = 160
     currEnergy = 85
     currAV = 0
-    rotation = ["E", "A"]
+    rotation = ["E", "A", "A"]
     dmgDct = {"BSC": 0, "ULT": 0, "BREAK": 0}
     hasSpecial = True
     
@@ -99,7 +99,7 @@ class Robin(Character):
     
     def handleSpecial(self, special: Special):
         self.atkStat = special.attr1
-        bl, dbl, al, dl = super().handleSpecial(special)
+        bl, dbl, al, dl, tl = super().handleSpecial(special)
         if not self.canBeAdv:
             bl.append(Buff("RobinUltBuff", "ATK", self.atkStat * 0.228 + 200, "ALL", ["ALL"], 1, 1, self.role, "START"))
-        return bl, dbl, al, dl
+        return bl, dbl, al, dl, tl

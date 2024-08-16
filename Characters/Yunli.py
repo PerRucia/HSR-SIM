@@ -4,7 +4,7 @@ from Relics.WindSoaring import WindSoaringYunli
 from Planars.Duran import Duran
 from RelicStats import RelicStats
 from Buff import Buff
-from Result import Result
+from Result import Result, Special
 from Turn import Turn
 
 class Yunli(Character):
@@ -20,12 +20,13 @@ class Yunli(Character):
     maxEnergy = 240
     ultCost = 120
     currAV = 0
+    hasSpecial = True
     rotation = ["E"]
     dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0, "BREAK": 0}
     
     # Unique Character Properties
     cullActive = False
-    aggroMultiplier = 1.0
+    aggroMultiplier = 0
     
     # Relic Settings
     relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 13, 11, "CR%", "ATK%", "DMG%", "ATK%")
@@ -98,4 +99,15 @@ class Yunli(Character):
             res += f"{key}: {val:.3f} | {val / ttl * 100:.3f}%\n"
         return res, ttl
     
+    def special(self):
+        return "getYunliAggro"
+    
+    def handleSpecial(self, specialRes: Special):
+        bl, dbl, al, dl, tl = super().handleSpecial(specialRes)
+        self.aggroMultiplier = specialRes.attr1
+        self.hasSpecial = False
+        tl.append(Turn(self.name, self.role, -1, "BLAST", ["ULT", "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
+        for i in range(6):
+            tl.append(Turn(self.name, self.role, -1, "ST", ["ULT", "FUA"], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
+        return bl, dbl, al, dl, tl
     
