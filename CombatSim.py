@@ -5,6 +5,7 @@ from Characters.Tingyun import Tingyun
 from Characters.Robin import Robin
 from Characters.HuoHuo import HuoHuo
 from HelperFuncs import *
+from RelicStats import RelicStats
 
 # Enemy Settings
 enemyLevel = 95
@@ -20,10 +21,9 @@ slot1 = Robin(0, "SUP1")
 slot2 = Yunli(1, "DPS")
 slot3 = HuoHuo(2, "SUS")
 slot4 = Tingyun(3, "SUP2")
-playerTeam = [slot1, slot2, slot3, slot4]
 
 # Simulation Settings
-cycleLimit = 5
+cycleLimit = 50
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
@@ -32,6 +32,7 @@ totalEnemyAttacks = 0
 logLevel = logging.WARNING
 
 # =============== END OF SETTINGS ===============
+playerTeam = [slot1, slot2, slot3, slot4]
 log_folder = "Output"
 teamInfo = "".join([char.name for char in playerTeam])
 enemyInfo = f"_{numEnemies}Enemies_{cycleLimit}Cycles"
@@ -55,7 +56,7 @@ logging.critical("Enemy Team:")
 for enemy in eTeam:
     logging.critical(enemy)
 
-# Print Char Info
+# Print Char Info\
 logging.critical("\nPlayer Team:")
 for char in playerTeam:
     logging.critical(char)
@@ -140,7 +141,7 @@ while simAV < avLimit:
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
     # Add Energy if any was provided from special effects
-    teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
     
     # Check if any unit can ult
     for char in playerTeam:
@@ -157,7 +158,7 @@ while simAV < avLimit:
     turnList = []
     
     # Handle any errGain from unit ults
-    teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
     
     # Handle unit Turns
     if not unit.isChar(): # Enemy turn
@@ -169,8 +170,8 @@ while simAV < avLimit:
                 bl, dbl, al, dl, tl = char.useHit(unit.enemyID)
                 teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
                 turnList.extend(tl)
-        addEnergy(playerTeam, numAttacks, attackTypeRatio, teamBuffs)
-        takeDot(unit, eTeam, playerTeam, teamBuffs, enemyDebuffs)
+        addEnergy(playerTeam, eTeam, numAttacks, attackTypeRatio, teamBuffs)
+        takeDot(unit, playerTeam, teamBuffs, enemyDebuffs)
         enemyDebuffs = tickDebuffs(enemy, enemyDebuffs)
     else: # Character Turn
         moveType = unit.takeTurn()
@@ -191,7 +192,7 @@ while simAV < avLimit:
     spUsed += spMinus
     
     # Handle any errGain from unit turns
-    teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
     
     # Check if any unit can ult
     for char in playerTeam:
@@ -207,7 +208,7 @@ while simAV < avLimit:
     spUsed += spMinus
     
     # Handle any errGain from unit ults
-    teamBuffs = handleEnergyFromBuffs(teamBuffs, playerTeam)
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
     
     # Apply any speed adjustments
     spdAdjustment(playerTeam, teamBuffs)

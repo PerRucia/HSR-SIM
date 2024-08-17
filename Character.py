@@ -33,14 +33,13 @@ class Character:
     # Unique Character Properties
     
     # Relic Settings
-    relicStats = RelicStats(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, "HP%", "HP%", "HP%", "HP%") # Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: str) -> None:
         self.pos = pos
         self.role = role
         self.priority = 0
         self.currSPD = 100
-    
+        
     def __str__(self) -> str:
         res = f"{self.name} | {self.element}-{self.path} | {self.role} | POS:{self.pos}\n"
         res += f"{self.lightcone}\n"

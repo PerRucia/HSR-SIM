@@ -5,12 +5,9 @@ from Enemy import Enemy
 from Delay import *
 from Character import *
 import logging
+from Misc import *
 
 logger = logging.getLogger(__name__)
-wbMultiplier = 3767.5533
-eleDct = {"PHY": 2.0, "FIR": 2.0, "WIN": 1.5, "ICE": 1.0, "LNG": 1.0, "QUA": 0.5, "IMG": 0.5}
-aggroDct = {"HUN": 3, "ERU": 3, "NIH": 4, "HAR": 4, "ABU": 4, "DES": 5, "PRE": 6}
-
 
 def parseBuffs(lst: list[Buff], playerTeam: list[Character]) -> list:
     buffList = []
@@ -169,7 +166,7 @@ def enemySPDAdjustment(enemyTeam: list[Enemy], debuffList: list[Debuff]):
 def avAdjustment(teamList: list[Character], advList: list[Advance]):
     for adv in advList:
         logger.info(adv)
-        char = findChar(teamList, adv.targetRole)
+        char = findCharRole(teamList, adv.targetRole)
         avRed = (10000 / char.currSPD)  * adv.advPercent
         char.reduceAV(avRed)
         char.priority = char.priority + 10
@@ -197,7 +194,7 @@ def delayAdjustment(enemyTeam: list[Enemy], delayList: list[Delay], debuffList: 
             res.append(delay) # keep the delay in delayList until it can be applied
     return res
 
-def addEnergy(playerTeam: list[Character], numAttacks: int, attackTypeRatio: list[float], buffList: list[Buff]):
+def addEnergy(playerTeam: list[Character], enemyTeam: list[Enemy], numAttacks: int, attackTypeRatio: list[float], buffList: list[Buff]):
     aggroLst = []
     for char in playerTeam:
         aggro = aggroDct[char.path]
@@ -227,7 +224,8 @@ def addEnergy(playerTeam: list[Character], numAttacks: int, attackTypeRatio: lis
     finalEnergy = [sum(values) for values in zip(chanceAOE, chanceBlast, chanceST)]
     for i in range(len(playerTeam)):
         char = playerTeam[i]
-        errMul = getERR(char, buffList, ["ALL"]) if not char.specialEnergy else 0
+        placeHolderTurn = Turn(char.name, char.role, -1, "NA", ["ALL"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "HitEnergyPlaceholder")
+        errMul = getMulERR(char, enemyTeam[0], buffList, [], placeHolderTurn) if not char.specialEnergy else 0
         char.addEnergy(finalEnergy[i]* errMul) 
     return [i / (numAttacks * 10) for i in finalEnergy]
 
@@ -262,21 +260,25 @@ def tickBuffs(charRole: str, buffList: list[Buff], tdType: str) -> list[Buff]:
         newList.append(buff)
     return newList
 
-def takeDot(enemy: Enemy, enemyTeam: list[Enemy], playerTeam: list[Character], buffList: list[Buff], debuffList: list[Debuff]):
+def takeDot(enemy: Enemy, playerTeam: list[Character], buffList: list[Buff], debuffList: list[Debuff]):
     dmg = 0
     dotList = [debuff for debuff in debuffList if (debuff.isDot and debuff.target == enemy.enemyID)]
-    enemyMul = getEnemyMul(enemy.enemyID, enemyTeam, debuffList, ["DOT"])
+
     for dot in dotList:
-        char = findChar(playerTeam, dot.charRole)
-        penMul = getPenMul(char, enemy, buffList, ["DOT"], "DOT")
-        dmg += dot.getDebuffVal() * enemyMul * penMul
+        char = findCharRole(playerTeam, dot.charRole)
+        placeholderTurn = Turn(char.name, char.role, enemy.enemyID, "NA", ["DOT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "DOTPlaceholder")
+        dmg += dot.getDebuffVal() * getMulENEMY(char, enemy, buffList, debuffList, placeholderTurn)
         logging.warning(f"{enemy.name} took {dmg:.3f} DOT-dmg from {dot.name}")
     enemy.dotDMG = enemy.dotDMG + dmg
-    return
 
-def findChar(playerTeam: list, charRole: str) -> Character:
+def findCharRole(playerTeam: list[Character], charRole: str) -> Character:
     for char in playerTeam:
         if char.role == charRole:
+            return char
+        
+def findCharName(playerTeam: list[Character], charName: str) -> Character:
+    for char in playerTeam:
+        if char.name == charName:
             return char
         
 def handleAdditions(playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], advList: list[Advance], delayList: list[Delay], 
@@ -289,33 +291,33 @@ def handleAdditions(playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buf
     
     return buffList, debuffList, advList, delayList
 
-def handleTurn(turn: Turn, playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff]) -> tuple[Result, list[Debuff], list[Delay]]:
-    char = findChar(playerTeam, turn.charRole)
+def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff]) -> tuple[Result, list[Debuff], list[Delay]]:
+    char = findCharRole(playerTeam, turn.charRole)
+    charERR = getMulERR(char, enemyTeam[0], buffList, debuffList, turn)
     baseValue = getBaseValue(char, buffList, turn)
-    charERR = getERR(char, buffList, turn.atkType)
-    charDMG = getDmgMul(char, buffList, turn.atkType)
-    charCR = getCritChance(char, buffList, turn.atkType)
-    charCD = getCritMul(char, buffList, turn.atkType)
-    charBE = getBE(char, buffList, turn.atkType)
-    
-    errGain = charERR * turn.errGain # actual energy gained from this move
-    wbe = getWBE(char, buffList, turn.atkType)
     
     anyBroken = False
     turnDmg = 0
     wbDmg = 0
     newDebuff, newDelay = [], []
     
-    def processEnemy(enemy: Enemy, breakUnits: float, dmgMul, cr: float, cd: float) -> tuple[list[Debuff], list[Delay]]:
+    def processEnemy(enemy: Enemy, breakUnits: float, percentMultiplier: float, charCR=0, charCD=0) -> tuple[list[Debuff], list[Delay]]:
         nonlocal turnDmg, wbDmg, anyBroken
+        
+        charBE = getMulBE(char, enemy, buffList, debuffList, turn)
+        charWBE = getMulWBE(char, enemy, buffList, debuffList, turn)
+        charDMG = getMulDMG(char, enemy, buffList, debuffList, turn)
+        if charCR == 0:
+            charCR = getMulCR(char, enemy, buffList, debuffList, turn)
+        if charCD == 0:
+            charCD = getMulCD(char, enemy, buffList, debuffList, turn)
+        enemyMul = getMulENEMY(char, enemy, buffList, debuffList, turn)
         
         enemyBroken = False
         newDebuffs, newDelays = [], []
         if checkValidList(turn.element, enemy.weakness):
-            enemyBroken = enemy.redToughness(breakUnits * wbe)
-        penMul = getPenMul(char, enemy, buffList, turn.atkType, turn.element[0])
-        enemyMul = getEnemyMul(enemy.enemyID, enemyTeam, debuffList, turn.atkType)
-        turnDmg += expectedDMG(dmgMul * baseValue * charDMG * penMul * enemyMul, cr, cd)
+            enemyBroken = enemy.redToughness(breakUnits * charWBE)
+        turnDmg += expectedDMG(baseValue * charDMG * percentMultiplier * enemyMul, charCR, charCD)
         
         if enemyBroken:
             anyBroken = True
@@ -328,31 +330,32 @@ def handleTurn(turn: Turn, playerTeam: list, enemyTeam: list[Enemy], buffList: l
     if turn.moveType == "AOE":
         # AOE Attack
         for enemy in enemyTeam:
-            a, b = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0], charCR, charCD)
+            a, b = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0])
             newDebuff.extend(a)
             newDelay.extend(b)
     elif turn.moveType == "NA":
         if turn.moveName == "RobinConcertoDMG":
-            enemy = findBestEnemy(enemyTeam, debuffList, ["ULT"])
+            char = findCharName(playerTeam, "Robin")
+            enemy = findBestEnemy(char, enemyTeam, buffList, debuffList, turn)
             _, _ = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0], 1.0, 2.5)
     else :
         if turn.targetID == -1:
-            enemy = findBestEnemy(enemyTeam, debuffList, turn.atkType)
+            enemy = findBestEnemy(char, enemyTeam, buffList, debuffList, turn)
         else:
             enemy = enemyTeam[turn.targetID]  
-        a, b = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0], charCR, charCD)
+        a, b = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0])
         newDebuff.extend(a)
         newDelay.extend(b)
         if enemy.hasAdj and (turn.brkSplit[1] > 0 or (turn.dmgSplit[1] > 0)):
             for enemyID in enemy.adjacent:
                 adj_enemy = enemyTeam[enemyID]
-                a, b = processEnemy(adj_enemy, turn.brkSplit[1], turn.dmgSplit[1], charCR, charCD)
+                a, b = processEnemy(adj_enemy, turn.brkSplit[1], turn.dmgSplit[1])
                 newDebuff.extend(a)
                 newDelay.extend(b)
                 
-    return Result(turn.charName, turn.charRole, turn.atkType, turn.element, anyBroken, turnDmg, wbDmg, errGain, turn.moveName), newDebuff, newDelay
+    return Result(turn.charName, turn.charRole, turn.atkType, turn.element, anyBroken, turnDmg, wbDmg, turn.errGain * charERR, turn.moveName), newDebuff, newDelay
 
-def handleEnergyFromBuffs(buffList: list[Buff], playerTeam: list) -> list[Buff]:
+def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], playerTeam: list[Character], enemyTeam: list[Enemy]) -> list[Buff]:
     errBuffs, newList = [], []
     for buff in buffList:
         if buff.buffType == "ERR_T" or buff.buffType == "ERR_F":
@@ -360,8 +363,9 @@ def handleEnergyFromBuffs(buffList: list[Buff], playerTeam: list) -> list[Buff]:
         else:
             newList.append(buff)
     for eb in errBuffs:
-        char = findChar(playerTeam, eb.target)
-        charERR = getERR(char, newList, ["ALL"])
+        char = findCharRole(playerTeam, eb.target)
+        placeholderTurn = Turn(char.name, char.role, 0, "NA", ["ALL"], ["ALL"], [0, 0], [0, 0], 0, char.scaling, 0, "PlaceHolderTurn: ERR")
+        charERR = getMulERR(char, enemyTeam[0], buffList, debuffList, placeholderTurn)
         if not char.specialEnergy:
             if eb.buffType == "ERR_T":
                 char.addEnergy(eb.getBuffVal() * charERR)
@@ -377,7 +381,7 @@ def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy]
             if p.name == "Robin":
                 role = p.role
                 break
-        char = findChar(playerTeam, role)
+        char = findCharRole(playerTeam, role)
         res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
         return Special(attr1=res)
     elif specStr == "HuoHuoUlt":
@@ -388,8 +392,8 @@ def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy]
                 lst.append([charMaxEnergy * 0.2, char.role])
         return Special(attr1=lst[0], attr2=lst[1], attr3=lst[2])
     elif specStr == "getYunliAggro":
-        yunliSlot = findChar(playerTeam, "DPS").pos
-        lst = addEnergy(playerTeam, 1, [0.55, 0.2, 0.25], buffList)
+        yunliSlot = findCharName(playerTeam, "Yunli").pos
+        lst = addEnergy(playerTeam, enemyTeam, 1, [0.55, 0.2, 0.25], buffList)
         return Special(attr1=lst[yunliSlot])
     elif specStr == "FeixiaoStartFUA":
         return Special()
@@ -424,11 +428,11 @@ def wbDebuff(ele: str, charRole: str, charBE: float, enemy: Enemy) -> Debuff:
     elif ele == "IMG":
         return Debuff(debuffName, charRole, "SPD%", -0.1, enemy.enemyID, ["ALL"], 1, 1, False, False)
     
-def findBestEnemy(enemyTeam: list[Enemy], debuffList: list[Debuff], atkType: list[str]) -> Enemy:
+def findBestEnemy(char: Character, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> Enemy:
     bestEnemy = None
     bestMul = 0
     for enemy in enemyTeam:
-        currMul = getEnemyMul(enemy.enemyID, enemyTeam, debuffList, atkType)
+        currMul = getMulENEMY(char, enemy, buffList, debuffList, turn)
         if currMul > bestMul:
             bestMul = currMul
             bestEnemy = enemy
@@ -444,44 +448,11 @@ def checkValidList(list1: list, list2: list) -> bool:
     set2 = set(list2)
     return any(l1 in set2 for l1 in list1)
 
-def getEnemyShredMul(enemy: Enemy, debuffList: list[Debuff], atkType: list[str]) -> float:
-    defShred = 0
-    for debuff in debuffList:
-        if debuff.target != enemy.enemyID:
-            continue
-        if debuff.debuffType != "SHRED":
-            continue
-        if not checkValidList(atkType, debuff.atkType):
-            continue
-        defShred += debuff.getDebuffVal()
-    return min(1.0, 100 / ((enemy.level + 20) * (1 - defShred) + 100))
-
-def getEnemyVulnMul(enemy: Enemy, debuffList: list[Debuff], atkType: list[str]) -> float:
-    vuln = 0
-    for debuff in debuffList:
-        if debuff.target != enemy.enemyID:
-            continue
-        if debuff.debuffType != "VULN":
-            continue
-        if not checkValidList(atkType, debuff.atkType):
-            continue
-        vuln += debuff.getDebuffVal()
-    return min(3.5, 1 + vuln)
-
-def getUniMul(enemy: Enemy, debuffList: list[Debuff], atkType: list[str]) -> float:
-    return enemy.getUniMul()
-
-def getEnemyMul(enemyID: int, enemyTeam: list, debuffList: list[Debuff], atkType: list[str]) -> float:
-    # Returns total multiplier for Vuln, Shred, and Uni Res for the specified enemy
-    enemy = enemyTeam[enemyID]
-    return getEnemyShredMul(enemy, debuffList, atkType) * getEnemyVulnMul(enemy, debuffList, atkType) * getUniMul(enemy, debuffList, atkType)
-
-def getBaseValue(char, buffList: list[Buff], turn: Turn): 
+def getBaseValue(char, buffList: list[Buff], turn: Turn) -> float: 
     if turn.scaling == "ATK" or turn.scaling == "DEF" or turn.scaling == "HP": # normal scaling attacks
         return getScalingValues(char, buffList, turn.atkType)
-    else: # for turns with weird/hybrid scaling effects (FF, Robin, etc.)
-        if turn.moveName == "RobinULT":
-            return getScalingValues(char, buffList, turn.atkType) 
+    else:
+        return 0
     
 def getScalingValues(char, buffList: list[Buff], atkType: list[str]) -> float:
     base, mul, flat = char.getBaseStat()
@@ -498,102 +469,99 @@ def getScalingValues(char, buffList: list[Buff], atkType: list[str]) -> float:
             flat += buff.getBuffVal()
     return base * (1 + mul) + flat
 
-def getDmgMul(char, buffList: list[Buff], atkType: list[str]) -> float:
-    dmg = 1 + char.relicStats.getDMG()
+# Use this function to get the stat of the character, without any associated base multipliers:
+# e.g. 1 + dmg%, 1 + err% etc.
+def getCharStat(query: str, char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    res = 0
     for buff in buffList:
         if buff.target != char.role:
-             continue
-        if not checkValidList(atkType, buff.atkType):
-             continue
-        if buff.buffType == "DMG%":
-            dmg += buff.getBuffVal()
-    return dmg
+            continue
+        if not checkValidList(turn.atkType, buff.atkType):
+            continue
+        if buff.buffType == query:
+            res += buff.getBuffVal()
+    
+    for debuff in debuffList:
+        if debuff.target != enemy.enemyID:
+            continue
+        if not checkValidList(turn.atkType, debuff.atkType):
+            continue
+        if debuff.debuffType == query:
+            res += debuff.getDebuffVal()
+            
+    match query:
+        case "BE%":
+            return res + char.relicStats.getBE() # base multiplier of 1 not added
+        case "WBE%":
+            return res # base multiplier of 1 not added
+        case "EHR%":
+            return res + char.relicStats.getEHR()
+        case "ERS%":
+            return res + char.relicStats.getERS()
+        case "CR%":
+            return res + char.relicStats.getCR() # base value of 0.05 added
+        case "CD%":
+            return res + char.relicStats.getCD() # base value of 0.5 added, base multi of 1 not added
+        case "DMG%":
+            return res + char.relicStats.getDMG() # base value of 1 not added
+        case "ERR%":
+            return res + char.relicStats.getERR() # base value of 1 not added
+        case "OGH%":
+            return res + char.relicStats.getOGH() # base multiplier of 1 not added
+        case "SHRED":
+            return res
+        case "PEN":
+            return res
+        case "VULN":
+            return res
 
-def getPenMul(char: Character, enemy: Enemy, buffList: list[Buff], atkType: list[str], element: str) -> float:
-    enemyRes = enemy.getRes(element)
-    resPen = 0
-    for buff in buffList:
-        if buff.target != char.role:
-            continue
-        if not checkValidList(atkType, buff.atkType):
-            continue
-        if buff.buffType == "PEN":
-            resPen += buff.getBuffVal()
-    return min(2.0, (1 - (enemyRes - resPen)))
+# Use these functions to directly get the multiplier against the specified enemy for the specified char
+def getMulBE(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    return getCharStat("BE%", char, enemy, buffList, debuffList, turn) + 1
 
-def getCritMul(char: Character, buffList: list[Buff], atkType: list[str]) -> float:
-    cd = 1 + char.relicStats.getCD()
-    for buff in buffList:
-        if buff.target != char.role:
-            continue
-        if not checkValidList(atkType, buff.atkType):
-            continue
-        if buff.buffType == "CD%":
-            cd += buff.getBuffVal()
-    return cd
+def getMulWBE(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    return getCharStat("WBE%", char, enemy, buffList, debuffList, turn) + 1
 
-def getCritChance(char: Character, buffList: list[Buff], atkType: list[str]) -> float:
-    cr = char.relicStats.getCR()
-    for buff in buffList:
-        if buff.target != char.role:
-            continue
-        if not checkValidList(atkType, buff.atkType):
-            continue
-        if buff.buffType == "CR%":
-            cr += buff.getBuffVal()
-    return min(1.0, cr)
+def getMulEHR(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    return getCharStat("EHR%", char, enemy, buffList, debuffList, turn)
 
-def getBE(char: Character, buffList: list[Buff], atkType: list[str]) -> float:
-    be = char.relicStats.getBE()
-    for buff in buffList:
-        if buff.target != char.role:
-            continue
-        if not checkValidList(atkType, buff.atkType):
-            continue
-        if buff.buffType == "BE%":
-            be += buff.getBuffVal()
-    return 1 + be
+def getMulERS(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    return getCharStat("ERS%", char, enemy, buffList, debuffList, turn)
 
-def getEHR(char, buffList: list[Buff], atkType: list[str]) -> float:
-    ehr = char.relicStats.getEHR()
-    for buff in buffList:
-        if buff.target != char.role:
-            continue
-        if not checkValidList(atkType, buff.atkType):
-            continue
-        if buff.buffType == "EHR%":
-            ehr += buff.getBuffVal()
-    return ehr
+def getMulCR(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    return getCharStat("CR%", char, enemy, buffList, debuffList, turn)
 
-def getERS(char, buffList: list[Buff], atkType: list[str]) -> float:
-    ers = char.relicStats.getERS()
-    for buff in buffList:
-        if buff.target != char.role:
-            continue
-        if not checkValidList(atkType, buff.atkType):
-            continue
-        if buff.buffType == "ERS%":
-            ers += buff.getBuffVal()
-    return ers
+def getMulCD(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    return getCharStat("CD%", char, enemy, buffList, debuffList, turn) + 1
 
-def getERR(char, buffList: list[Buff], atkType: list[str]) -> float:
-    err = char.relicStats.getERR()
-    for buff in buffList:
-        if buff.target != char.role:
-            continue
-        if not checkValidList(atkType, buff.atkType):
-            continue
-        if buff.buffType == "ERR%":
-            err += buff.getBuffVal()
-    return err
+def getMulDMG(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    return getCharStat("DMG%", char, enemy, buffList, debuffList, turn) + 1
 
-def getWBE(char, buffList: list[Buff], atkType: list[str]) -> float:
-    wbe = 1
-    for buff in buffList:
-        if buff.target != char.role:
-            continue
-        if not checkValidList(atkType, buff.atkType):
-            continue
-        if buff.buffType == "WBE%":
-            wbe += buff.getBuffVal()
-    return wbe
+def getMulERR(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    return getCharStat("ERR%", char, enemy, buffList, debuffList, turn) + 1
+
+def getMulOGH(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    return getCharStat("OGH%", char, enemy, buffList, debuffList, turn) + 1
+
+def getMulSHRED(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    shred = getCharStat("SHRED", char, enemy, buffList, debuffList, turn)
+    return min(1.0, 100 / ((enemy.level + 20) * (1 - shred) + 100))
+
+def getMulVULN(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    vuln = getCharStat("VULN", char, enemy, buffList, debuffList, turn) 
+    return min(3.5, 1 + vuln)
+
+def getMulPEN(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    pen = getCharStat("PEN", char, enemy, buffList, debuffList, turn)
+    pen = pen - enemy.getRes(turn.element[0])
+    return min(3.0, 1 - pen)
+
+def getMulUNI(enemy: Enemy) -> float:
+    return enemy.getUniMul()
+
+def getMulENEMY(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
+    shredMul = getMulSHRED(char, enemy, buffList, debuffList, turn)
+    vulnMul = getMulVULN(char, enemy, buffList, debuffList, turn)
+    penMul = getMulPEN(char, enemy, buffList, debuffList, turn)
+    uniMul = getMulUNI(enemy)
+    return shredMul * vulnMul * penMul * uniMul
