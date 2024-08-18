@@ -328,8 +328,6 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         if charCD == 0:
             charCD = getMulCD(char, enemy, buffList, debuffList, turn)
         enemyMul = getMulENEMY(char, enemy, buffList, debuffList, turn)
-        if turn.moveName == "FeixiaoUltFinal":
-            print(f"ATK: {baseValue:3f} | DMG: {charDMG:.3f} | CR: {charCR:.3f} | CD: {charCD:.3f} | ENEMY: {enemyMul:.3f}")
         
         enemyBroken = False
         newDebuffs, newDelays = [], []
@@ -400,7 +398,7 @@ def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy]
         return Special(name=specStr)
     elif specStr == "updateRobinATK":
         nextChar = sortUnits(playerTeam + enemyTeam)[0]
-        if nextChar.isChar() and not nextChar.isSummon():
+        if not nextChar.isChar():
             res2 = True
         else:
             res2 = False

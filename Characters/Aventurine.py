@@ -2,7 +2,7 @@ from Character import Character
 from Lightcones.ConcertForTwo import ConcertForTwo
 from Relics.Knight import Knight
 from Relics.Messenger import Messenger
-from Planars.Salsotto import Salsotto
+from Planars.Keel import Keel
 from RelicStats import RelicStats
 from Buff import *
 from Result import *
@@ -44,7 +44,7 @@ class Aventurine(Character):
         self.lightcone = ConcertForTwo(role, 5, 1.0)
         self.relic1 = Knight(role, 2)
         self.relic2 = Messenger(role, 2, False)
-        self.planar = Salsotto(role)
+        self.planar = Keel(role)
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

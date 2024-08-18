@@ -2,7 +2,7 @@ from Character import Character
 from Lightcones.ForTomorrowJourney import Journey
 from Relics.Musketeer import Musketeer
 from Relics.Prisoner import Prisoner
-from Planars.Penacony import Penacony
+from Planars.Vonwacq import Vonwacq
 from RelicStats import RelicStats
 from Buff import Buff
 from Result import Result, Special
@@ -42,7 +42,7 @@ class Robin(Character):
         self.lightcone = Journey(role, 5)
         self.relic1 = Musketeer(role, 2)
         self.relic2 = Prisoner(role, 2)
-        self.planar = Penacony(role, self.sameEleTeammates)
+        self.planar = Vonwacq(role)
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()

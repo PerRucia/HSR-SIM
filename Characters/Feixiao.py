@@ -88,7 +88,7 @@ class Feixiao(Character):
             if self.fuaTrigger:
                 self.fuaTrigger = False
                 bl, dbl, al, dl, tl = self.useFua()
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], "ST", ["FUA"], [self.element], [1.1, 0], [5, 0], 0.5, self.scaling, 1, "FeixiaoFUA"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0], "ST", ["FUA"], [self.element], [1.1, 0], [5, 0], 0.5, self.scaling, 0, "FeixiaoFUA"))
                 bl.append(Buff("FeixiaoBuffDMG", "DMG%", 0.6, self.role, ["ALL"], 2, 1, "SELF", "END"))
         return bl, dbl, al, dl, tl
     
