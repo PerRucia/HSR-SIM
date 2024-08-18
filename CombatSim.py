@@ -1,8 +1,10 @@
 import logging
 from Enemy import Enemy
 from Characters.Yunli import Yunli
-from Characters.Tingyun import Tingyun
+from Characters.Topaz import Topaz
 from Characters.Robin import Robin
+from Characters.HuoHuo import HuoHuo
+from Characters.Feixiao import Feixiao
 from Characters.Aventurine import Aventurine
 from Summons import *
 from HelperFuncs import *
@@ -10,21 +12,21 @@ from Misc import *
 
 # Enemy Settings
 enemyLevel = 95
-enemySPD = [158.4, 145.2, 150] # make sure that the number of entries in this list is the same as "numEnemies"
+enemySPD = [145.2, 158.4] # make sure that the number of entries in this list is the same as "numEnemies"
 attackTypeRatio = atkRatio # from Misc.py
 toughness = 100
-numEnemies = 3
-weaknesses = ["PHY"]
+numEnemies = 2
+weaknesses = ["WIN", "FIR"]
 actionOrder = [1,1,2]
 
 # Character Settings
-slot1 = Robin(0, "SUP1")
-slot2 = Yunli(1, "DPS")
+slot1 = Feixiao(0, "DPS")
+slot2 = Robin(1, "SUP1")
 slot3 = Aventurine(2, "SUS")
-slot4 = Tingyun(3, "SUP2")
+slot4 = Topaz(3, "SUBDPS", 1)
 
 # Simulation Settings
-cycleLimit = 50
+cycleLimit = 5
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
@@ -48,7 +50,10 @@ logging.basicConfig(filename=f"{log_folder}/{teamInfo}{enemyInfo}.log",
 summons = []
 for char in playerTeam:
     if char.hasSummon:
-        pass
+        if char.name == "Topaz":
+            summons.append(Numby(char.role, char.numbyRole))
+        elif char.name == "Lingsha":
+            pass
 # Print Enemy Info
 eTeam = []
 for i in range(numEnemies):
@@ -200,6 +205,9 @@ while simAV < avLimit:
         turnList.extend(tl)
     elif unit.isChar() and unit.isSummon():
         logging.critical(f"SUMMON > TotalAV: {simAV:.3f} | TurnAV: {av:.3f}") # Summon logic
+        bl, dbl, al, dl, tl = unit.takeTurn()
+        teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
+        turnList.extend(tl)
         
     # Handle any pending attacks:
     teamBuffs, enemyDebuffs, advList, delayList, spPlus, spMinus = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
@@ -244,6 +252,9 @@ while simAV < avLimit:
     avAdjustment(playerTeam + summons, advList)
     advList = []
     
+    if unit.isChar() and unit.isSummon():
+        resetUnitAV(unit, [], []) # summons cannot be advanced during their own turn
+        
     allUnits = sortUnits(allUnits)
     
 logging.critical("\n==========COMBAT SIMULATION ENDED==========")
@@ -270,6 +281,6 @@ logging.critical(f"SP GAINED: {spGain} | SP USED: {spUsed} | Enemy Attacks: {tot
 
 for char in playerTeam:
     res, dmg = char.gettotalDMG()
-    logging.critical(f"\n{char.name} > Total DMG: {dmg:.3f} | Team%: {dmg / totalDMG * 100:.3f}% | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
+    logging.critical(f"\n{char.name} > Total DMG: {dmg:.3f} | DPAV: {dmg / avLimit:.3f} | Team%: {dmg / totalDMG * 100:.3f}% | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
     logging.critical(res)
 

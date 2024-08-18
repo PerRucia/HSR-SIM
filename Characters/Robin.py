@@ -24,14 +24,15 @@ class Robin(Character):
     ultCost = 160
     currEnergy = 85
     currAV = 0
-    rotation = ["E", "A", "A"]
+    rotation = ["E", "A"]
     dmgDct = {"BSC": 0, "ULT": 0, "BREAK": 0}
     hasSpecial = True
     
     # Unique Character Properties
     canBeAdv = True
-    sameEleTeammates = ["DPS"]
+    sameEleTeammates = []
     atkStat = 0
+    nextTurnChar = False
     
     # Relic Settings
     relicStats = RelicStats(11, 5, 6, 3, 7, 6, 6, 0, 0, 5, 0, 0, "ATK%", "ATK%", "ATK%", "ERR%")
@@ -45,11 +46,10 @@ class Robin(Character):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.extend([Buff("RobinCD", "CD%", 0.2, "ALL", ["ALL"], 1, 1, "SELF", "PERM"),
-                         Buff("RobinTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, "SELF", "PERM"),
-                         Buff("RobinTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, "SELF", "PERM"),
-                         Buff("RobinTraceSPD", "SPD", 5, self.role, ["ALL"], 1, 1, "SELF", "PERM")
-                         ])
+        buffList.append(Buff("RobinCD", "CD%", 0.2, "ALL", ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("RobinTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("RobinTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("RobinTraceSPD", "SPD", 5, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
         advList.append(Advance("RobinStartADV", self.role, 0.25))
         return buffList, debuffList, advList, delayList
     
@@ -61,7 +61,7 @@ class Robin(Character):
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         tl.append(Turn(self.name, self.role, enemyID, "NA", ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RobinSkill"))
-        bl.append(Buff("RobinSklDMG", "DMG%", 0.5, "ALL", ["ALL"], 3, 1, "SELF", "START"))
+        bl.append(Buff("RobinSklDMG", "DMG%", 0.5, "ALL", ["ALL"], 3, 1, self.role, "START"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -69,6 +69,7 @@ class Robin(Character):
         self.canBeAdv = False
         self.currAV = 10000 / 90
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
+        bl.append(Buff("RobinFuaCD", "CD%", 0.25, "ALL", ["FUA"], 1, 1, self.role, "START"))
         tl.append(Turn(self.name, self.role, enemyID, "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinUlt"))
         al.append(Advance("RobinUltADV", "ALL", 1.0))
         return bl, dbl, al, dl, tl
@@ -99,7 +100,13 @@ class Robin(Character):
     
     def handleSpecial(self, special: Special):
         self.atkStat = special.attr1
+        self.nextTurnChar = special.attr2
         bl, dbl, al, dl, tl = super().handleSpecial(special)
         if not self.canBeAdv:
             bl.append(Buff("RobinUltBuff", "ATK", self.atkStat * 0.228 + 200, "ALL", ["ALL"], 1, 1, self.role, "START"))
         return bl, dbl, al, dl, tl
+    
+    def canUseUlt(self) -> bool:
+        if self.currEnergy >= self.ultCost and not self.nextTurnChar:
+            return True
+        return False

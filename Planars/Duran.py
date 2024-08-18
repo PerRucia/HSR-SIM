@@ -13,10 +13,9 @@ class Duran(Planar):
         
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl = super().allyTurn(turn, result)
-        filterFUA = []
-        if "FUA" in turn.atkType and turn.moveName not in filterFUA:
+        if "FUA" in turn.atkType and turn.moveName not in bonusDMG:
             self.procs = self.procs + 1
-            bl.append(Buff("DuranATK", "ATK%", 0.05, self.wearerRole, ["FUA"], 1, 5, "SELF", "PERM"))
+            bl.append(Buff("DuranDMG", "DMG%", 0.05, self.wearerRole, ["FUA"], 1, 5, "SELF", "PERM"))
             if self.procs == 5 and not self.appliedCDBuff:
                 self.appliedCDBuff = True
                 bl.append(Buff("DuranCD", "CD%", 0.25, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
@@ -26,7 +25,7 @@ class Duran(Planar):
         bl, dbl, al, dl = super().ownTurn(result)
         if "FUA" in result.atkType and result.turnName not in bonusDMG:
             self.procs = self.procs + 1
-            bl.append(Buff("DuranATK", "ATK%", 0.05, self.wearerRole, ["FUA"], 1, 5, "SELF", "PERM"))
+            bl.append(Buff("DuranDMG", "DMG%", 0.05, self.wearerRole, ["FUA"], 1, 5, "SELF", "PERM"))
             if self.procs == 5 and not self.appliedCDBuff:
                 self.appliedCDBuff = True
                 bl.append(Buff("DuranCD", "CD%", 0.25, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))

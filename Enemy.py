@@ -51,6 +51,9 @@ class Enemy:
     def isChar(self) -> bool:
         return False
     
+    def isSummon(self) -> bool:
+        return False
+    
     def reduceAV(self, reduceValue: float):
         self.currAV = max(0, self.currAV - reduceValue)
         

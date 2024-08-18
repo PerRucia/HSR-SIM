@@ -65,10 +65,10 @@ class Aventurine(Character):
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
-        tl.append(Turn(self.name, self.role, 0, "ST", ["ULT"], [self.element], [2.7, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
+        tl.append(Turn(self.name, self.role, 1, "ST", ["ULT"], [self.element], [2.7, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
         self.currEnergy = self.currEnergy - self.ultCost
         self.blindBetStacks = min(self.blindBetStacks + 4, 10)
-        dbl.append(Debuff("AvenUltCD", self.role, "CD%", 0.15, 0, ["ALL"], 3, 1, False, False))
+        dbl.append(Debuff("AvenUltCD", self.role, "CD%", 0.15, 1, ["ALL"], 3, 1, False, False))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):
