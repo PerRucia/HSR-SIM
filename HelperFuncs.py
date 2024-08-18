@@ -320,8 +320,6 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         if charCD == 0:
             charCD = getMulCD(char, enemy, buffList, debuffList, turn)
         enemyMul = getMulENEMY(char, enemy, buffList, debuffList, turn)
-        if charCR == 1.0 and charCD == 2.5:
-            print("Robin", enemyMul, baseValue)
         
         enemyBroken = False
         newDebuffs, newDelays = [], []
@@ -336,10 +334,11 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
                 newDelays.extend(wbDelay(ele, charBE, enemy))
                 newDebuff.append(wbDebuff(ele, char.role, charBE, enemy))
         return newDebuffs, newDelays
-    
+    enemiesHit = []
     if turn.moveType == "AOE":
         # AOE Attack
         for enemy in enemyTeam:
+            enemiesHit.append(enemy.enemyID)
             a, b = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0])
             newDebuff.extend(a)
             newDelay.extend(b)
@@ -347,23 +346,26 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         if turn.moveName == "RobinConcertoDMG":
             char = findCharName(playerTeam, "Robin")
             enemy = findBestEnemy(char, enemyTeam, buffList, debuffList, turn)
+            enemiesHit.append(enemy.enemyID)
             _, _ = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0], 1.0, 2.5)
     else :
         if turn.targetID == -1:
             enemy = findBestEnemy(char, enemyTeam, buffList, debuffList, turn)
         else:
             enemy = enemyTeam[turn.targetID]  
+        enemiesHit.append(enemy.enemyID)
         a, b = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0])
         newDebuff.extend(a)
         newDelay.extend(b)
         if enemy.hasAdj and (turn.brkSplit[1] > 0 or (turn.dmgSplit[1] > 0)):
             for enemyID in enemy.adjacent:
                 adj_enemy = enemyTeam[enemyID]
+                enemiesHit.append(adj_enemy.enemyID)
                 a, b = processEnemy(turn, adj_enemy, turn.brkSplit[1], turn.dmgSplit[1])
                 newDebuff.extend(a)
                 newDelay.extend(b)
                 
-    return Result(turn.charName, turn.charRole, turn.atkType, turn.element, anyBroken, turnDmg, wbDmg, turn.errGain * charERR, turn.moveName), newDebuff, newDelay
+    return Result(turn.charName, turn.charRole, turn.atkType, turn.element, anyBroken, turnDmg, wbDmg, turn.errGain * charERR, turn.moveName, enemiesHit), newDebuff, newDelay
 
 def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], playerTeam: list[Character], enemyTeam: list[Enemy]) -> list[Buff]:
     errBuffs, newList = [], []

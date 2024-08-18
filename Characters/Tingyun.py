@@ -6,6 +6,7 @@ from RelicStats import RelicStats
 from Buff import Buff
 from Result import Result
 from Turn import Turn
+from Misc import *
 
 class Tingyun(Character):
     # Standard Character Settings
@@ -69,9 +70,8 @@ class Tingyun(Character):
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        beneFilter = ["TYAllyBonus", "TYBeneBonus", "YunliCullBounce"]
-        if (turn.charRole == self.beneTarget) and (turn.moveName not in beneFilter) and (turn.moveType != "NA"):
-            tl.append(Turn(self.name, self.beneTarget, -1, "ST", ["BSC"], [self.element], [0.64, 0], [0, 0], 0, "ATK", 0, "TYBeneBonus"))
+        if (turn.charRole == self.beneTarget) and (turn.moveName not in bonusDMG) and (turn.moveType != "NA"):
+            tl.append(Turn(self.name, self.beneTarget, result.enemiesHit[0], "ST", ["BSC"], [self.element], [0.64, 0], [0, 0], 0, "ATK", 0, "TYBeneBonus"))
         return bl, dbl, al, dl, tl
     
     
