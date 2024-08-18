@@ -77,9 +77,9 @@ class Robin(Character):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
         if (turn.moveName not in bonusDMG) and (turn.moveType != "NA"):
             if self.canBeAdv: # not in concerto state, only provide extra ERR
-                tl.append(Turn(self.name, self.role, turn.targetID, "NA", ["ULT"], self.element, [0, 0], [0, 0], 2, self.scaling, 0, "RobinBonusERR"))
+                tl.append(Turn(self.name, self.role, turn.targetID, "NA", ["ULT"], [self.element], [0, 0], [0, 0], 2, self.scaling, 0, "RobinBonusERR"))
             else: # in concerto state, provide both additional dmg and extra ERR
-                tl.append(Turn(self.name, self.role, turn.targetID, "NA", ["ULT"], self.element, [1.2, 0], [0, 0], 2, self.scaling, 0, "RobinConcertoDMG"))
+                tl.append(Turn(self.name, self.role, turn.targetID, "NA", ["ULT"], [self.element], [1.2, 0], [0, 0], 2, self.scaling, 0, "RobinConcertoDMG"))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):

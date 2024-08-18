@@ -127,7 +127,6 @@ while simAV < avLimit:
         break
     logging.critical("\n<<< NEW TURN >>>")
     turnList = []
-    
     # Reduce AV of all chars
     for u in allUnits:
         u.standardAVred(av)
@@ -140,6 +139,13 @@ while simAV < avLimit:
             bl, dbl, al, dl, tl = char.handleSpecial(specRes)
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
+            
+    # Handle any attacks from special attacks  
+    teamBuffs, enemyDebuffs, advList, delayList, spPlus, spMinus = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+    spGain += spPlus
+    spUsed += spMinus
+    turnList = []        
+    
     # Add Energy if any was provided from special effects
     teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
     

@@ -9,6 +9,9 @@ from Misc import *
 
 logger = logging.getLogger(__name__)
 
+def getBuffNames(lst: list) -> list:
+    return [entry.name for entry in lst]
+
 def parseBuffs(lst: list[Buff], playerTeam: list[Character]) -> list:
     buffList = []
     for buff in lst:
@@ -281,6 +284,11 @@ def findCharName(playerTeam: list[Character], charName: str) -> Character:
         if char.name == charName:
             return char
         
+def findBuffName(lst: list, name: str): # works for both buffs and debuffs
+    for entry in lst:
+        if entry.name == name:
+            return entry
+        
 def handleAdditions(playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], advList: list[Advance], delayList: list[Delay], 
                     buffToAdd: list[Buff], DebuffToAdd: list[Debuff], advToAdd: list[Advance], delayToAdd: list[Delay]) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay]]:
     buffs, debuffs, advs, delays = parseBuffs(buffToAdd, playerTeam), parseDebuffs(DebuffToAdd, enemyTeam), parseAdvance(advToAdd, playerTeam), parseDelay(delayToAdd, enemyTeam)
@@ -301,7 +309,7 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
     wbDmg = 0
     newDebuff, newDelay = [], []
     
-    def processEnemy(enemy: Enemy, breakUnits: float, percentMultiplier: float, charCR=0, charCD=0) -> tuple[list[Debuff], list[Delay]]:
+    def processEnemy(turn: Turn, enemy: Enemy, breakUnits: float, percentMultiplier: float, charCR=0, charCD=0) -> tuple[list[Debuff], list[Delay]]:
         nonlocal turnDmg, wbDmg, anyBroken
         
         charBE = getMulBE(char, enemy, buffList, debuffList, turn)
@@ -312,6 +320,8 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         if charCD == 0:
             charCD = getMulCD(char, enemy, buffList, debuffList, turn)
         enemyMul = getMulENEMY(char, enemy, buffList, debuffList, turn)
+        if charCR == 1.0 and charCD == 2.5:
+            print("Robin", enemyMul, baseValue)
         
         enemyBroken = False
         newDebuffs, newDelays = [], []
@@ -330,26 +340,26 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
     if turn.moveType == "AOE":
         # AOE Attack
         for enemy in enemyTeam:
-            a, b = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0])
+            a, b = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0])
             newDebuff.extend(a)
             newDelay.extend(b)
     elif turn.moveType == "NA":
         if turn.moveName == "RobinConcertoDMG":
             char = findCharName(playerTeam, "Robin")
             enemy = findBestEnemy(char, enemyTeam, buffList, debuffList, turn)
-            _, _ = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0], 1.0, 2.5)
+            _, _ = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0], 1.0, 2.5)
     else :
         if turn.targetID == -1:
             enemy = findBestEnemy(char, enemyTeam, buffList, debuffList, turn)
         else:
             enemy = enemyTeam[turn.targetID]  
-        a, b = processEnemy(enemy, turn.brkSplit[0], turn.dmgSplit[0])
+        a, b = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0])
         newDebuff.extend(a)
         newDelay.extend(b)
         if enemy.hasAdj and (turn.brkSplit[1] > 0 or (turn.dmgSplit[1] > 0)):
             for enemyID in enemy.adjacent:
                 adj_enemy = enemyTeam[enemyID]
-                a, b = processEnemy(adj_enemy, turn.brkSplit[1], turn.dmgSplit[1])
+                a, b = processEnemy(turn, adj_enemy, turn.brkSplit[1], turn.dmgSplit[1])
                 newDebuff.extend(a)
                 newDelay.extend(b)
                 
@@ -377,12 +387,11 @@ def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy]
     if specStr == "":
         return Special()
     elif specStr == "updateRobinATK":
-        for p in playerTeam:
-            if p.name == "Robin":
-                role = p.role
-                break
-        char = findCharRole(playerTeam, role)
+        char = findCharName(playerTeam, "Robin")
         res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
+        if "RobinUltBuff" in getBuffNames(buffList):
+            robinUltBuff = findBuffName(buffList, "RobinUltBuff")
+            res -= robinUltBuff.getBuffVal()
         return Special(attr1=res)
     elif specStr == "HuoHuoUlt":
         lst = []
@@ -554,7 +563,7 @@ def getMulVULN(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: 
 def getMulPEN(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
     pen = getCharStat("PEN", char, enemy, buffList, debuffList, turn)
     pen = pen - enemy.getRes(turn.element[0])
-    return min(3.0, 1 - pen)
+    return min(3.0, 1 + pen)
 
 def getMulUNI(enemy: Enemy) -> float:
     return enemy.getUniMul()
