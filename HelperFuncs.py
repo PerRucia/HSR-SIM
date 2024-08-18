@@ -144,8 +144,10 @@ def initCharAV(char: Character, buffList: list[Buff]):
     
 def resetUnitAV(unit, buffList: list[Buff], debuffList: list[Debuff]):
     # check if unit is a char or enemy
-    if unit.isChar(): # Character, check buffList for spd buffs
+    if unit.isChar() and not unit.isSummon(): # Character, check buffList for spd buffs
         initCharAV(unit, buffList)
+    elif unit.isChar() and unit.isSummon():
+        unit.currAV = 10000 / unit.currSPD
     else: # Enemy, check debuffList for spd debuffs
         eSPD = getEnemySPD(unit, debuffList)
         unit.currAV = 10000 / eSPD
@@ -156,6 +158,7 @@ def spdAdjustment(teamList: list[Character], buffList: list[Buff]):
         newSPD = getCharSPD(char, buffList)
         if newSPD != char.currSPD:
             char.reduceAV(char.currAV - (char.currAV * char.currSPD / newSPD))
+            char.currSPD = newSPD
     return
 
 def enemySPDAdjustment(enemyTeam: list[Enemy], debuffList: list[Debuff]):
@@ -172,7 +175,7 @@ def avAdjustment(teamList: list[Character], advList: list[Advance]):
         char = findCharRole(teamList, adv.targetRole)
         avRed = (10000 / char.currSPD)  * adv.advPercent
         char.reduceAV(avRed)
-        char.priority = char.priority + 10
+        char.priority = char.priority + 15
     return
                 
 def sortUnits(allUnits: list) -> list:

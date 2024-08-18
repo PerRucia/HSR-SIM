@@ -37,7 +37,7 @@ class Feixiao(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    relicStats = RelicStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "HP%", "HP%", "HP%", "HP%")
+    relicStats = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 7, 17, "CR%", "ATK%", "DMG%", "ATK%")
     
     def __init__(self, pos: int, role: str):
         super().__init__(pos, role)

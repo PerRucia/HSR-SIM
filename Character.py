@@ -23,6 +23,7 @@ class Character:
     rotation = ["E", "A", "A"]
     dmgDct = {"BSC": 0, "SKL": 0, "ULT": 0, "BREAK": 0}
     hasSpecial = False
+    hasSummon = False
     specialEnergy = False
     basics = 0
     skills = 0
@@ -134,6 +135,9 @@ class Character:
     
     def isChar(self) -> bool:
         return True
+    
+    def isSummon(self) -> bool:
+        return False
     
     def takeTurn(self) -> str:
         res = self.turn

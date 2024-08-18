@@ -4,8 +4,8 @@ from Characters.Yunli import Yunli
 from Characters.Tingyun import Tingyun
 from Characters.Robin import Robin
 from Characters.HuoHuo import HuoHuo
+from Summons import *
 from HelperFuncs import *
-from RelicStats import RelicStats
 
 # Enemy Settings
 enemyLevel = 95
@@ -32,6 +32,8 @@ totalEnemyAttacks = 0
 logLevel = logging.WARNING
 
 # =============== END OF SETTINGS ===============
+
+# Logging Config
 playerTeam = [slot1, slot2, slot3, slot4]
 log_folder = "Output"
 teamInfo = "".join([char.name for char in playerTeam])
@@ -41,6 +43,11 @@ logging.basicConfig(filename=f"{log_folder}/{teamInfo}{enemyInfo}.log",
                     format="%(message)s",
                     filemode="w")
 
+# Summons
+summons = []
+for char in playerTeam:
+    if char.hasSummon():
+        pass
 # Print Enemy Info
 eTeam = []
 for i in range(numEnemies):
@@ -56,7 +63,7 @@ logging.critical("Enemy Team:")
 for enemy in eTeam:
     logging.critical(enemy)
 
-# Print Char Info\
+# Print Char Info
 logging.critical("\nPlayer Team:")
 for char in playerTeam:
     logging.critical(char)
@@ -79,7 +86,7 @@ advList = [] # clear advList after applying
 logging.info("\nInitial Enemy Delays")
 delayList = delayAdjustment(eTeam, delayList, enemyDebuffs) # apply any "on battle start" delays
 
-allUnits = sortUnits(playerTeam + eTeam)
+allUnits = sortUnits(playerTeam + eTeam + summons)
 setPriority(allUnits)
     
 # Simulator Loop
@@ -179,7 +186,7 @@ while simAV < avLimit:
         addEnergy(playerTeam, eTeam, numAttacks, attackTypeRatio, teamBuffs)
         takeDot(unit, playerTeam, teamBuffs, enemyDebuffs)
         enemyDebuffs = tickDebuffs(enemy, enemyDebuffs)
-    else: # Character Turn
+    elif unit.isChar() and not unit.isSummon(): # Character Turn
         moveType = unit.takeTurn()
         logging.critical(f"ACTION > TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
         teamBuffs = tickBuffs(unit.role, teamBuffs, "START")
@@ -190,6 +197,8 @@ while simAV < avLimit:
         teamBuffs = tickBuffs(unit.role, teamBuffs, "END")
         teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
         turnList.extend(tl)
+    elif unit.isChar() and unit.isSummon():
+        logging.critical(f"SUMMON > TotalAV: {simAV:.3f} | TurnAV: {av:.3f}") # Summon logic
         
     # Handle any pending attacks:
     teamBuffs, enemyDebuffs, advList, delayList, spPlus, spMinus = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
@@ -230,8 +239,8 @@ while simAV < avLimit:
     # Apply any enemy delays
     delayList = delayAdjustment(eTeam, delayList, enemyDebuffs)
     
-    # Apply any character AV adjustments
-    avAdjustment(playerTeam, advList)
+    # Apply any character/summon AV adjustments
+    avAdjustment(playerTeam + summons, advList)
     advList = []
     
     allUnits = sortUnits(allUnits)
