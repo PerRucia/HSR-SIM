@@ -15,7 +15,8 @@ class Result:
         return f"{self.turnName} | {self.charName} | {self.charRole} | DMG: {self.turnDmg:.3f} | Enemies Hit: {self.enemiesHit} | WB: {self.brokenEnemy} | WB DMG: {self.wbDmg:.3f} | Energy: {self.errGain:.3f}"
     
 class Special:
-    def __init__(self, attr1=None, attr2=None, attr3=None):
+    def __init__(self, name: str, attr1=None, attr2=None, attr3=None):
+        self.specialName = name
         self.attr1 = attr1
         self.attr2 = attr2
         self.attr3 = attr3

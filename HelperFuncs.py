@@ -222,18 +222,23 @@ def addEnergy(playerTeam: list[Character], enemyTeam: list[Enemy], numAttacks: i
             if char.name == "Yanqing":
                 aggro -= aggroDct["HUN"] * 0.6
         aggroLst.append(aggro)
+    if numAttacks == 0:
+        actAttacks = 1
+    else:
+        actAttacks = numAttacks
     aggroSum = sum(aggroLst)
-    chanceST = [a * numAttacks * 10 * attackTypeRatio[0] / aggroSum for a in aggroLst]
+    chanceST = [a * actAttacks * 10 * attackTypeRatio[0] / aggroSum for a in aggroLst]
     chanceBlast = [aggroLst[i] + (aggroLst[i - 1] if i - 1 >= 0 else 0) + (aggroLst[i + 1] if i + 1 < len(aggroLst) else 0) for i in range(len(aggroLst))]
-    chanceBlast = [a * numAttacks * 10 * attackTypeRatio[1] / aggroSum for a in chanceBlast]
-    chanceAOE = [10 * numAttacks * attackTypeRatio[2] for _ in aggroLst]
+    chanceBlast = [a * actAttacks * 10 * attackTypeRatio[1] / aggroSum for a in chanceBlast]
+    chanceAOE = [10 * actAttacks * attackTypeRatio[2] for _ in aggroLst]
     finalEnergy = [sum(values) for values in zip(chanceAOE, chanceBlast, chanceST)]
     for i in range(len(playerTeam)):
         char = playerTeam[i]
         placeHolderTurn = Turn(char.name, char.role, -1, "NA", ["ALL"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "HitEnergyPlaceholder")
         errMul = getMulERR(char, enemyTeam[0], buffList, [], placeHolderTurn) if not char.specialEnergy else 0
-        char.addEnergy(finalEnergy[i]* errMul) 
-    return [i / (numAttacks * 10) for i in finalEnergy]
+        if numAttacks != 0:
+            char.addEnergy(finalEnergy[i] * errMul) 
+    return [i / (actAttacks * 10) for i in finalEnergy]
 
 def checkInTeam(name: str, team: list[Character]) -> bool:
     for char in team:
@@ -390,28 +395,36 @@ def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], player
 
 def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff]) -> Special:
     if specStr == "":
-        return Special()
+        return Special(name=specStr)
     elif specStr == "updateRobinATK":
         char = findCharName(playerTeam, "Robin")
         res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
         if "RobinUltBuff" in getBuffNames(buffList):
             robinUltBuff = findBuffName(buffList, "RobinUltBuff")
             res -= robinUltBuff.getBuffVal()
-        return Special(attr1=res)
+        return Special(name=specStr, attr1=res)
     elif specStr == "HuoHuoUlt":
         lst = []
         for char in playerTeam:
             if char.name != "HuoHuo":
                 charMaxEnergy = 0 if char.specialEnergy else char.maxEnergy
                 lst.append([charMaxEnergy * 0.2, char.role])
-        return Special(attr1=lst[0], attr2=lst[1], attr3=lst[2])
+        return Special(name=specStr, attr1=lst[0], attr2=lst[1], attr3=lst[2])
     elif specStr == "getYunliAggro":
         yunliSlot = findCharName(playerTeam, "Yunli").pos
-        lst = addEnergy(playerTeam, enemyTeam, 1, [0.55, 0.2, 0.25], buffList)
-        return Special(attr1=lst[yunliSlot])
+        lst = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
+        return Special(name=specStr, attr1=lst[yunliSlot])
     elif specStr == "FeixiaoStartFUA":
         return Special()
-    
+    elif specStr == "getAvenDEF":
+        char = findCharName(playerTeam, "Aventurine")
+        avenDef = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateAvenDEF"))
+        aggroList = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
+        bbList = [2 * aggroList[i] if i == char.pos else 1 * aggroList[i] for i in range(4)]
+        return Special(name=specStr, attr1=avenDef, attr2=sum(bbList))
+    elif specStr == "checkAvenFUA":
+        return Special(name=specStr)
+        
 def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:
     res = [Delay("STDBreakDelay", 0.25, enemy.enemyID, True, False)]
     breakName = f"{ele}-break"

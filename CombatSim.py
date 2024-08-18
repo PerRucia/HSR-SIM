@@ -3,14 +3,15 @@ from Enemy import Enemy
 from Characters.Yunli import Yunli
 from Characters.Tingyun import Tingyun
 from Characters.Robin import Robin
-from Characters.HuoHuo import HuoHuo
+from Characters.Aventurine import Aventurine
 from Summons import *
 from HelperFuncs import *
+from Misc import *
 
 # Enemy Settings
 enemyLevel = 95
 enemySPD = [158.4, 145.2, 150] # make sure that the number of entries in this list is the same as "numEnemies"
-attackTypeRatio = [0.55, 0.20, 0.25] # ST/BLAST/AOE splits for enemy attacks
+attackTypeRatio = atkRatio # from Misc.py
 toughness = 100
 numEnemies = 3
 weaknesses = ["PHY"]
@@ -19,7 +20,7 @@ actionOrder = [1,1,2]
 # Character Settings
 slot1 = Robin(0, "SUP1")
 slot2 = Yunli(1, "DPS")
-slot3 = HuoHuo(2, "SUS")
+slot3 = Aventurine(2, "SUS")
 slot4 = Tingyun(3, "SUP2")
 
 # Simulation Settings
@@ -46,7 +47,7 @@ logging.basicConfig(filename=f"{log_folder}/{teamInfo}{enemyInfo}.log",
 # Summons
 summons = []
 for char in playerTeam:
-    if char.hasSummon():
+    if char.hasSummon:
         pass
 # Print Enemy Info
 eTeam = []
