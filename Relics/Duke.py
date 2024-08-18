@@ -10,8 +10,9 @@ class DukeTopaz(Relic):
     def equip(self):
         bl, debuffList, advList, delayList = super().equip()
         bl.append(Buff("DukeDMG", "DMG%", 0.20, self.wearerRole, ["FUA"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("DukeBasicATK", "ATK%", 0.06, self.wearerRole, ["BSC"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("DukeSkillATK", "ATK%", 0.24, self.wearerRole, ["SKL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("DukeFuaATK", "ATK%", 0.24, self.wearerRole, ["TOPAZFUA"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("DukeUltATK", "ATK%", 0.312, self.wearerRole, ["TOPAZULT"], 1, 1, "SELF", "PERM"))
+        if self.setType == 4:
+            bl.append(Buff("DukeBasicATK", "ATK%", 0.06, self.wearerRole, ["BSC"], 1, 1, "SELF", "PERM"))
+            bl.append(Buff("DukeSkillATK", "ATK%", 0.24, self.wearerRole, ["SKL"], 1, 1, "SELF", "PERM"))
+            bl.append(Buff("DukeFuaATK", "ATK%", 0.24, self.wearerRole, ["TOPAZFUA"], 1, 1, "SELF", "PERM"))
+            bl.append(Buff("DukeUltATK", "ATK%", 0.312, self.wearerRole, ["TOPAZULT"], 1, 1, "SELF", "PERM"))
         return bl, debuffList, advList, delayList
