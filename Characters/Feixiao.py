@@ -2,6 +2,7 @@ from Character import Character
 from Lightcones.VentureForth import VentureForthFeixiao
 from Relics.WindSoaring import WindSoaringYunli
 from Planars.Duran import Duran
+from Planars.Salsotto import Salsotto
 from RelicStats import RelicStats
 from Buff import *
 from Result import *
@@ -27,7 +28,7 @@ class Feixiao(Character):
     ultCost = 6
     currAV = 0
     rotation = ["E"] # Adjust accordingly
-    dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0, "BREAK": 0} # Adjust accordingly
+    dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0, "BREAK": 0, "TECH": 0} # Adjust accordingly
     specialEnergy = True
     hasSpecial = True
     
@@ -41,10 +42,10 @@ class Feixiao(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     relicStats = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", "DMG%", "ATK%")
     
-    def __init__(self, pos: int, role: str):
-        super().__init__(pos, role)
+    def __init__(self, pos: int, role: str, defaultTarget: int= -1):
+        super().__init__(pos, role, defaultTarget)
         self.lightcone = VentureForthFeixiao(role, 1)
-        self.relic1 = WindSoaringYunli(role, 4)
+        self.relic1 = WindSoaringYunli(role, 4) # same as yunli, ult also counts as FuA
         self.relic2 = None
         self.planar = Duran(role)
         
@@ -58,13 +59,13 @@ class Feixiao(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, enemyID, "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 0.5, self.scaling, 1, "FeixiaoBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 0.5, self.scaling, 1, "FeixiaoBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, enemyID, "ST", ["SKL"], [self.element], [2.0, 0], [20, 0], 0.5, self.scaling, -1, "FeixiaoSkill"))
-        tl.append(Turn(self.name, self.role, enemyID, "ST", ["FUA"], [self.element], [1.1, 0], [5, 0], 0.5, self.scaling, 0, "FeixiaoSkillFUA"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["SKL"], [self.element], [2.0, 0], [20, 0], 0.5, self.scaling, -1, "FeixiaoSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["FUA"], [self.element], [1.1, 0], [5, 0], 0.5, self.scaling, 0, "FeixiaoSkillFUA"))
         bl.append(Buff("FeixiaoBuffATK", "ATK%", 0.48, self.role, ["ALL"], 3, 1, "SELF", "END"))
         bl.append(Buff("FeixiaoBuffDMG", "DMG%", 0.6, self.role, ["ALL"], 2, 1, "SELF", "END"))
         return bl, dbl, al, dl, tl
@@ -73,8 +74,8 @@ class Feixiao(Character):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
         for _ in range(6):
-            tl.append(Turn(self.name, self.role, enemyID, "ST", ["ULT", "FUA"], [self.element], [0.9, 0], [10, 0], 0, self.scaling, 0, "FeixiaoUlt"))
-        tl.append(Turn(self.name, self.role, enemyID, "ST", ["ULT", "FUA"], [self.element], [1.6, 0], [0, 0], 0, self.scaling, 0, "FeixiaoUltFinal"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["ULT", "FUA"], [self.element], [0.9, 0], [10, 0], 0, self.scaling, 0, "FeixiaoUlt"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["ULT", "FUA"], [self.element], [1.6, 0], [0, 0], 0, self.scaling, 0, "FeixiaoUltFinal"))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):
@@ -88,12 +89,13 @@ class Feixiao(Character):
             if self.fuaTrigger:
                 self.fuaTrigger = False
                 bl, dbl, al, dl, tl = self.useFua()
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], "ST", ["FUA"], [self.element], [1.1, 0], [5, 0], 0.5, self.scaling, 0, "FeixiaoFUA"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0], "ST", ["FUA"], [self.element], [1.1, 0], [5, 0], 0, self.scaling, 0, "FeixiaoFUA"))
                 bl.append(Buff("FeixiaoBuffDMG", "DMG%", 0.6, self.role, ["ALL"], 2, 1, "SELF", "END"))
         return bl, dbl, al, dl, tl
     
     def takeTurn(self) -> str:
         self.fuaTrigger = True
+        self.currEnergy = self.currEnergy + 0.5
         return super().takeTurn()
     
     def special(self):
@@ -111,7 +113,8 @@ class Feixiao(Character):
     def handleSpecial(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecial(specialRes)
         if specialRes.specialName == "FeixiaoStartFUA":
-            tl.append(Turn(self.name, self.role, -1, "ST", ["FUA"], [self.element], [1.1, 0], [5, 0], 0.5, self.scaling, 0, "FeixiaoStartFUA"))
+            tl.append(Turn(self.name, self.role, self.defaultTarget, "AOE", ["TECH"], [self.element], [2.2, 0], [10, 0], 0.5, self.scaling, 0, "FeixiaoTech"))
+            bl.append(Buff("FexiaoTechCR", "CR%", 1.0, self.role, ["TECH"], 1, 1, "SELF", "END"))
         elif specialRes.specialName == "FeixiaoCheckRobin":
             self.robinUlt = specialRes.attr1
         return bl, dbl, al, dl, tl

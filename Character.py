@@ -35,11 +35,12 @@ class Character:
     
     # Relic Settings
     
-    def __init__(self, pos: int, role: str) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int) -> None:
         self.pos = pos
         self.role = role
         self.priority = 0
         self.currSPD = 100
+        self.defaultTarget = defaultTarget
         
     def __str__(self) -> str:
         res = f"{self.name} | {self.element}-{self.path} | {self.role} | POS:{self.pos}\n"
@@ -162,5 +163,10 @@ class Character:
     
     def standardAVred(self, av: float):
         self.currAV = max(0, self.currAV - av)
+        
+    def getTargetID(self, enemyID: int):
+        if enemyID == -1:
+            return self.defaultTarget
+        return enemyID
     
         

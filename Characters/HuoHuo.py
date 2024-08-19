@@ -40,8 +40,8 @@ class HuoHuo(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     relicStats = RelicStats(8, 2, 3, 4, 7, 6, 4, 0, 0, 9, 5, 0, "OGH%", "SPD%", "HP%", "ERR%")
     
-    def __init__(self, pos: int, role: str) -> None:
-        super().__init__(pos, role)
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
+        super().__init__(pos, role, defaultTarget)
         self.lightcone = PostOp(self.role, 5)
         self.relic1 = Messenger(self.role, 2, True)
         self.relic2 = Longevous(self.role, 2)
@@ -56,12 +56,12 @@ class HuoHuo(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, enemyID, "ST", ["BSC"], [self.element], [0.5, 0], [10, 0], 20, self.scaling, 1, "HuoHuoBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [0.5, 0], [10, 0], 20, self.scaling, 1, "HuoHuoBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, enemyID, "NA", ["SKL"], [self.element], [0, 0], [0,0], 36, self.scaling, -1, "HuoHuoSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0,0], 36, self.scaling, -1, "HuoHuoSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -71,6 +71,7 @@ class HuoHuo(Character):
         bl.append(Buff("HuoHuoERR", "ERR_F", self.ally1Energy, self.ally1Role, ["ALL"], 1, 1, self.ally1Role, "PERM"))
         bl.append(Buff("HuoHuoERR", "ERR_F", self.ally2Energy, self.ally2Role, ["ALL"], 1, 1, self.ally2Role, "PERM"))
         bl.append(Buff("HuoHuoERR", "ERR_F", self.ally3Energy, self.ally3Role, ["ALL"], 1, 1, self.ally3Role, "PERM"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "HuoHuoULT"))
         return bl, dbl, al, dl, tl
     
     def special(self):
@@ -78,13 +79,12 @@ class HuoHuo(Character):
         return "HuoHuoUlt"
     
     def handleSpecial(self, specialRes: Special):
-        bl, dbl, al, dl, tl = super().handleSpecial(specialRes)
         self.ally1Energy = specialRes.attr1[0]
         self.ally1Role = specialRes.attr1[1]
         self.ally2Energy = specialRes.attr2[0]
         self.ally2Role = specialRes.attr2[1]
         self.ally3Energy = specialRes.attr3[0]
         self.ally3Role = specialRes.attr3[1]
-        return bl, dbl, al, dl, tl
+        return super().handleSpecial(specialRes)
     
     

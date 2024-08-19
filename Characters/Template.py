@@ -32,8 +32,8 @@ class Template(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     relicStats = RelicStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "HP%", "HP%", "HP%", "HP%")
     
-    def __init__(self, pos: int, role: str) -> None:
-        super().__init__(pos, role)
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
+        super().__init__(pos, role, defaultTarget)
         self.lightcone = None
         self.relic1 = None
         self.relic2 = None

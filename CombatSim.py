@@ -12,18 +12,18 @@ from Misc import *
 
 # Enemy Settings
 enemyLevel = 95
-enemySPD = [145.2, 158.4] # make sure that the number of entries in this list is the same as "numEnemies"
+enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies"
 attackTypeRatio = atkRatio # from Misc.py
 toughness = 100
 numEnemies = 2
 weaknesses = ["WIN", "FIR"]
-actionOrder = [1,1,2]
+actionOrder = [1,1,2] # determines how many attacks enemies will have per turn
 
 # Character Settings
-slot1 = Feixiao(0, "DPS")
-slot2 = Robin(1, "SUP1")
-slot3 = Aventurine(2, "SUS")
-slot4 = Topaz(3, "SUBDPS", 1)
+slot1 = Feixiao(0, "DPS", 0)
+slot2 = Robin(1, "SUP1", 0)
+slot3 = Aventurine(2, "SUS", 0)
+slot4 = Topaz(3, "SUBDPS", 0)
 
 # Simulation Settings
 cycleLimit = 5
@@ -242,6 +242,7 @@ while simAV < avLimit:
     resetUnitAV(unit, teamBuffs, enemyDebuffs)
     logging.warning(f"AV     > {unit.name} AV reset to {unit.currAV:.3f} | {unit.currSPD:.3f} SPD")
     
+    allUnits = sortUnits(allUnits)
     # Reset priorities
     setPriority(allUnits)
     

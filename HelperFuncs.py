@@ -175,7 +175,7 @@ def avAdjustment(teamList: list[Character], advList: list[Advance]):
         avRed = (10000 / char.currSPD)  * adv.advPercent
         char.reduceAV(avRed)
         char.priority = char.priority + 15
-        logger.warning(f"ADV    > {char.name} advanced by {adv.advPercent * 100}% | NewAV: {char.currAV:.3f}")
+        logger.warning(f"ADV    > {char.name} advanced by {adv.advPercent * 100}% | NewAV: {char.currAV:.3f} | Priority: {char.priority}")
     return
                 
 def sortUnits(allUnits: list) -> list:
@@ -397,11 +397,8 @@ def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy]
     if specStr == "":
         return Special(name=specStr)
     elif specStr == "updateRobinATK":
-        nextChar = sortUnits(playerTeam + enemyTeam)[0]
-        if not nextChar.isChar():
-            res2 = True
-        else:
-            res2 = False
+        lastChar = sortUnits(playerTeam)[-1]
+        res2 = True if not lastChar.name == "Feixiao" else False
         char = findCharName(playerTeam, "Robin")
         res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
         if "RobinUltBuff" in getBuffNames(buffList):
@@ -432,7 +429,7 @@ def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy]
         return Special(name=specStr)
     elif specStr == "TopazFireCheck":
         char = findCharName(playerTeam, "Topaz")
-        targetID = char.targetID
+        targetID = char.defaultTarget
         res = "FIR" in enemyTeam[targetID].weakness
         return Special(name=specStr, attr1=res)
         

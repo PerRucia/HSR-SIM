@@ -21,7 +21,7 @@ class Topaz(Character):
     baseDEF = 412.33
     baseSPD = 110
     maxEnergy = 130
-    currEnergy = 125 # bonus 60 energy from technique
+    currEnergy = 65
     ultCost = 130
     currAV = 0
     rotation = ["E", "A"] # Adjust accordingly
@@ -32,7 +32,7 @@ class Topaz(Character):
     hasSpecial = True
     numbyRole = "Numby"
     windfallCount = 0
-    targetID = 0
+    firstNumby = True
 
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
@@ -41,13 +41,12 @@ class Topaz(Character):
     # SwordplayBuild: RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, "CR%", "SPD", "DMG%", "ATK%")
     relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, "CR%", "SPD", "DMG%", "ATK%")
     
-    def __init__(self, pos: int, role: str, targetID: int) -> None:
-        super().__init__(pos, role)
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
+        super().__init__(pos, role, defaultTarget)
         self.lightcone = Swordplay(role, 5)
         self.relic1 = DukeTopaz(role, 4)
         self.relic2 = None
         self.planar = Duran(role)
-        self.targetID = targetID
         if self.lightcone.name == "Swordplay":
             self.relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, "CR%", "SPD", "DMG%", "ATK%")
         else:
@@ -59,12 +58,12 @@ class Topaz(Character):
         bl.append(Buff("TopazTraceCR", "CR%", 0.12, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
         bl.append(Buff("TopazTraceHP", "HP%", 0.10, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
         bl.append(Buff("WindfallCD", "CD%", 0.25, self.role, ["TOPAZULT"], 1, 1, "SELF", "PERM"))
-        dbl.append(Debuff("ProofOfDebt", self.role, "VULN", 0.5, self.targetID, ["FUA"], 1000, 1, False, False))
+        dbl.append(Debuff("ProofOfDebt", self.role, "VULN", 0.5, self.defaultTarget, ["FUA"], 1000, 1, False, False))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.targetID, "ST", ["BSC", "FUA"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "TopazBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC", "FUA"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "TopazBasic"))
         al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
         return bl, dbl, al, dl, tl
     
@@ -73,9 +72,9 @@ class Topaz(Character):
         al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
         if self.windfallCount > 0:
             self.windfallCount = self.windfallCount - 1
-            tl.append(Turn(self.name, self.role, self.targetID, "ST", ["SKL", "FUA", "TOPAZULT"], [self.element], [3.0, 0], [20, 0], 40, self.scaling, -1, "TopazEnhancedSkill"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["SKL", "FUA", "TOPAZULT"], [self.element], [3.0, 0], [20, 0], 40, self.scaling, -1, "TopazEnhancedSkill"))
         else:
-            tl.append(Turn(self.name, self.role, self.targetID, "ST", ["SKL", "FUA", "TOPAZFUA"], [self.element], [1.5, 0], [20, 0], 30, self.scaling, -1, "TopazSkill"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["SKL", "FUA", "TOPAZFUA"], [self.element], [1.5, 0], [20, 0], 30, self.scaling, -1, "TopazSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -86,19 +85,23 @@ class Topaz(Character):
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if ("FUA" in turn.atkType) and (turn.moveName not in bonusDMG) and (self.targetID in result.enemiesHit):
+        if (turn.moveName not in bonusDMG) and (self.windfallCount > 0) and (self.defaultTarget in result.enemiesHit):
+            al.append(Advance("AdvanceWindFallNumby", self.numbyRole, 0.5))
+        elif ("FUA" in turn.atkType) and (turn.moveName not in bonusDMG) and (self.defaultTarget in result.enemiesHit):
             al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
         bl, dbl, al, dl, tl = super().ownTurn(result)
         if result.turnName == "NumbyGoGo":
+            errGain = 60 if self.firstNumby else 0
+            self.firstNumby = False
             self.fuas = self.fuas + 1
             if self.windfallCount > 0:
                 self.windfallCount = self.windfallCount - 1
-                tl.append(Turn(self.name, self.role, self.targetID, "ST", ["FUA", "TOPAZULT"], [self.element], [3.0, 0], [20, 0], 10, self.scaling, 0, "TopazEnhancedFUA"))
+                tl.append(Turn(self.name, self.role, self.defaultTarget, "ST", ["FUA", "TOPAZULT"], [self.element], [3.0, 0], [20, 0], errGain + 10, self.scaling, 0, "TopazEnhancedFUA"))
             else:
-                tl.append(Turn(self.name, self.role, self.targetID, "ST", ["FUA", "TOPAZFUA"], [self.element], [1.5, 0], [20, 0], 0, self.scaling, 0, "TopazFUA"))
+                tl.append(Turn(self.name, self.role, self.defaultTarget, "ST", ["FUA", "TOPAZFUA"], [self.element], [1.5, 0], [20, 0], errGain, self.scaling, 0, "TopazFUA"))
         return bl, dbl, al, dl, tl    
     
     def special(self):
@@ -108,7 +111,7 @@ class Topaz(Character):
     def handleSpecial(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecial(specialRes)
         if specialRes.attr1:
-            bl.append(Buff("TopazFireDMG", "DMG%", 0.15, self.targetID, ["ALL"], 1, 1, "SELF", "PERM"))
+            bl.append(Buff("TopazFireDMG", "DMG%", 0.15, self.defaultTarget, ["ALL"], 1, 1, "SELF", "PERM"))
         return bl, dbl, al, dl, tl
     
     
