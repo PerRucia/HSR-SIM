@@ -105,8 +105,8 @@ class Yunli(Character):
     def special(self):
         return "getYunliAggro"
     
-    def handleSpecial(self, specialRes: Special):
-        bl, dbl, al, dl, tl = super().handleSpecial(specialRes)
+    def handleSpecialStart(self, specialRes: Special):
+        bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         self.aggroMultiplier = specialRes.attr1
         self.hasSpecial = False
         tl.append(Turn(self.name, self.role, self.defaultTarget, "BLAST", ["ULT", "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain"))

@@ -12,22 +12,22 @@ class Equipment:
     def __init__(self, wearerRole: str):
         self.wearerRole = wearerRole
     
-    def equip(self): # init function to add base buffs to wearer
+    def equip(self, enemyID=-1): # init function to add base buffs to wearer
         return [], [], [], []
     
-    def useSkl(self):
+    def useSkl(self, enemyID=-1):
         return [], [], [], []
     
-    def useBsc(self):
+    def useBsc(self, enemyID=-1):
         return [], [], [], []
     
-    def useUlt(self):
+    def useUlt(self, enemyID=-1):
         return [], [], [], []
     
-    def useFua(self):
+    def useFua(self, enemyID=-1):
         return [], [], [], []
     
-    def useHit(self):
+    def useHit(self, enemyID=-1):
         return [], [], [], []
     
     def allyTurn(self, turn: Turn, result: Result):

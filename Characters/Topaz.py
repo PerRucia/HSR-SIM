@@ -30,10 +30,11 @@ class Topaz(Character):
     # Unique Character Properties
     hasSummon = True
     hasSpecial = True
+    foundFire = False
     numbyRole = "Numby"
     windfallCount = 0
     firstNumby = True
-
+    canUlt = False
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
@@ -81,6 +82,7 @@ class Topaz(Character):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
         self.windfallCount = 2
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TopazUlt"))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
@@ -105,14 +107,25 @@ class Topaz(Character):
         return bl, dbl, al, dl, tl    
     
     def special(self):
-        self.hasSpecial = False
-        return "TopazFireCheck"
+        if not self.foundFire:
+            self.foundFire = True
+            return "TopazFireCheck"
+        else:
+            return "TopazUltCheck"
     
-    def handleSpecial(self, specialRes: Special):
-        bl, dbl, al, dl, tl = super().handleSpecial(specialRes)
-        if specialRes.attr1:
-            bl.append(Buff("TopazFireDMG", "DMG%", 0.15, self.defaultTarget, ["ALL"], 1, 1, "SELF", "PERM"))
+    def handleSpecialStart(self, specialRes: Special):
+        bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
+        if specialRes.specialName == "TopazFireCheck":
+            if specialRes.attr1:
+                bl.append(Buff("TopazFireDMG", "DMG%", 0.15, self.defaultTarget, ["ALL"], 1, 1, "SELF", "PERM"))
+        else:
+            self.canUlt = specialRes.attr1
         return bl, dbl, al, dl, tl
+    
+    def canUseUlt(self) -> bool:
+        return super().canUseUlt() if self.canUlt else False
+
+
     
     
     

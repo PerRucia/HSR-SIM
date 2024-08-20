@@ -2,7 +2,8 @@ from Character import Character
 from Lightcones.ForTomorrowJourney import Journey
 from Relics.Musketeer import Musketeer
 from Relics.Prisoner import Prisoner
-from Planars.Lukshaka import Lukshaka
+from Planars.Lushaka import Lushaka
+from Planars.Keel import Keel
 from RelicStats import RelicStats
 from Buff import Buff
 from Result import Result, Special
@@ -22,7 +23,7 @@ class Robin(Character):
     baseSPD = 102
     maxEnergy = 160
     ultCost = 160
-    currEnergy = 85
+    currEnergy = 80
     currAV = 0
     rotation = ["E", "A"]
     dmgDct = {"BSC": 0, "ULT": 0, "BREAK": 0}
@@ -33,6 +34,7 @@ class Robin(Character):
     sameEleTeammates = []
     atkStat = 0
     canUlt = False
+    techErr = True
     
     # Relic Settings
     relicStats = RelicStats(11, 5, 6, 3, 7, 6, 6, 0, 0, 5, 0, 0, "ATK%", "ATK%", "ATK%", "ERR%")
@@ -42,7 +44,7 @@ class Robin(Character):
         self.lightcone = Journey(role, 5)
         self.relic1 = Musketeer(role, 2)
         self.relic2 = Prisoner(role, 2)
-        self.planar = Lukshaka(role, "DPS")
+        self.planar = Lushaka(role, "DPS")
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
@@ -98,13 +100,19 @@ class Robin(Character):
     def special(self):
         return "updateRobinATK"
     
-    def handleSpecial(self, special: Special):
-        self.atkStat = special.attr1
-        self.canUlt = special.attr2
-        bl, dbl, al, dl, tl = super().handleSpecial(special)
+    def handleSpecialStart(self, special: Special):
+        self.atkStat = special.attr1        
+        bl, dbl, al, dl, tl = super().handleSpecialStart(special)
+        if self.techErr:
+            self.techErr = False
+            tl.append(Turn(self.name, self.role, self.defaultTarget, "NA", ["BSC"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinTechEnergy"))
         if not self.canBeAdv:
             bl.append(Buff("RobinUltBuff", "ATK", self.atkStat * 0.228 + 200, "ALL", ["ALL"], 1, 1, self.role, "START"))
         return bl, dbl, al, dl, tl
+    
+    def handleSpecialEnd(self, specialRes: Special):
+        self.canUlt = specialRes.attr1
+        return super().handleSpecialEnd(specialRes)
     
     def canUseUlt(self) -> bool:
         if self.currEnergy >= self.ultCost and self.canUlt:

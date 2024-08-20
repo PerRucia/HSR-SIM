@@ -78,13 +78,13 @@ class HuoHuo(Character):
         self.hasSpecial = False
         return "HuoHuoUlt"
     
-    def handleSpecial(self, specialRes: Special):
+    def handleSpecialStart(self, specialRes: Special):
         self.ally1Energy = specialRes.attr1[0]
         self.ally1Role = specialRes.attr1[1]
         self.ally2Energy = specialRes.attr2[0]
         self.ally2Role = specialRes.attr2[1]
         self.ally3Energy = specialRes.attr3[0]
         self.ally3Role = specialRes.attr3[1]
-        return super().handleSpecial(specialRes)
+        return super().handleSpecialStart(specialRes)
     
     

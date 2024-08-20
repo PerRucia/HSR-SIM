@@ -5,6 +5,9 @@ from RelicStats import RelicStats
 from Planar import Planar
 from Turn import Turn
 from Result import *
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Character:
     # Standard Character Properties
@@ -54,40 +57,43 @@ class Character:
     
     def useSkl(self, enemyID=-1):
         self.skills = self.skills + 1
-        return *self.parseEquipment("BASIC"), []
+        return *self.parseEquipment("BASIC", enemyID=enemyID), []
     
     def useBsc(self, enemyID=-1):
         self.basics = self.basics + 1
-        return *self.parseEquipment("SKILL"), []
+        return *self.parseEquipment("SKILL", enemyID=enemyID), []
     
     def useUlt(self, enemyID=-1):
         self.ults = self.ults + 1
-        return *self.parseEquipment("ULT"), []
+        return *self.parseEquipment("ULT", enemyID=enemyID), []
         
     def useFua(self, enemyID=-1):
         self.fuas = self.fuas + 1
-        return *self.parseEquipment("FUA"), []
+        return *self.parseEquipment("FUA", enemyID=enemyID), []
         
     def useHit(self, enemyID=-1):
-        return *self.parseEquipment("HIT"), []
+        return *self.parseEquipment("HIT", enemyID=enemyID), []
     
     def ownTurn(self, result: Result):
         if result.atkType in self.dmgDct:
             self.dmgDct[result.atkType] = self.dmgDct[result.atkType] + result.turnDmg
         self.dmgDct["BREAK"] = self.dmgDct["BREAK"] + result.wbDmg
-        self.currEnergy = self.currEnergy + result.errGain
+        self.currEnergy = min(self.maxEnergy, self.currEnergy + result.errGain)
         return *self.parseEquipment("OWN", result=result), []
     
     def special(self):
         return ""
     
-    def handleSpecial(self, specialRes: Special):
+    def handleSpecialStart(self, specialRes: Special):
+        return *self.parseEquipment("SPECIAL", special=specialRes), []
+    
+    def handleSpecialEnd(self, specialRes: Special):
         return *self.parseEquipment("SPECIAL", special=specialRes), []
     
     def allyTurn(self, turn: Turn, result: Result):
         return *self.parseEquipment("ALLY", turn=turn, result=result), []
         
-    def parseEquipment(self, actionType: str, turn=None, result=None, special=None):
+    def parseEquipment(self, actionType: str, turn=None, result=None, special=None, enemyID=-1):
         buffList, debuffList, advList, delayList = [], [], [], []
         equipmentList = [self.lightcone, self.relic1, self.planar]
         if self.relic2:
@@ -95,17 +101,17 @@ class Character:
             
         for equipment in equipmentList:
             if actionType == "BASIC":
-                buffs, debuffs, advs, delays = equipment.useBsc()
+                buffs, debuffs, advs, delays = equipment.useBsc(enemyID)
             elif actionType == "SKILL":
-                buffs, debuffs, advs, delays = equipment.useSkl()
+                buffs, debuffs, advs, delays = equipment.useSkl(enemyID)
             elif actionType == "ULT":
-                buffs, debuffs, advs, delays = equipment.useUlt()
+                buffs, debuffs, advs, delays = equipment.useUlt(enemyID)
             elif actionType == "FUA":
-                buffs, debuffs, advs, delays = equipment.useFua()
+                buffs, debuffs, advs, delays = equipment.useFua(enemyID)
             elif actionType == "EQUIP":
                 buffs, debuffs, advs, delays = equipment.equip()
             elif actionType == "HIT":
-                buffs, debuffs, advs, delays = equipment.useHit()
+                buffs, debuffs, advs, delays = equipment.useHit(enemyID)
             elif actionType == "SPECIAL":
                 buffs, debuffs, advs, delays = equipment.special(special)
             elif actionType == "OWN":

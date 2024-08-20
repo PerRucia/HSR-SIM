@@ -2,9 +2,9 @@ from Buff import Buff
 from Planar import Planar
 from Delay import *
 
-class Lukshaka(Planar):
-    name = "Sprightly Vonwacq"
-    def __init__(self, wearerRole: str, slot1Role: str):
+class Lushaka(Planar):
+    name = "Lushaka, the Sunken Seas"
+    def __init__(self, wearerRole: str, slot1Role: str = "DPS"):
         super().__init__(wearerRole)
         self.slot1Role = slot1Role
         

@@ -17,8 +17,8 @@ class MOTP(Lightcone):
         buffList.append(Buff("MotpBE", "BE%", breakBuff, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
         return buffList, debuffList, advList, delayList
     
-    def useBsc(self):
-        buffList, debuffList, advList, delayList = super().useBsc()
+    def useBsc(self, enemyID):
+        buffList, debuffList, advList, delayList = super().useBsc(enemyID)
         errGain = self.level + 3
         buffList.append(Buff("MotpBonusEnergy", "ERR_T", errGain, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
         return buffList, debuffList, advList, delayList

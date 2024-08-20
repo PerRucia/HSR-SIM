@@ -2,11 +2,11 @@ from Character import Character
 from Lightcones.VentureForth import VentureForthFeixiao
 from Relics.WindSoaring import WindSoaringYunli
 from Planars.Duran import Duran
-from Planars.Salsotto import Salsotto
+from Relics.Eagle import Eagle
 from RelicStats import RelicStats
 from Buff import *
 from Result import *
-from Result import Special
+from Result import Result, Special
 from Turn import Turn
 from Misc import *
 import logging
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class Feixiao(Character):
     # Standard Character Settings
-    name = "Feixiao (V3)"
+    name = "Feixiao"
     path = "HUN"
     element = "WIN"
     scaling = "ATK"
@@ -36,6 +36,7 @@ class Feixiao(Character):
     fuaTrigger = True
     techFua = False
     robinUlt = False
+    prevTurnFua = True
     
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
@@ -78,18 +79,22 @@ class Feixiao(Character):
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["ULT", "FUA"], [self.element], [1.6, 0], [0, 0], 0, self.scaling, 0, "FeixiaoUltFinal"))
         return bl, dbl, al, dl, tl
     
-    def useFua(self, enemyID=-1):
-        return super().useFua()
+    def ownTurn(self, result: Result):
+        bl, dbl, al, dl, tl = super().ownTurn(result)
+        if not self.prevTurnFua:
+            tl.append(Turn(self.name, self.role, result.enemiesHit[0], "NA", ["ALL"], [self.element], [0, 0], [0, 0], 0.5, self.scaling, 0, "FeixiaoPityEnergy"))
+        self.prevTurnFua = True
+        return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn, result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
         if turn.moveType != "NA" and turn.moveName not in bonusDMG:
-            logger.critical("ALERT: Feixiao gained 0.5 stacks of FA")
-            self.currEnergy = self.currEnergy + 0.5
+            tl.append(Turn(self.name, self.role, result.enemiesHit[0], "NA", ["ALL"], [self.element], [0, 0], [0, 0], 0.5, self.scaling, 0, "FeixiaoAllyAttackEnergy"))
             if self.fuaTrigger:
                 self.fuaTrigger = False
+                self.prevTurnFua = True
                 bl, dbl, al, dl, tl = self.useFua()
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], "ST", ["FUA"], [self.element], [1.1, 0], [5, 0], 0, self.scaling, 0, "FeixiaoFUA"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0], "ST", ["FUA"], [self.element], [1.1, 0], [5, 0], 0.5, self.scaling, 0, "FeixiaoFUA"))
                 bl.append(Buff("FeixiaoBuffDMG", "DMG%", 0.6, self.role, ["ALL"], 2, 1, "SELF", "END"))
         return bl, dbl, al, dl, tl
     
@@ -110,8 +115,8 @@ class Feixiao(Character):
         else:
             return False
     
-    def handleSpecial(self, specialRes: Special):
-        bl, dbl, al, dl, tl = super().handleSpecial(specialRes)
+    def handleSpecialStart(self, specialRes: Special):
+        bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         if specialRes.specialName == "FeixiaoStartFUA":
             tl.append(Turn(self.name, self.role, self.defaultTarget, "AOE", ["TECH"], [self.element], [2.2, 0], [10, 0], 0.5, self.scaling, 0, "FeixiaoTech"))
             bl.append(Buff("FexiaoTechCR", "CR%", 1.0, self.role, ["TECH"], 1, 1, "SELF", "END"))

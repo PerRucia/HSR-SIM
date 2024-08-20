@@ -271,9 +271,9 @@ def tickBuffs(charRole: str, buffList: list[Buff], tdType: str) -> list[Buff]:
         newList.append(buff)
     return newList
 
-def takeDot(enemy: Enemy, playerTeam: list[Character], buffList: list[Buff], debuffList: list[Debuff]):
+def takeDebuffDMG(enemy: Enemy, playerTeam: list[Character], buffList: list[Buff], debuffList: list[Debuff]):
     dmg = 0
-    dotList = [debuff for debuff in debuffList if (debuff.isDot and debuff.target == enemy.enemyID)]
+    dotList = [debuff for debuff in debuffList if ((debuff.target == enemy.enemyID) and (debuff.isDot or debuff.debuffType == "FREEZE" or debuff.debuffType == "ENTANGLE"))]
 
     for dot in dotList:
         char = findCharRole(playerTeam, dot.charRole)
@@ -296,6 +296,12 @@ def findBuffName(lst: list, name: str): # works for both buffs and debuffs
     for entry in lst:
         if entry.name == name:
             return entry
+        
+def inTeam(playerTeam: list[Character], charName) -> bool:
+    for char in playerTeam:
+        if char.name == charName:
+            return True
+    return False
         
 def handleAdditions(playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], advList: list[Advance], delayList: list[Delay], 
                     buffToAdd: list[Buff], DebuffToAdd: list[Debuff], advToAdd: list[Advance], delayToAdd: list[Delay]) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay]]:
@@ -337,11 +343,13 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         
         if enemyBroken:
             anyBroken = True
-            for ele in turn.element:
-                wbDmg += eleDct[ele] * wbMultiplier * enemy.maxToughnessMul * charBE * enemyMul
-                newDelays.extend(wbDelay(ele, charBE, enemy))
-                newDebuff.append(wbDebuff(ele, char.role, charBE, enemy))
+            ele = turn.element[0]
+            enemyBreakMul = getMulENEMY(char, enemy, buffList, debuffList, Turn(char.name, char.role, enemy.enemyID, "NA", ["BREAK"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "PlaceholderTurn"))
+            wbDmg += eleDct[ele] * wbMultiplier * enemy.maxToughnessMul * charBE * enemyBreakMul
+            newDelays.extend(wbDelay(ele, charBE, enemy))
+            newDebuff.append(wbDebuff(ele, char.role, charBE, enemy))
         return newDebuffs, newDelays
+    
     enemiesHit = []
     if turn.moveType == "AOE":
         # AOE Attack
@@ -393,45 +401,79 @@ def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], player
                 char.addEnergy(eb.getBuffVal())
     return newList
 
-def handleSpec(specStr: str, playerTeam: list[Character], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff]) -> Special:
-    if specStr == "":
-        return Special(name=specStr)
-    elif specStr == "updateRobinATK":
-        lastChar = sortUnits(playerTeam)[-1]
-        res2 = True if not lastChar.name == "Feixiao" else False
-        char = findCharName(playerTeam, "Robin")
-        res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
-        if "RobinUltBuff" in getBuffNames(buffList):
-            robinUltBuff = findBuffName(buffList, "RobinUltBuff")
-            res -= robinUltBuff.getBuffVal()
-        return Special(name=specStr, attr1=res, attr2=res2)
-    elif specStr == "HuoHuoUlt":
-        lst = []
-        for char in playerTeam:
-            if char.name != "HuoHuo":
-                charMaxEnergy = 0 if char.specialEnergy else char.maxEnergy
-                lst.append([charMaxEnergy * 0.2, char.role])
-        return Special(name=specStr, attr1=lst[0], attr2=lst[1], attr3=lst[2])
-    elif specStr == "getYunliAggro":
-        yunliSlot = findCharName(playerTeam, "Yunli").pos
-        lst = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
-        return Special(name=specStr, attr1=lst[yunliSlot])
-    elif specStr == "FeixiaoStartFUA" or specStr == "FeixiaoCheckRobin":
-        res = "RobinFuaCD" in getBuffNames(buffList)
-        return Special(name=specStr, attr1=res)
-    elif specStr == "getAvenDEF":
-        char = findCharName(playerTeam, "Aventurine")
-        avenDef = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateAvenDEF"))
-        aggroList = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
-        bbList = [2 * aggroList[i] if i == char.pos else 1 * aggroList[i] for i in range(4)]
-        return Special(name=specStr, attr1=avenDef, attr2=sum(bbList))
-    elif specStr == "checkAvenFUA":
-        return Special(name=specStr)
-    elif specStr == "TopazFireCheck":
-        char = findCharName(playerTeam, "Topaz")
-        targetID = char.defaultTarget
-        res = "FIR" in enemyTeam[targetID].weakness
-        return Special(name=specStr, attr1=res)
+def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str) -> Special:
+    if typ == "START":
+        if specStr == "":
+            return Special(name=specStr)
+        
+        elif specStr == "updateRobinATK":
+            char = findCharName(playerTeam, "Robin")
+            res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
+            if "RobinUltBuff" in getBuffNames(buffList):
+                robinUltBuff = findBuffName(buffList, "RobinUltBuff")
+                res -= robinUltBuff.getBuffVal()
+            return Special(name=specStr, attr1=res)
+        
+        elif specStr == "HuoHuoUlt":
+            lst = []
+            for char in playerTeam:
+                if char.name != "HuoHuo":
+                    charMaxEnergy = 0 if char.specialEnergy else char.maxEnergy
+                    lst.append([charMaxEnergy * 0.2, char.role])
+            return Special(name=specStr, attr1=lst[0], attr2=lst[1], attr3=lst[2])
+        
+        elif specStr == "getYunliAggro":
+            yunliSlot = findCharName(playerTeam, "Yunli").pos
+            lst = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
+            return Special(name=specStr, attr1=lst[yunliSlot])
+        
+        elif specStr == "FeixiaoStartFUA" or specStr == "FeixiaoCheckRobin":
+            if not inTeam(playerTeam, "Robin"):
+                res = True
+            else:
+                res = "RobinFuaCD" in getBuffNames(buffList)
+            return Special(name=specStr, attr1=res)
+        
+        elif specStr == "getAvenDEF":
+            char = findCharName(playerTeam, "Aventurine")
+            avenDef = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateAvenDEF"))
+            aggroList = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
+            bbList = [2 * aggroList[i] if i == char.pos else 1 * aggroList[i] for i in range(4)]
+            return Special(name=specStr, attr1=avenDef, attr2=sum(bbList))
+        
+        elif specStr == "checkAvenFUA":
+            return Special(name=specStr)
+        
+        elif specStr == "TopazFireCheck":
+            char = findCharName(playerTeam, "Topaz")
+            targetID = char.defaultTarget
+            res = "FIR" in enemyTeam[targetID].weakness
+            return Special(name=specStr, attr1=res)
+        
+        elif specStr == "TopazUltCheck":
+            if not inTeam(playerTeam, "Robin"):
+                res = True
+            else:
+                res = "RobinFuaCD" in getBuffNames(buffList)
+            return Special(name=specStr, attr1=res)
+        
+        elif specStr == "H7Special":
+            masterRole = findCharName(playerTeam, "HuntM7").masterRole
+            master = findCharRole(playerTeam, masterRole)
+            return Special(name=specStr, attr1=master.element)
+        
+        elif specStr == "CheckGallyUlt":
+            res = False if unit.name == "Gallagher" else True
+            return Special(name=specStr, attr1=res)
+        
+    elif typ == "END":
+        if specStr == "":
+            return Special(name=specStr)
+        
+        elif specStr == "updateRobinATK":
+            currChar = sorted(playerTeam, key=lambda char: char.currAV)[0]
+            res = True if (currChar.role == "DPS" and unit.isChar() and not unit.isSummon()) else False
+            return Special(name=specStr, attr1=res)
         
 def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:
     res = [Delay("STDBreakDelay", 0.25, enemy.enemyID, True, False)]
@@ -513,7 +555,7 @@ def getCharStat(query: str, char: Character, enemy: Enemy, buffList: list[Buff],
             continue
         if not checkValidList(turn.atkType, buff.atkType):
             continue
-        if buff.buffType == query:
+        if buff.buffType == query or buff.buffType == f"{turn.element[0]}{query}":
             res += buff.getBuffVal()
     
     for debuff in debuffList:
@@ -521,10 +563,10 @@ def getCharStat(query: str, char: Character, enemy: Enemy, buffList: list[Buff],
             continue
         if not checkValidList(turn.atkType, debuff.atkType):
             continue
-        if debuff.debuffType == query:
+        if debuff.debuffType == query or debuff.debuffType == f"{turn.element[0]}{query}":
             res += debuff.getDebuffVal()
             
-    match query:
+    match query:    
         case "BE%":
             return res + char.relicStats.getBE() # base multiplier of 1 not added
         case "WBE%":

@@ -37,7 +37,7 @@ class Aventurine(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    relicStats = RelicStats(3, 2, 1, 8, 4, 3, 3, 0, 4, 2, 13, 7, "DEF%", "SPD", "DEF%", "DEF%")
+    relicStats = RelicStats(6, 2, 1, 5, 4, 3, 3, 0, 4, 2, 13, 7, "DEF%", "SPD", "DEF%", "DEF%")
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
         super().__init__(pos, role, defaultTarget)
@@ -98,8 +98,8 @@ class Aventurine(Character):
     def special(self):
         return "getAvenDEF" if self.baseDefStat == 0 else "checkAvenFUA"
     
-    def handleSpecial(self, specialRes: Special):
-        bl, dbl, al, dl, tl = super().handleSpecial(specialRes)
+    def handleSpecialStart(self, specialRes: Special):
+        bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         if self.blindBetStacks >= 7 and specialRes.specialName == "checkAvenFUA":
             bl, dbl, al, dl, tl = self.useFua()
         if specialRes.specialName == "getAvenDEF":

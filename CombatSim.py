@@ -5,7 +5,9 @@ from Characters.Topaz import Topaz
 from Characters.Robin import Robin
 from Characters.HuoHuo import HuoHuo
 from Characters.Feixiao import Feixiao
+from Characters.Hunt7th import Hunt7th
 from Characters.Aventurine import Aventurine
+from Characters.Gallagher import Gallagher
 from Summons import *
 from HelperFuncs import *
 from Misc import *
@@ -16,13 +18,13 @@ enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is
 attackTypeRatio = atkRatio # from Misc.py
 toughness = 100
 numEnemies = 2
-weaknesses = ["WIN", "FIR"]
+weaknesses = ["WIN", "IMG", "FIR", "LNG"]
 actionOrder = [1,1,2] # determines how many attacks enemies will have per turn
 
 # Character Settings
 slot1 = Feixiao(0, "DPS", 0)
 slot2 = Robin(1, "SUP1", 0)
-slot3 = Aventurine(2, "SUS", 0)
+slot3 = Gallagher(2, "SUS", 0)
 slot4 = Topaz(3, "SUBDPS", 0)
 
 # Simulation Settings
@@ -117,7 +119,11 @@ def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDeb
         logging.debug("----------End of Debuff List----------")
 
         res, newDebuffs, newDelays = handleTurn(turn, playerTeam, eTeam, teamBuffs, enemyDebuffs)
-        logging.warning(f"    RESULT - {res}")
+        if res.errGain > 0:
+            char = findCharRole(playerTeam, res.charRole)
+            logging.warning(f"    RESULT - {res} | {char.name}Energy: {min(char.maxEnergy, char.currEnergy + res.errGain):.3f}")
+        else:
+            logging.warning(f"    RESULT - {res}")
         teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, [], newDebuffs, [], newDelays)
         for char in playerTeam:
             if char.role == turn.charRole:
@@ -148,8 +154,8 @@ while simAV < avLimit:
     for char in playerTeam:
         if char.hasSpecial:
             spec = char.special()
-            specRes = handleSpec(spec, playerTeam, eTeam, teamBuffs, enemyDebuffs)
-            bl, dbl, al, dl, tl = char.handleSpecial(specRes)
+            specRes = handleSpec(spec, unit, playerTeam, eTeam, teamBuffs, enemyDebuffs, "START")
+            bl, dbl, al, dl, tl = char.handleSpecialStart(specRes)
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
             
@@ -190,7 +196,8 @@ while simAV < avLimit:
                 teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
                 turnList.extend(tl)
         addEnergy(playerTeam, eTeam, numAttacks, attackTypeRatio, teamBuffs)
-        takeDot(unit, playerTeam, teamBuffs, enemyDebuffs)
+        logging.warning(f"    CharEnergy - {playerTeam[0].name}: {playerTeam[0].currEnergy:.3f} | {playerTeam[1].name}: {playerTeam[1].currEnergy:.3f} | {playerTeam[2].name}: {playerTeam[2].currEnergy:.3f} | {playerTeam[3].name}: {playerTeam[3].currEnergy:.3f}")
+        takeDebuffDMG(unit, playerTeam, teamBuffs, enemyDebuffs)
         enemyDebuffs = tickDebuffs(enemy, enemyDebuffs)
     elif unit.isChar() and not unit.isSummon(): # Character Turn
         moveType = unit.takeTurn()
@@ -216,6 +223,24 @@ while simAV < avLimit:
     spUsed += spMinus
     
     # Handle any errGain from unit turns
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
+    
+    # Apply any special effects
+    for char in playerTeam:
+        if char.hasSpecial:
+            spec = char.special()
+            specRes = handleSpec(spec, unit, playerTeam, eTeam, teamBuffs, enemyDebuffs, "END")
+            bl, dbl, al, dl, tl = char.handleSpecialEnd(specRes)
+            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
+            turnList.extend(tl)
+            
+    # Handle any attacks from special attacks  
+    teamBuffs, enemyDebuffs, advList, delayList, spPlus, spMinus = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+    spGain += spPlus
+    spUsed += spMinus
+    turnList = []        
+    
+    # Add Energy if any was provided from special effects
     teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
     
     # Check if any unit can ult
@@ -248,7 +273,6 @@ while simAV < avLimit:
     
     # Apply any enemy delays
     delayList = delayAdjustment(eTeam, delayList, enemyDebuffs)
-    
     # Apply any character/summon AV adjustments
     avAdjustment(playerTeam + summons, advList)
     advList = []
@@ -268,20 +292,31 @@ for char in playerTeam:
 logging.critical("\n==========SIMULATION RESULTS==========")
 dotDMG = 0
 charDMG = 0
+dmgList = []
 for enemy in eTeam:
     dotDMG += enemy.dotDMG
 for char in playerTeam:
     res, dmg = char.gettotalDMG()
+    dmgList.append(dmg)
     charDMG += dmg
 totalDMG = dotDMG + charDMG
+dpavList = [i / avLimit for i in dmgList]
+percentList = [i / totalDMG * 100 for i in dmgList]
 
 logging.critical(f"TOTAL TEAM DMG: {totalDMG:.3f} | AV: {avLimit}")
 logging.critical(f"TEAM DPAV: {totalDMG / avLimit:.3f}")
 logging.critical(f"DOT DMG: {dotDMG:.3f} | CHAR DMG: {charDMG:.3f}")
 logging.critical(f"SP GAINED: {spGain} | SP USED: {spUsed} | Enemy Attacks: {totalEnemyAttacks}")
+res = ""
+i = 0
+for char in playerTeam:
+    res += f"{char.name} DPAV: {dpavList[i]:.3f}, {percentList[i]:.3f}% | "
+    i += 1
+    
+logging.critical(res)
 
 for char in playerTeam:
     res, dmg = char.gettotalDMG()
-    logging.critical(f"\n{char.name} > Total DMG: {dmg:.3f} | DPAV: {dmg / avLimit:.3f} | Team%: {dmg / totalDMG * 100:.3f}% | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
+    logging.critical(f"\n{char.name} > Total DMG: {dmg:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
     logging.critical(res)
 
