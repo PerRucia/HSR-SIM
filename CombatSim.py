@@ -22,7 +22,7 @@ weaknesses = ["WIN", "IMG", "FIR", "LNG"]
 actionOrder = [1,1,2] # determines how many attacks enemies will have per turn
 
 # Character Settings
-slot1 = FeixiaoEidolons(0, "DPS", 0, 0)
+slot1 = Feixiao(0, "DPS", 0)
 slot2 = Robin(1, "SUP1", 0)
 slot3 = Aventurine(2, "SUS", 0)
 slot4 = Topaz(3, "SUBDPS", 0)
@@ -198,7 +198,7 @@ while simAV < avLimit:
         addEnergy(playerTeam, eTeam, numAttacks, attackTypeRatio, teamBuffs)
         logging.warning(f"    CharEnergy - {playerTeam[0].name}: {playerTeam[0].currEnergy:.3f} | {playerTeam[1].name}: {playerTeam[1].currEnergy:.3f} | {playerTeam[2].name}: {playerTeam[2].currEnergy:.3f} | {playerTeam[3].name}: {playerTeam[3].currEnergy:.3f}")
         takeDebuffDMG(unit, playerTeam, teamBuffs, enemyDebuffs)
-        enemyDebuffs = tickDebuffs(enemy, enemyDebuffs)
+        enemyDebuffs = tickDebuffs(unit, enemyDebuffs)
     elif unit.isChar() and not unit.isSummon(): # Character Turn
         moveType = unit.takeTurn()
         logging.critical(f"ACTION > TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
@@ -290,22 +290,22 @@ for char in playerTeam:
         char.hitMultiplier = char.ults / totalEnemyAttacks
 
 logging.critical("\n==========SIMULATION RESULTS==========")
-dotDMG = 0
+debuffDMG = 0
 charDMG = 0
 dmgList = []
 for enemy in eTeam:
-    dotDMG += enemy.dotDMG
+    debuffDMG += enemy.debuffDMG
 for char in playerTeam:
     res, dmg = char.gettotalDMG()
     dmgList.append(dmg)
     charDMG += dmg
-totalDMG = dotDMG + charDMG
+totalDMG = debuffDMG + charDMG
 dpavList = [i / avLimit for i in dmgList]
 percentList = [i / totalDMG * 100 for i in dmgList]
 
 logging.critical(f"TOTAL TEAM DMG: {totalDMG:.3f} | AV: {avLimit}")
 logging.critical(f"TEAM DPAV: {totalDMG / avLimit:.3f}")
-logging.critical(f"DOT DMG: {dotDMG:.3f} | CHAR DMG: {charDMG:.3f}")
+logging.critical(f"DOT DMG: {debuffDMG:.3f} | CHAR DMG: {charDMG:.3f}")
 logging.critical(f"SP GAINED: {spGain} | SP USED: {spUsed} | Enemy Attacks: {totalEnemyAttacks}")
 res = ""
 i = 0

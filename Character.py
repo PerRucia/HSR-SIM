@@ -85,10 +85,10 @@ class Character:
         return ""
     
     def handleSpecialStart(self, specialRes: Special):
-        return *self.parseEquipment("SPECIAL", special=specialRes), []
+        return *self.parseEquipment("SPECIALS", special=specialRes), []
     
     def handleSpecialEnd(self, specialRes: Special):
-        return *self.parseEquipment("SPECIAL", special=specialRes), []
+        return *self.parseEquipment("SPECIALE", special=specialRes), []
     
     def allyTurn(self, turn: Turn, result: Result):
         return *self.parseEquipment("ALLY", turn=turn, result=result), []
@@ -112,8 +112,10 @@ class Character:
                 buffs, debuffs, advs, delays = equipment.equip()
             elif actionType == "HIT":
                 buffs, debuffs, advs, delays = equipment.useHit(enemyID)
-            elif actionType == "SPECIAL":
-                buffs, debuffs, advs, delays = equipment.special(special)
+            elif actionType == "SPECIALS":
+                buffs, debuffs, advs, delays = equipment.specialStart(special)
+            elif actionType == "SPECIALE":
+                buffs, debuffs, advs, delays = equipment.specialEnd(special)
             elif actionType == "OWN":
                 buffs, debuffs, advs, delays = equipment.ownTurn(result)    
             elif actionType == "ALLY":

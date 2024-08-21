@@ -18,7 +18,7 @@ class Enemy:
         self.turn = 0
         self.maxToughnessMul = 0.5 + (self.toughness / 40)
         self.priority = 0
-        self.dotDMG = 0
+        self.debuffDMG = 0
         
     def __str__(self) -> str:
         res = f"Enemy {self.enemyID} | LVL: {self.level} | SPD: {self.spd} | "
@@ -65,6 +65,9 @@ class Enemy:
     
     def standardAVred(self, av: float):
         self.currAV = max(0, self.currAV - av)
+        
+    def addDebuffDMG(self, dmg: float):
+        self.debuffDMG = self.debuffDMG + dmg
         
         
         

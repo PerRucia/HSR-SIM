@@ -195,7 +195,9 @@ def delayAdjustment(enemyTeam: list[Enemy], delayList: list[Delay], debuffList: 
         enemy = findEnemy(delay.target)
         enemyAV = 10000 / getEnemySPD(enemy, debuffList)
         if not delay.reqBroken or (delay.reqBroken and enemy.broken):
-            enemy.reduceAV(enemyAV * delay.delayPercent * -1)
+            avRed = enemyAV * delay.delayPercent * -1
+            enemy.reduceAV(avRed)
+            logging.warning(f"DELAY  > {enemy.name} delayed by {delay.delayPercent} | NewAV: {enemy.currAV}")
         else:
             res.append(delay) # keep the delay in delayList until it can be applied
     return res
@@ -254,7 +256,7 @@ def tickDebuffs(enemy: Enemy, debuffList: list[Debuff]) -> list[Debuff]:
                 debuff.reduceTurns()
                 newList.append(debuff)
             else:
-                logging.info(f"{debuff.name} expired")
+                logging.info(f"Debuff {debuff.name} expired")
         else:
             newList.append(debuff)
     return newList
@@ -265,7 +267,7 @@ def tickBuffs(charRole: str, buffList: list[Buff], tdType: str) -> list[Buff]:
         if buff.tdType == tdType: # must match tdType to tickdown
             if buff.tickDown == charRole: # must match charRole to tickdown
                 if buff.turns <= 1:
-                    logging.info(f"{buff.name} expired")
+                    logging.info(f"Buff {buff.name} expired")
                     continue
                 buff.reduceTurns()
         newList.append(buff)
@@ -279,8 +281,8 @@ def takeDebuffDMG(enemy: Enemy, playerTeam: list[Character], buffList: list[Buff
         char = findCharRole(playerTeam, dot.charRole)
         placeholderTurn = Turn(char.name, char.role, enemy.enemyID, "NA", ["DOT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "DOTPlaceholder")
         dmg += dot.getDebuffVal() * getMulENEMY(char, enemy, buffList, debuffList, placeholderTurn)
-        logging.warning(f"{enemy.name} took {dmg:.3f} DOT-dmg from {dot.name}")
-    enemy.dotDMG = enemy.dotDMG + dmg
+        logging.warning(f"{enemy.name} took {dmg:.3f} debuff DMG from {dot.name}")
+    enemy.addDebuffDMG(dmg)
 
 def findCharRole(playerTeam: list[Character], charRole: str) -> Character:
     for char in playerTeam:
@@ -296,6 +298,9 @@ def findBuffName(lst: list, name: str): # works for both buffs and debuffs
     for entry in lst:
         if entry.name == name:
             return entry
+        
+def countDebuffs(enemyID: int, debuffList: list[Debuff]) -> int:
+    return len([debuff for debuff in debuffList if debuff.target == enemyID])
         
 def inTeam(playerTeam: list[Character], charName) -> bool:
     for char in playerTeam:
@@ -403,10 +408,8 @@ def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], player
 
 def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str) -> Special:
     if typ == "START":
-        if specStr == "":
-            return Special(name=specStr)
         
-        elif specStr == "updateRobinATK":
+        if specStr == "updateRobinATK":
             char = findCharName(playerTeam, "Robin")
             res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
             if "RobinUltBuff" in getBuffNames(buffList):
@@ -428,11 +431,13 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
             return Special(name=specStr, attr1=lst[yunliSlot])
         
         elif specStr == "FeixiaoStartFUA" or specStr == "FeixiaoCheckRobin":
+            feixiao = findCharName(playerTeam, "Feixiao")
+            targetDebuffs = countDebuffs(feixiao.defaultTarget, debuffList)
             if not inTeam(playerTeam, "Robin"):
                 res = True
             else:
                 res = "RobinFuaCD" in getBuffNames(buffList)
-            return Special(name=specStr, attr1=res)
+            return Special(name=specStr, attr1=res, attr2=targetDebuffs)
         
         elif specStr == "getAvenDEF":
             char = findCharName(playerTeam, "Aventurine")
@@ -466,14 +471,18 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
             res = False if unit.name == "Gallagher" else True
             return Special(name=specStr, attr1=res)
         
-    elif typ == "END":
-        if specStr == "":
+        else:
             return Special(name=specStr)
         
-        elif specStr == "updateRobinATK":
+    elif typ == "END":
+        
+        if specStr == "updateRobinATK":
             currChar = sorted(playerTeam, key=lambda char: char.currAV)[0]
             res = True if ((currChar.role == "DPS") and unit.isChar() and not unit.isSummon()) else False
             return Special(name=specStr, attr1=res)
+        
+        else:
+            return Special(name=specStr)
         
 def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:
     res = [Delay("STDBreakDelay", 0.25, enemy.enemyID, True, False)]
