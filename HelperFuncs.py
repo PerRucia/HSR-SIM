@@ -472,7 +472,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
         
         elif specStr == "updateRobinATK":
             currChar = sorted(playerTeam, key=lambda char: char.currAV)[0]
-            res = True if (currChar.role == "DPS" and unit.isChar() and not unit.isSummon()) else False
+            res = True if ((currChar.role == "DPS") and unit.isChar() and not unit.isSummon()) else False
             return Special(name=specStr, attr1=res)
         
 def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:

@@ -56,6 +56,7 @@ class Hunt7th(Character):
         bl, dbl, al, dl = super().equip()
         al.append(Advance("H7StartAdv", self.role, 0.25))
         bl.append(Buff("H7enhancedBasicCD", "CD%", 0.5, self.role, ["UltEBSC"], 1, 1, "SELF", "END")) # e6 buff
+        bl.append(Buff("H7enhancedBasicDMG", "DMG%", 0.88, self.role, ["EBSC"], 1, 1, "SELF", "PERM")) # e6 buff
         bl.append(Buff("H7TraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
         bl.append(Buff("H7TraceCD", "CD%", 0.24, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
         bl.append(Buff("H7TraceDEF", "DEF%", 0.125, self.role, ["ALL"], 1, 1, "SELF", "PERM"))

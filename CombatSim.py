@@ -1,13 +1,13 @@
 import logging
 from Enemy import Enemy
-from Characters.Yunli import Yunli
 from Characters.Topaz import Topaz
 from Characters.Robin import Robin
-from Characters.HuoHuo import HuoHuo
-from Characters.Feixiao import Feixiao
-from Characters.Hunt7th import Hunt7th
+from Characters.Feixiao import *
 from Characters.Aventurine import Aventurine
-from Characters.Gallagher import Gallagher
+from Characters.Lingsha import Lingsha
+from Characters.Hunt7th import Hunt7th
+from Characters.Pela import Pela
+from Characters.HuoHuo import HuoHuo
 from Summons import *
 from HelperFuncs import *
 from Misc import *
@@ -22,13 +22,13 @@ weaknesses = ["WIN", "IMG", "FIR", "LNG"]
 actionOrder = [1,1,2] # determines how many attacks enemies will have per turn
 
 # Character Settings
-slot1 = Feixiao(0, "DPS", 0)
+slot1 = FeixiaoEidolons(0, "DPS", 0, 0)
 slot2 = Robin(1, "SUP1", 0)
-slot3 = Gallagher(2, "SUS", 0)
+slot3 = Aventurine(2, "SUS", 0)
 slot4 = Topaz(3, "SUBDPS", 0)
 
 # Simulation Settings
-cycleLimit = 5
+cycleLimit = 50
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
@@ -55,7 +55,7 @@ for char in playerTeam:
         if char.name == "Topaz":
             summons.append(Numby(char.role, char.numbyRole))
         elif char.name == "Lingsha":
-            pass
+            summons.append(Fuyuan(char.role, char.fuyuanRole))
 # Print Enemy Info
 eTeam = []
 for i in range(numEnemies):

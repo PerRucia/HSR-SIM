@@ -41,7 +41,7 @@ class Pela(Character):
         super().__init__(pos, role, defaultTarget)
         self.lightcone = ResolutionPela(role, 5)
         self.relic1 = Longevous(role, 2)
-        self.relic2 = Messenger(role, 2)
+        self.relic2 = Messenger(role, 2, False)
         self.planar = Keel(role)
         
     def equip(self):
@@ -55,37 +55,24 @@ class Pela(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [1.1 + 0.4, 0], [10, 0], 20, self.scaling, 1, "PelaBasic")) # bonus 0.4 from e6
+        if self.lightcone.name == "Resolution Shines as Pearls of Sweat":
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element], [0, 0], [0, 0], 11, self.scaling, 0, "PelaTalentERR"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        dbl.append(Debuff("PelaIceRes", self.role, "ICEPEN", 0.12, self.getTargetID(enemyID), ["ALL"], 1, 1, False, False))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["SKL"], [self.element], [2.31 + 0.4, 0], [20, 0], 20, self.scaling, -1, "PelaSkill")) # bonus 0.4 from e6
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element], [0, 0], [0, 0], 11, self.scaling, 0, "PelaTalentERR"))
+        dbl.append(Debuff("PelaIceRes", self.role, "ICEPEN", 0.12, self.getTargetID(enemyID), ["ALL"], 1, 1, False, False)) # e4
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
-        
-        return bl, dbl, al, dl, tl
-    
-    def useFua(self, enemyID=-1):
-        bl, dbl, al, dl, tl = super().useFua(enemyID)
-        return bl, dbl, al, dl, tl
-    
-    def useHit(self, enemyID=-1):
-        bl, dbl, al, dl, tl = super().useHit(enemyID)
-
-        return bl, dbl, al, dl, tl
-    
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl, tl = super().ownTurn(result)
-        
-        return bl, dbl, al, dl, tl
-    
-    def allyTurn(self, turn: Turn, result: Result):
-        bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["ULT"], [self.element], [1.08 + 0.4, 0], [10, 0], 20, self.scaling, 0, "PelaUlt")) # bonus 0.4 from e6
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element], [0, 0], [0, 0], 11, self.scaling, 0, "PelaTalentERR"))
+        dbl.append(Debuff("PelaUltShred", self.role, "SHRED", 0.42, "ALL", ["ALL"], 2, 1, False, False))
         return bl, dbl, al, dl, tl
     
     

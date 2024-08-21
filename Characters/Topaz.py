@@ -24,7 +24,7 @@ class Topaz(Character):
     currEnergy = 65
     ultCost = 130
     currAV = 0
-    rotation = ["E", "A"] # Adjust accordingly
+    rotation = ["E", "A", "A"] # Adjust accordingly
     dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0, "BREAK": 0} # Adjust accordingly
     
     # Unique Character Properties

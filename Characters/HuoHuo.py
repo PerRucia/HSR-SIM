@@ -23,7 +23,7 @@ class HuoHuo(Character):
     currEnergy = 70
     ultCost = 140
     currAV = 0
-    rotation = ["E", "A"] # Adjust accordingly
+    rotation = ["E", "A", "A"] # Adjust accordingly
     dmgDct = {"BSC": 0, "BREAK": 0} # Adjust accordingly
     hasSpecial = True
     

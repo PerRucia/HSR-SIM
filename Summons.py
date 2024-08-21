@@ -46,3 +46,17 @@ class Numby(Summon):
         bl, dbl, al, dl, tl = super().takeTurn()
         tl.append(Turn(self.name, self.ownerRole, -1, "NA", ["ALL"], [self.element], [0, 0], [0, 0], 0, "ATK", 0, "NumbyGoGo"))
         return bl, dbl, al, dl, tl
+    
+class Fuyuan(Summon):
+    name = "Fuyuan"
+    element = "FIR"
+    currSPD = 90
+    currAV = 10000 / currSPD
+    
+    def __init__(self, ownerRole: str, role: str) -> None:
+        super().__init__(ownerRole, role)
+    
+    def takeTurn(self) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay], list[Turn]]:
+        bl, dbl, al, dl, tl = super().takeTurn()
+        tl.append(Turn(self.name, self.ownerRole, -1, "NA", ["ALL"], [self.element], [0, 0], [0, 0], 0, "ATK", 0, "FuyuanGoGo"))
+        return bl, dbl, al, dl, tl

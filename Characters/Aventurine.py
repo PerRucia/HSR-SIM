@@ -1,5 +1,6 @@
 from Character import Character
 from Lightcones.ConcertForTwo import ConcertForTwo
+from Lightcones.UnjustDestiny import UnjustDestinyAven
 from Relics.Knight import Knight
 from Relics.Messenger import Messenger
 from Planars.Keel import Keel
@@ -41,7 +42,7 @@ class Aventurine(Character):
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = ConcertForTwo(role, 5, 1.0)
+        self.lightcone = ConcertForTwo(role, level=5)
         self.relic1 = Knight(role, 2)
         self.relic2 = Messenger(role, 2, False)
         self.planar = Keel(role)
