@@ -20,7 +20,7 @@ class VentureForth(Lightcone):
     def useFua(self, enemyID):
         bl, dbl, al, dl = super().useFua(enemyID)
         shredBuff = self.level * 0.03 + 0.24
-        dbl.append(Buff("VentureSHRED", "SHRED", shredBuff, self.wearerRole, ["ULT"], 2, 1, "SELF", "END"))
+        bl.append(Buff("VentureSHRED", "SHRED", shredBuff, self.wearerRole, ["ULT"], 2, 1, "SELF", "END"))
         return bl, dbl, al, dl
     
 class VentureForthFeixiao(Lightcone):
@@ -41,6 +41,12 @@ class VentureForthFeixiao(Lightcone):
     
     def useFua(self, enemyID):
         bl, dbl, al, dl = super().useFua(enemyID)
+        shredBuff = self.level * 0.03 + 0.24
+        bl.append(Buff("VentureSHRED", "SHRED", shredBuff, self.wearerRole, ["ULT"], 2, 2, "SELF", "END"))
+        return bl, dbl, al, dl
+    
+    def useSkl(self, enemyID=-1):
+        bl, dbl, al, dl = super().useSkl(enemyID)
         shredBuff = self.level * 0.03 + 0.24
         bl.append(Buff("VentureSHRED", "SHRED", shredBuff, self.wearerRole, ["ULT"], 2, 2, "SELF", "END"))
         return bl, dbl, al, dl

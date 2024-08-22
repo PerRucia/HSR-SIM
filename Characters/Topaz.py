@@ -1,5 +1,7 @@
 from Character import Character
 from Lightcones.Swordplay import Swordplay
+from Lightcones.Cruising import Cruising
+from Lightcones.Blissful import BlissfulTopaz
 from Relics.Duke import DukeTopaz
 from Planars.Duran import Duran
 from RelicStats import RelicStats

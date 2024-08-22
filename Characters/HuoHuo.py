@@ -38,7 +38,7 @@ class HuoHuo(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    relicStats = RelicStats(8, 2, 3, 4, 7, 6, 4, 0, 0, 9, 5, 0, "OGH%", "SPD%", "HP%", "ERR%")
+    relicStats = RelicStats(8, 2, 3, 4, 7, 6, 4, 0, 0, 9, 5, 0, "OGH%", "SPD", "HP%", "ERR%")
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
         super().__init__(pos, role, defaultTarget)

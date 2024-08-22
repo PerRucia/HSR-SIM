@@ -1,6 +1,7 @@
 from Character import Character
 from Lightcones.VentureForth import VentureForthFeixiao
-from Lightcones.Baptism import BaptismFeixiao
+from Lightcones.Swordplay import Swordplay
+from Lightcones.Cruising import Cruising
 from Relics.WindSoaring import WindSoaringYunli
 from Planars.Duran import Duran
 from RelicStats import RelicStats
@@ -41,11 +42,11 @@ class Feixiao(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    relicStats = RelicStats(0, 3, 0, 3, 3, 1, 4, 4, 4, 4, 6, 18, "CR%", "SPD", "DMG%", "ATK%")
+    relicStats = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", "DMG%", "ATK%")
     
-    def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0):
+    def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lcLevel: int = 1):
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = VentureForthFeixiao(role, 1)
+        self.lightcone = VentureForthFeixiao(role, lcLevel)
         self.relic1 = WindSoaringYunli(role, 4) # same as yunli, ult also counts as FuA
         self.relic2 = None
         self.planar = Duran(role)
@@ -97,7 +98,8 @@ class Feixiao(Character):
         bl, dbl, al, dl, tl = super().ownTurn(result)
         if not self.prevTurnFua:
             tl.append(Turn(self.name, self.role, result.enemiesHit[0], "NA", ["ALL"], [self.element], [0, 0], [0, 0], 0.5, self.scaling, 0, "FeixiaoPityEnergy"))
-        self.prevTurnFua = True
+        if result.turnName == "FeixiaoFUA":
+            self.prevTurnFua = True
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn, result):
