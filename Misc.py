@@ -29,13 +29,13 @@ class BuffType(Enum):
     ERR_F = auto()
     
 class Element(Enum):
-    WIND = auto()
-    FIRE = auto()
-    LIGHTNING = auto()
-    IMAGINARY = auto()
-    QUANTUM = auto()
-    ICE = auto()
-    PHYSICAL = auto()
+    WIND = "WIN"
+    FIRE = "FIR"
+    LIGHTNING = "LNG"
+    IMAGINARY = "IMG"
+    QUANTUM = "QUA"
+    ICE = "ICE"
+    PHYSICAL = "PHY"
     
 class Path(Enum):
     HUNT = 3

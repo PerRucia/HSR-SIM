@@ -17,7 +17,7 @@ class Hunt7th(Character):
     # Standard Character Settings
     name = "HuntM7"
     path = Path.HUNT
-    element = "IMG"
+    element = Element.IMAGINARY
     scaling = "ATK"
     baseHP = 1058.4
     baseATK = 564.48

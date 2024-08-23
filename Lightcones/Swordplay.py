@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import Buff
+from Misc import *
 
 class Swordplay(Lightcone):
     name = "Swordplay"
-    path = "HUN"
+    path = Path.HUNT
     baseHP = 952.6
     baseATK = 476.28
     baseDEF = 330.75

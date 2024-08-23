@@ -13,7 +13,7 @@ class Yunli(Character):
     # Standard Character Settings
     name = "Yunli"
     path = Path.DESTRUCTION
-    element = "PHY"
+    element = Element.PHYSICAL
     scaling = "ATK"
     baseHP = 1358.3
     baseATK = 679.14

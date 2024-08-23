@@ -22,7 +22,7 @@ class Enemy:
         
     def __str__(self) -> str:
         res = f"Enemy {self.enemyID} | LVL: {self.level} | SPD: {self.spd} | "
-        res += f"Weakness: {self.weakness} | Toughness: {self.gauge}"
+        res += f"Weakness: {[w.name for w in self.weakness]} | Toughness: {self.gauge}"
         return res
     
     def getUniMul(self) -> float:

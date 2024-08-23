@@ -13,7 +13,7 @@ class HuoHuo(Character):
     # Standard Character Settings
     name = "HuoHuo"
     path = Path.ABUNDANCE
-    element = "WIN"
+    element = Element.WIND
     scaling = "HP"
     baseHP = 1358.3
     baseATK = 601.52

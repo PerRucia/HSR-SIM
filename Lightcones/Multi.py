@@ -1,10 +1,11 @@
 from Lightcone import Lightcone
 from Buff import Buff
 from Delay import *
+from Misc import *
 
 class Multi(Lightcone):
     name = "Multiplication"
-    path = "ABU"
+    path = Path.ABUNDANCE
     baseHP = 952.6
     baseATK = 317.52
     baseDEF = 198.45

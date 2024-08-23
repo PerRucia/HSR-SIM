@@ -17,7 +17,7 @@ class Pela(Character):
     # Standard Character Settings
     name = "Pela"
     path = Path.NIHILITY
-    element = "ICE"
+    element = Element.ICE
     scaling = "ATK"
     baseHP = 987.8
     baseATK = 546.84

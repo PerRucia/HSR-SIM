@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import Buff
+from Misc import *
 
 class Cruising(Lightcone):
     name = "Cruising in the Stellar Sea"
-    path = "HUN"
+    path = Path.HUNT
     baseHP = 952.6
     baseATK = 529.2
     baseDEF = 463.05

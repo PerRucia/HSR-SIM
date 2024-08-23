@@ -17,7 +17,7 @@ class Fuxuan(Character):
     # Standard Character Settings
     name = "FuXuan"
     path = Path.PRESERVATION
-    element = "QUA"
+    element = Element.QUANTUM
     scaling = "HP"
     baseHP = 1474.7
     baseATK = 465.70

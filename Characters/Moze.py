@@ -18,7 +18,7 @@ class Moze(Character):
     # Standard Character Settings
     name = "Moze"
     path = Path.HUNT
-    element = "LNG"
+    element = Element.LIGHTNING
     scaling = "ATK"
     baseHP = 811.4
     baseATK = 546.84

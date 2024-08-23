@@ -16,7 +16,7 @@ class Robin(Character):
     # Standard Character Settings
     name = "Robin"
     path = Path.HARMONY
-    element = "PHY"
+    element = Element.PHYSICAL
     scaling = "ATK"
     baseHP = 1280.7
     baseATK = 640.33

@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import Buff
+from Misc import *
 
 class Aeon(Lightcone):
     name = "On the Fall of an Aeon"
-    path = "DES"
+    path = Path.DESTRUCTION
     baseHP = 1058.4
     baseATK = 529.20
     baseDEF = 396.90

@@ -1,10 +1,11 @@
 from Lightcone import Lightcone
 from Buff import *
 from Result import Result
+from Misc import *
 
 class ReturnToDarkness(Lightcone):
     name = "Return to Darkness"
-    path = "HUN"
+    path = Path.HUNT
     baseHP = 846.7
     baseATK = 529.20
     baseDEF = 330.75

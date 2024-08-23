@@ -16,7 +16,7 @@ class Topaz(Character):
     # Standard Character Settings
     name = "Topaz"
     path = Path.HUNT
-    element = "FIR"
+    element = Element.FIRE
     scaling = "ATK"
     baseHP = 931.4
     baseATK = 620.93

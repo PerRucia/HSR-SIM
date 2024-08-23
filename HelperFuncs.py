@@ -362,7 +362,7 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
             anyBroken = True
             ele = turn.element[0]
             enemyBreakMul = getMulENEMY(char, enemy, buffList, debuffList, Turn(char.name, char.role, enemy.enemyID, "NA", ["BREAK"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "PlaceholderTurn"))
-            wbDmg += eleDct[ele] * wbMultiplier * enemy.maxToughnessMul * charBE * enemyBreakMul
+            wbDmg += eleDct[ele.value] * wbMultiplier * enemy.maxToughnessMul * charBE * enemyBreakMul
             newDelays.extend(wbDelay(ele, charBE, enemy))
             newDebuff.append(wbDebuff(ele, char.role, charBE, enemy))
         return newDebuffs, newDelays
@@ -563,32 +563,32 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
         
 def wbDelay(ele: str, charBE: float, enemy: Enemy) -> list[Delay]:
     res = [Delay("STDBreakDelay", 0.25, enemy.enemyID, True, False)]
-    breakName = f"{ele}-break"
-    if ele in ["WIN", "PHY", "FIR", "LNG"]: # standard break delay
+    breakName = f"{ele.value}-break"
+    if ele in [Element.PHYSICAL, Element.WIND, Element.FIRE, Element.LIGHTNING]: # standard break delay
         pass # no additional effects (for now)
-    elif ele == "ICE":
+    elif ele == Element.ICE:
         res.append(Delay(breakName, 0.50, enemy.enemyID, True, False))
-    elif ele == "QUA":
+    elif ele == Element.QUANTUM:
         res.append(Delay(breakName, 0.2 * charBE, enemy.enemyID, True, False))
-    elif ele == "IMG":
+    elif ele == Element.IMAGINARY:
         res.append(Delay(breakName, 0.3 * charBE, enemy.enemyID, True, False))
     return res
 
 def wbDebuff(ele: str, charRole: str, charBE: float, enemy: Enemy) -> Debuff:
-    debuffName = f"{enemy.name} {ele}-break"
-    if ele == "PHY":
+    debuffName = f"{enemy.name} {ele.value}-break"
+    if ele == Element.PHYSICAL:
         return Debuff(debuffName, charRole, "BLEED", 2 * wbMultiplier * enemy.maxToughnessMul * charBE, enemy.enemyID, ["ALL"], 2, 1, True, [0, 0], False)
-    elif ele == "FIR":
+    elif ele == Element.FIRE:
         return Debuff(debuffName, charRole, "BURN", 1 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 2, 1, True, [0, 0], False)
-    elif ele == "ICE":
+    elif ele == Element.ICE:
         return Debuff(debuffName, charRole, "FREEZE", 1 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 1, 1, False, [0, 0], False)
-    elif ele == "WIN":
+    elif ele == Element.WIND:
         return Debuff(debuffName, charRole, "WINDSHEAR", 3 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 2, 1, True, [0, 0], False)
-    elif ele == "LNG":
+    elif ele == Element.LIGHTNING:
         return Debuff(debuffName, charRole, "SHOCK", 2 * wbMultiplier * charBE, enemy.enemyID, ["ALL"], 2, 1, True, [0, 0], False)
-    elif ele == "QUA":
+    elif ele == Element.QUANTUM:
         return Debuff(debuffName, charRole, "ENTANGLE", 1.8 * wbMultiplier * enemy.maxToughnessMul * charBE, enemy.enemyID, ["ALL"], 1, 1, False, [0, 0], False)
-    elif ele == "IMG":
+    elif ele == Element.IMAGINARY:
         return Debuff(debuffName, charRole, "SPD%", -0.1, enemy.enemyID, ["ALL"], 1, 1, False, [0, 0], False)
     
 def findBestEnemy(char: Character, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> Enemy:

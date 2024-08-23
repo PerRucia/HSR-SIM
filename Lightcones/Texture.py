@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import *
+from Misc import *
 
 class Texture(Lightcone):
     name = "Texture of Memories"
-    path = "PRE"
+    path = Path.PRESERVATION
     baseHP = 1058.4
     baseATK = 423.36
     baseDEF = 529.20

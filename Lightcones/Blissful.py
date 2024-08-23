@@ -1,10 +1,11 @@
 from Lightcone import Lightcone
 from Buff import *
 from Result import Result
+from Misc import *
 
 class Blissful(Lightcone):
     name = "Worrisome, Blissful"
-    path = "HUN"
+    path = Path.HUNT
     baseHP = 1058.4
     baseATK = 582.12
     baseDEF = 463.05

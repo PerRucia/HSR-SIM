@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import *
+from Misc import *
 
 class UnjustDestinyAven(Lightcone):
     name = "Inherently Unjust Destiny"
-    path = "PRE"
+    path = Path.PRESERVATION
     baseHP = 1058.4
     baseATK = 423.36
     baseDEF = 661.50

@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import Buff
+from Misc import *
 
 class MOTP(Lightcone):
     name = "Memories of the Past"
-    path = "HAR"
+    path = Path.HARMONY
     baseHP = 952.6
     baseATK = 423.36
     baseDEF = 396.90

@@ -1,8 +1,8 @@
 from Character import Character
 from Lightcones.VentureForth import VentureForthFeixiao
-from Lightcones.Subscribe import Subscribe
 from Lightcones.Cruising import Cruising
 from Relics.WindSoaring import WindSoaringYunli
+from Relics.Duke import DukeFeixiao
 from Planars.Duran import Duran
 from Planars.Izumo import Izumo
 from RelicStats import RelicStats
@@ -19,7 +19,7 @@ class Feixiao(Character):
     # Standard Character Settings
     name = "Feixiao"
     path = Path.HUNT
-    element = "WIN"
+    element = Element.WIND
     scaling = "ATK"
     baseHP = 1047.8
     baseATK = 601.52

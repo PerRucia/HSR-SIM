@@ -1,10 +1,11 @@
 from Lightcone import Lightcone
 from Buff import Buff
 from Result import Special
+from Misc import *
 
 class BaptismFeixiao(Lightcone):
     name = "Baptism of Pure Thought"
-    path = "HUN"
+    path = Path.HUNT
     baseHP = 952.6
     baseATK = 582.12
     baseDEF = 529.20

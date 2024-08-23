@@ -15,7 +15,7 @@ class Aventurine(Character):
     # Standard Character Settings
     name = "Aventurine"
     path = Path.PRESERVATION
-    element = "IMG"
+    element = Element.IMAGINARY
     scaling = "DEF"
     baseHP = 1203.0
     baseATK = 446.29

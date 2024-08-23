@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import Buff
+from Misc import *
 
 class PostOp(Lightcone):
     name = "Post-Op Conversation"
-    path = "ABU"
+    path = Path.ABUNDANCE
     baseHP = 1058.4
     baseATK = 423.36
     baseDEF = 330.75

@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import Buff
+from Misc import *
 
 class Sunset(Lightcone):
     name = "Dance at Sunset"
-    path = "DES"
+    path = Path.DESTRUCTION
     baseHP = 1058.4
     baseATK = 582.12
     baseDEF = 463.05

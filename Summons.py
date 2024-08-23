@@ -35,7 +35,7 @@ class Summon:
         
 class Numby(Summon):
     name = "Numby"
-    element = "FIR"
+    element = Element.FIRE
     currSPD = 80
     currAV = 10000 / currSPD
     
@@ -49,7 +49,7 @@ class Numby(Summon):
     
 class Fuyuan(Summon):
     name = "Fuyuan"
-    element = "FIR"
+    element = Element.FIRE
     currSPD = 90
     currAV = 10000 / currSPD
     

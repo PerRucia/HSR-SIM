@@ -18,7 +18,7 @@ class RuanMei(Character):
     # Standard Character Settings
     name = "Ruan Mei"
     path = Path.HARMONY
-    element = "ICE"
+    element = Element.ICE
     scaling = "ATK"
     baseHP = 1086.6
     baseATK = 659.74

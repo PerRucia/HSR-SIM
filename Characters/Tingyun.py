@@ -12,7 +12,7 @@ class Tingyun(Character):
     # Standard Character Settings
     name = "Tingyun"
     path = Path.HARMONY
-    element = "LNG"
+    element = Element.LIGHTNING
     scaling = "ATK"
     baseHP = 846.70
     baseATK = 529.20

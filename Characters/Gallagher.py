@@ -18,7 +18,7 @@ class Gallagher(Character):
     # Standard Character Settings
     name = "Gallagher"
     path = Path.ABUNDANCE
-    element = "FIR"
+    element = Element.FIRE
     scaling = "ATK"
     baseHP = 1305.4
     baseATK = 529.20

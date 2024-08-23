@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import Buff
+from Misc import *
 
 class Journey(Lightcone):
     name = "For Tomorrow's Journey"
-    path = "HAR"
+    path = Path.HARMONY
     baseHP = 952.6
     baseATK = 476.28
     baseDEF = 330.75

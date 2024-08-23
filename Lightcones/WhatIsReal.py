@@ -1,16 +1,16 @@
 from Lightcone import Lightcone
 from Buff import *
+from Misc import *
 
 class WhatIsReal(Lightcone):
     name = "What is Real"
-    path = "ABU"
+    path = Path.ABUNDANCE
     baseHP = 1058.4
     baseATK = 423.36
     baseDEF = 330.75
 
     def __init__(self, wearerRole, level):
         super().__init__(wearerRole, level)
-
     
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()

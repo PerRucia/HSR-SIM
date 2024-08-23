@@ -1,10 +1,11 @@
 from Lightcone import Lightcone
 from Buff import *
 from Result import Result
+from Misc import *
 
 class Subscribe(Lightcone):
     name = "Subscribe for More!"
-    path = "HUN"
+    path = Path.HUNT
     baseHP = 952.6
     baseATK = 476.28
     baseDEF = 330.75

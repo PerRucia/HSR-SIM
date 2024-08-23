@@ -18,7 +18,7 @@ class Jiaoqiu(Character):
     # Standard Character Settings
     name = "Jiaoqiu"
     path = Path.NIHILITY
-    element = "FIR"
+    element = Element.FIRE
     scaling = "ATK"
     baseHP = 1358.3
     baseATK = 601.52

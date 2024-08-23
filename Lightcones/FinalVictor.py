@@ -1,10 +1,11 @@
 from Lightcone import Lightcone
 from Buff import *
 from Result import Result
+from Misc import *
 
 class FinalVictorFeixiao(Lightcone):
     name = "Final Victor"
-    path = "HUN"
+    path = Path.HUNT
     baseHP = 952.6
     baseATK = 476.28
     baseDEF = 330.75

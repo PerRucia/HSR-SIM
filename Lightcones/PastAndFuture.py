@@ -1,10 +1,11 @@
 from Lightcone import Lightcone
 from Buff import *
 from Result import Result
+from Misc import *
 
 class PastAndFuture(Lightcone):
     name = "Past and Future"
-    path = "HAR"
+    path = Path.HARMONY
     baseHP = 952.6
     baseATK = 423.36
     baseDEF = 396.90

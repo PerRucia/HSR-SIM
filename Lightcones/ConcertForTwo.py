@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import *
+from Misc import *
 
 class ConcertForTwo(Lightcone):
     name = "Concert for Two"
-    path = "PRE"
+    path = Path.PRESERVATION
     baseHP = 952.6
     baseATK = 370.44
     baseDEF = 463.05

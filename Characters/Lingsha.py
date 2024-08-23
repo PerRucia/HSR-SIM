@@ -17,7 +17,7 @@ class Lingsha(Character):
     # Standard Character Settings
     name = "Lingsha"
     path = Path.ABUNDANCE
-    element = "FIR"
+    element = Element.FIRE
     scaling = "ATK"
     baseHP = 1358.3
     baseATK = 679.14

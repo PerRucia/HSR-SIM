@@ -5,7 +5,7 @@
 # element: WIN, FIR, ICE, LNG, PHY, IMG, QUA
 # dmgSplit: Base multiplier split [main, adjacent], set adjacent to 0 for ST and AOE attacks
 # brkSplit: Toughness reduction split [main, adjacent], set adjacent to 0 for ST and AOE attacks
-
+from Misc import *
 class Turn:
     def __init__(self, charName: str, charRole: str, targetID: int, moveType: str, atkType: list, element: list, 
                  dmgSplit: list, brkSplit: list, errGain: float, scaling: str, spChange: int, moveName: str):
@@ -24,7 +24,7 @@ class Turn:
         
     def __str__(self) -> str:
         res = f"{self.moveName} | {self.charName} | {self.charRole} | "
-        res += f"{self.moveType} attack | {self.element} | {self.atkType} | "
+        res += f"{self.moveType} attack | {[e.value for e in self.element]} | {self.atkType} | "
         res += f"Scaling: {self.scaling} | Enemy Target: {self.targetID} | "
         res += f"DMG/BREAK Splits: {self.dmgSplit}/{self.brkSplit} | "
         res += f"Energy Gained: {self.errGain}"

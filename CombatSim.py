@@ -22,7 +22,7 @@ enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is
 attackTypeRatio = atkRatio # from Misc.py
 toughness = 100
 numEnemies = 2
-weaknesses = ["WIN", "FIR", "IMG", "LNG"]
+weaknesses = [Element.WIND, Element.FIRE, Element.IMAGINARY, Element.LIGHTNING]
 actionOrder = [1,1,2] # determines how many attacks enemies will have per turn
 
 # Character Settings

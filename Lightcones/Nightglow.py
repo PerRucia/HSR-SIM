@@ -1,9 +1,10 @@
 from Lightcone import Lightcone
 from Buff import Buff
+from Misc import *
 
 class Nightglow(Lightcone):
     name = "Flowing Nightglow"
-    path = "HAR"
+    path = Path.HARMONY
     baseHP = 952.6
     baseATK = 635.04
     baseDEF = 463.05

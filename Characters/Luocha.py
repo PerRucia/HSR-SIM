@@ -17,7 +17,7 @@ class Luocha(Character):
     # Standard Character Settings
     name = "Luocha"
     path = Path.ABUNDANCE
-    element = "IMG"
+    element = Element.IMAGINARY
     scaling = "ATK"
     baseHP = 1280.7
     baseATK = 756.76

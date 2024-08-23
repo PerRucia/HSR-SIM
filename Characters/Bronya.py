@@ -17,7 +17,7 @@ class Bronya(Character):
     # Standard Character Settings
     name = "Bronya"
     path = Path.HARMONY
-    element = "WIN"
+    element = Element.WIND
     scaling = "ATK"
     baseHP = 1241.9
     baseATK = 582.12
