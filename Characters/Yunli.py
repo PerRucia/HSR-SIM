@@ -5,13 +5,14 @@ from Relics.WindSoaring import WindSoaringYunli
 from Planars.Duran import Duran
 from RelicStats import RelicStats
 from Buff import Buff
-from Result import Result, Special
+from Result import *
+from Misc import *
 from Turn import Turn
 
 class Yunli(Character):
     # Standard Character Settings
     name = "Yunli"
-    path = "DES"
+    path = Path.DESTRUCTION
     element = "PHY"
     scaling = "ATK"
     baseHP = 1358.3
@@ -22,7 +23,7 @@ class Yunli(Character):
     ultCost = 120
     currAV = 0
     hasSpecial = True
-    rotation = ["E"]
+    rotation = ["E", "A"]
     dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0, "BREAK": 0}
     
     # Unique Character Properties
@@ -35,7 +36,7 @@ class Yunli(Character):
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = Sunset(role, 1)
+        self.lightcone = Aeon(role, 5)
         self.relic1 = WindSoaringYunli(role, 4)
         self.relic2 = None
         self.planar = Duran(role)

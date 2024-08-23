@@ -87,6 +87,9 @@ class Character:
     def handleSpecialStart(self, specialRes: Special):
         return *self.parseEquipment("SPECIALS", special=specialRes), []
     
+    def handleSpecialMiddle(self, specialRes: Special):
+        return *self.parseEquipment("SPECIALM", special=specialRes), []
+    
     def handleSpecialEnd(self, specialRes: Special):
         return *self.parseEquipment("SPECIALE", special=specialRes), []
     
@@ -114,6 +117,8 @@ class Character:
                 buffs, debuffs, advs, delays = equipment.useHit(enemyID)
             elif actionType == "SPECIALS":
                 buffs, debuffs, advs, delays = equipment.specialStart(special)
+            elif actionType == "SPECIALM":
+                buffs, debuffs, advs, delays = equipment.specialMiddle(special)
             elif actionType == "SPECIALE":
                 buffs, debuffs, advs, delays = equipment.specialEnd(special)
             elif actionType == "OWN":
@@ -157,7 +162,7 @@ class Character:
         ttl = sum(self.dmgDct.values())
         res = ""
         for key, val in self.dmgDct.items():
-            res += f"-{key}: {val:.3f} | {val / ttl * 100:.3f}%\n"
+            res += f"-{key}: {val:.3f} | {val / ttl * 100 if ttl > 0 else 0:.3f}%\n"
         return res, ttl
     
     def getBaseStat(self) -> tuple[float, float, float]:
@@ -176,5 +181,7 @@ class Character:
         if enemyID == -1:
             return self.defaultTarget
         return enemyID
+    
+        
     
         

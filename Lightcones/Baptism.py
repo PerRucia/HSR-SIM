@@ -43,8 +43,8 @@ class BaptismFeixiao(Lightcone):
         return bl, dbl, al, dl
     
     def specialStart(self, special: Special):
-        if special.specialName == "FeixiaoStartFUA" or special.specialName == "FeixiaoCheckRobin":
-            self.targetDebuffs = min(3.0, special.attr2)
+        if special.specialName == "Feixiao" or special.specialName == "FeixiaoTech":
+            self.targetDebuffs = min(3.0, special.attr3)
         return super().specialStart(special)
     
     

@@ -11,5 +11,5 @@ class Prisoner(Relic):
         buffList, debuffList, advList, delayList = super().equip()
         buffList.append(Buff("PrisonerATK", "ATK%", 0.12, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
         if self.setType == 4:
-            debuffList.append(Debuff("PrisonerSHRED", self.wearerRole, "SHRED", 0.18, "ALL", ["ALL"], 1000, 1, False, False))
+            debuffList.append(Debuff("PrisonerSHRED", self.wearerRole, "SHRED", 0.18, "ALL", ["ALL"], 1000, 1, False, [0, 0], False))
         return buffList, debuffList, advList, delayList

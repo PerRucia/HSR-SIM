@@ -39,5 +39,8 @@ class Equipment:
     def specialStart(self, special: Special):
         return [], [], [], []
     
+    def specialMiddle(self, special: Special):
+        return [], [], [], []
+    
     def specialEnd(self, special: Special):
         return [], [], [], []

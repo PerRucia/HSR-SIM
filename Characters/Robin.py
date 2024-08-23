@@ -1,5 +1,6 @@
 from Character import Character
 from Lightcones.ForTomorrowJourney import Journey
+from Lightcones.Nightglow import Nightglow
 from Relics.Musketeer import Musketeer
 from Relics.Prisoner import Prisoner
 from Planars.Lushaka import Lushaka
@@ -14,7 +15,7 @@ from Misc import *
 class Robin(Character):
     # Standard Character Settings
     name = "Robin"
-    path = "HAR"
+    path = Path.HARMONY
     element = "PHY"
     scaling = "ATK"
     baseHP = 1280.7
@@ -39,12 +40,13 @@ class Robin(Character):
     # Relic Settings
     relicStats = RelicStats(14, 5, 6, 3, 7, 6, 6, 0, 0, 5, 0, 0, "ATK%", "ATK%", "ATK%", "ERR%")
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon=0) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = Journey(role, 5)
+        self.lightcone = Journey(role)
         self.relic1 = Musketeer(role, 2)
         self.relic2 = Prisoner(role, 2)
         self.planar = Lushaka(role, "DPS")
+        self.eidolon = eidolon
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
@@ -57,8 +59,7 @@ class Robin(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        e2ERR = 0
-        # e2ERR = 1 # uncomment for e2
+        e2ERR = 1 if self.eidolon >= 2 else 0
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 22 + e2ERR, self.scaling, 1, "RobinBasic"))
         return bl, dbl, al, dl, tl
     
@@ -73,17 +74,18 @@ class Robin(Character):
         self.canBeAdv = False
         self.currAV = 10000 / 90
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
-        bl.append(Buff("RobinFuaCD", "CD%", 0.25, "ALL", ["FUA"], 1, 1, self.role, "START")) 
-        # bl.append(Buff("RobinE1Pen", "PEN", 0.24, "ALL", ["ALL"], 1, 1, self.role, "START")) # uncomment for e1
-        # bl.append(Buff("RobinE2SPD", "SPD%", 0.16, "ALL", ["FUA"], 1, 1, self.role, "START")) # uncomment for e2
+        bl.append(Buff("RobinFuaCD", "CD%", 0.25, "ALL", ["FUA"], 1, 1, self.role, "START"))
+        if self.eidolon >= 1:
+            bl.append(Buff("RobinE1Pen", "PEN", 0.24, "ALL", ["ALL"], 1, 1, self.role, "START"))
+        if self.eidolon >= 2:
+            bl.append(Buff("RobinE2SPD", "SPD%", 0.16, "ALL", ["FUA"], 1, 1, self.role, "START")) 
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinUlt"))
         al.append(Advance("RobinUltADV", "ALL", 1.0))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        e2ERR = 0
-        # e2ERR = 1 # uncomment for e2
+        e2ERR = 1 if self.eidolon >= 2 else 0
         if (turn.moveName not in bonusDMG) and (turn.moveType != "NA"):
             if self.canBeAdv: # not in concerto state, only provide extra ERR
                 tl.append(Turn(self.name, self.role, turn.targetID, "NA", ["ULT"], [self.element], [0, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinBonusERR"))

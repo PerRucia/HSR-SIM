@@ -11,7 +11,7 @@ from Misc import *
 class Tingyun(Character):
     # Standard Character Settings
     name = "Tingyun"
-    path = "HAR"
+    path = Path.HARMONY
     element = "LNG"
     scaling = "ATK"
     baseHP = 846.70

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class Hunt7th(Character):
     # Standard Character Settings
     name = "HuntM7"
-    path = "HUN"
+    path = Path.HUNT
     element = "IMG"
     scaling = "ATK"
     baseHP = 1058.4

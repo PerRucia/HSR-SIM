@@ -9,7 +9,7 @@ class Blissful(Lightcone):
     baseATK = 582.12
     baseDEF = 463.05
 
-    def __init__(self, wearerRole, level, defaultTarget: int = 0):
+    def __init__(self, wearerRole, level: int = 1, defaultTarget: int = 0):
         super().__init__(wearerRole, level)
         self.defaultTarget = defaultTarget    
     
@@ -24,41 +24,59 @@ class Blissful(Lightcone):
     def useFua(self, enemyID):
         bl, dbl, al, dl = super().useFua(enemyID)
         cdBuff = self.level * 0.02 + 0.10
-        dbl.append(Debuff("BlissfulTame", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, False))
+        dbl.append(Debuff(f"BlissfulTame{self.wearerRole}", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, [0, 0], False))
         return bl, dbl, al, dl
     
 class BlissfulTopaz(Blissful): 
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl = super().useBsc(enemyID)
         cdBuff = self.level * 0.02 + 0.10
-        dbl.append(Debuff("BlissfulTame", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, False))
+        dbl.append(Debuff(f"BlissfulTame{self.wearerRole}", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, [0, 0], False))
         return bl, dbl, al, dl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl = super().useSkl(enemyID)
         cdBuff = self.level * 0.02 + 0.10
-        dbl.append(Debuff("BlissfulTame", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, False))
+        dbl.append(Debuff(f"BlissfulTame{self.wearerRole}", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, [0, 0], False))
         return bl, dbl, al, dl
     
     def ownTurn(self, result: Result):
         bl, dbl, al, dl = super().ownTurn(result)
         if result.turnName == "NumbyGoGo":
             cdBuff = self.level * 0.02 + 0.10
-            dbl.append(Debuff("BlissfulTame", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, False))
+            dbl.append(Debuff(f"BlissfulTame{self.wearerRole}", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, [0, 0], False))
         return bl, dbl, al, dl
     
 class BlissfulFeixiao(Blissful):
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl = super().useUlt(enemyID)
         cdBuff = self.level * 0.02 + 0.10
-        dbl.append(Debuff("BlissfulTame", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, False))
+        dbl.append(Debuff(f"BlissfulTame{self.wearerRole}", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, [0, 0], False))
         return bl, dbl, al, dl
     
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl = super().ownTurn(result)
-        if result.turnName == "FeixiaoFUA":
-            cdBuff = self.level * 0.02 + 0.10
-            dbl.append(Debuff("BlissfulTame", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, False))
+    def useSkl(self, enemyID=-1):
+        bl, dbl, al, dl = super().useSkl(enemyID)
+        cdBuff = self.level * 0.02 + 0.10
+        dbl.append(Debuff(f"BlissfulTame{self.wearerRole}", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, [0, 0], False))
+        return bl, dbl, al, dl
+    
+class BlissfulMoze(Blissful):
+    def useSkl(self, enemyID=-1):
+        bl, dbl, al, dl = super().useSkl(enemyID)
+        cdBuff = self.level * 0.02 + 0.10
+        dbl.append(Debuff(f"BlissfulTame{self.wearerRole}", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, [0, 0], False))
+        return bl, dbl, al, dl
+    
+    def useUlt(self, enemyID=-1):
+        bl, dbl, al, dl = super().useUlt(enemyID)
+        cdBuff = self.level * 0.02 + 0.10
+        dbl.append(Debuff(f"BlissfulTame{self.wearerRole}", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, [0, 0], False))
+        return bl, dbl, al, dl
+    
+    def useFua(self, enemyID=-1):
+        bl, dbl, al, dl = super().useFua(enemyID)
+        cdBuff = self.level * 0.02 + 0.10
+        dbl.append(Debuff(f"BlissfulTame{self.wearerRole}", self.wearerRole, "CD%", cdBuff, self.defaultTarget, ["ALL"], 1000, 2, False, [0, 0], False))
         return bl, dbl, al, dl
     
     

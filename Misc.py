@@ -1,6 +1,55 @@
-bonusDMG = ["AvenFUAExtras", "TYAllyBonus", "TYBeneBonus", "YunliCullBounce", "FeixiaoUlt", "RobinConcertoDMG", "H7UltEnhancedBSCExtras", "H7EnhancedBSCExtras"]
+from enum import Enum, auto
+
+bonusDMG = ["AvenFUAExtras", "TYAllyBonus", "TYBeneBonus", "YunliCullBounce", "FeixiaoUlt", "RobinConcertoDMG", "H7UltEnhancedBSCExtras", "H7EnhancedBSCExtras", "MozeBonusDMG", "RuanMeiBreakBonus", "LingshaFuaExtra"]
 wbMultiplier = 3767.5533
 eleDct = {"PHY": 2.0, "FIR": 2.0, "WIN": 1.5, "ICE": 1.0, "LNG": 1.0, "QUA": 0.5, "IMG": 0.5}
-aggroDct = {"HUN": 3, "ERU": 3, "NIH": 4, "HAR": 4, "ABU": 4, "DES": 5, "PRE": 6}
 
 atkRatio = [0.55, 0.2, 0.25] # Single Target, Blast Attack, AOE Attack splits for enemy behaviour
+
+class BuffType(Enum):
+    SPD = auto()
+    HP = auto()
+    ATK = auto()
+    DEF = auto()
+    HP_PERCENT = auto()
+    ATK_PERCENT = auto()
+    DEF_PERCENT = auto()
+    CR_PERCENT = auto()
+    CD_PERCENT = auto()
+    BE_PERCENT = auto()
+    OGH_PERCENT = auto()
+    ERR_PERCENT = auto()
+    EHR_PERCENT = auto()
+    ERS_PERCENT = auto()
+    DMG_PERCENT = auto()
+    SHRED = auto()
+    VULN = auto()
+    PEN = auto()
+    ERR_T = auto()
+    ERR_F = auto()
+    
+class Element(Enum):
+    WIND = auto()
+    FIRE = auto()
+    LIGHTNING = auto()
+    IMAGINARY = auto()
+    QUANTUM = auto()
+    ICE = auto()
+    PHYSICAL = auto()
+    
+class Path(Enum):
+    HUNT = 3
+    ERUDTION = 3
+    HARMONY = 4
+    NIHILITY = 4
+    ABUNDANCE = 4
+    DESTRUCTION = 5
+    PRESERVATION = 6
+    
+class Role(Enum):
+    DPS = auto()
+    SUBDPS1 = auto()
+    SUBDPS2 = auto()
+    SUP1 = auto()
+    SUP2 = auto()
+    SUS = auto()

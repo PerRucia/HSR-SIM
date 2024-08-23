@@ -8,7 +8,7 @@ class Aeon(Lightcone):
     baseATK = 529.20
     baseDEF = 396.90
 
-    def __init__(self, wearerRole, level, uptime):
+    def __init__(self, wearerRole, level, uptime: float = 0.5):
         super().__init__(wearerRole, level)
         self.uptime = uptime
     

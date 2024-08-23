@@ -42,7 +42,7 @@ class Buff:
         self.tdType = tdType
         
     def __str__(self) -> str:
-        res = f"{self.name} | {self.buffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val} | "
+        res = f"{self.name} | {self.buffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
         res += f"Remaining Turns: {self.turns} | TickDown: {self.tickDown}, {self.tdType} | "
         res += f"Target: {self.target} | Affects: {self.atkType}"
         return res
@@ -69,7 +69,7 @@ class Buff:
         self.val = val
         
 class Debuff:
-    def __init__(self, name: str, charRole: str, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int, isDot: bool, isBlast: bool):
+    def __init__(self, name: str, charRole: str, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int, isDot: bool, dotSplit, isBlast: bool):
         self.name = name
         self.charRole = charRole
         self.debuffType = debuffType
@@ -81,12 +81,13 @@ class Debuff:
         self.stackLimit = stackLimit
         self.stacks = 1
         self.isDot = isDot
+        self.dotSplit = dotSplit
         self.isBlast = isBlast
+        self.dotMul = 0
         
     def __str__(self) -> str:
-        res = f"{self.name} | From: {self.charRole} | {self.debuffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val} | "
-        res += f"Remaining Turns: {self.turns} | "
-        res += f"Target: {self.target} | Affects: {self.atkType} | DOT: {self.isDot} | Blast: {self.isBlast}"
+        res = f"{self.name} | From: {self.charRole} | {self.debuffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
+        res += f"Remaining Turns: {self.turns} | Target: {self.target} | Affects: {self.atkType} | DOT: {self.isDot} | Blast: {self.isBlast}"
         return res
         
     def reduceTurns(self) -> None:
@@ -102,6 +103,8 @@ class Debuff:
         self.stacks = self.stacks + 1
         
     def getDebuffVal(self) -> float:
+        if self.name == "AshenRoasted":
+            return self.val + (self.stacks) * 0.05
         return self.val * self.stacks
 
     def atMaxStacks(self) -> bool:

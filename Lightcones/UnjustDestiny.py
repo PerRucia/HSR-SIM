@@ -30,7 +30,7 @@ class UnjustDestinyAven(Lightcone):
         cdBuff = self.level * 0.06 + 0.34
         bl.append(Buff("UnjustCD", "CD%", cdBuff, self.wearerRole, ["ALL"], 2, 1, "SELF", "END"))
         vulnDebuff = self.level * 0.015 + 0.085
-        dbl.append(Debuff("UnjustVuln", self.wearerRole, "VULN", vulnDebuff, "ALL", ["ALL"], 2, 1, False, False))
+        dbl.append(Debuff("UnjustVuln", self.wearerRole, "VULN", vulnDebuff, "ALL", ["ALL"], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
     

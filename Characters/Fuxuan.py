@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class Fuxuan(Character):
     # Standard Character Settings
     name = "FuXuan"
-    path = "PRE"
+    path = Path.PRESERVATION
     element = "QUA"
     scaling = "HP"
     baseHP = 1474.7

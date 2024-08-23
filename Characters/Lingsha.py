@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class Lingsha(Character):
     # Standard Character Settings
     name = "Lingsha"
-    path = "ABU"
+    path = Path.ABUNDANCE
     element = "FIR"
     scaling = "ATK"
     baseHP = 1358.3
@@ -71,15 +71,15 @@ class Lingsha(Character):
         self.currEnergy = self.currEnergy - self.ultCost
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["ULT"], [self.element], [1.5, 0], [20, 0], 5, self.scaling, 0, "LingshaUlt"))
         al.append(Advance("LingshaADV", self.fuyuanRole, 1.0))
-        dbl.append(Debuff("LingshaBefog", self.role, "VULN", 0.25, "ALL", ["BREAK"], 2, 1, False, False))
+        dbl.append(Debuff("LingshaBefog", self.role, "VULN", 0.25, "ALL", ["BREAK"], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
         bl, dbl, al, dl, tl = super().ownTurn(result)
         if self.count == 0 and result.turnName != "FuyuanGoGo" and result.turnName != "LingshaAutoheal":
             self.count = 3
-            # self.fuas = self.fuas + 1
-            # tl.append(Turn(self.name, self.role, self.getTargetID(-1), "AOE", ["FUA"], [self.element], [0.9, 0], [10, 0], 0, self.scaling, 0, "LingshaAutoheal"))
+            self.fuas = self.fuas + 1
+            tl.append(Turn(self.name, self.role, self.getTargetID(-1), "AOE", ["FUA"], [self.element], [0.9, 0], [10, 0], 0, self.scaling, 0, "LingshaAutoheal"))
         elif result.turnName == "FuyuanGoGo":
             return self.useFua(-1)
         return bl, dbl, al, dl, tl
@@ -91,7 +91,8 @@ class Lingsha(Character):
          
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useFua(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["FUA"], [self.element], [0.9, 0], [10, 0], 0, self.scaling, 0, "LingshaFua"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["FUA"], [self.element], [0.75, 0], [10, 0], 0, self.scaling, 0, "LingshaFua"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["FUA"], [self.element], [0.75, 0], [10, 0], 0, self.scaling, 0, "LingshaFuaExtra"))
         return bl, dbl, al, dl, tl
     
     def takeTurn(self) -> str:

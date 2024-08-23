@@ -30,7 +30,7 @@ class VentureForthFeixiao(Lightcone):
     baseATK = 635.04
     baseDEF = 463.05
 
-    def __init__(self, wearerRole, level):
+    def __init__(self, wearerRole, level=1):
         super().__init__(wearerRole, level)
     
     def equip(self):

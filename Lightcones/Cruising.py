@@ -8,7 +8,7 @@ class Cruising(Lightcone):
     baseATK = 529.2
     baseDEF = 463.05
 
-    def __init__(self, wearerRole, level, uptime: float = 0.5):
+    def __init__(self, wearerRole, level: int = 5, uptime: float = 0.5):
         super().__init__(wearerRole, level)
         self.uptime = uptime
     

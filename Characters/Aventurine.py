@@ -14,7 +14,7 @@ from Misc import *
 class Aventurine(Character):
     # Standard Character Settings
     name = "Aventurine"
-    path = "PRE"
+    path = Path.PRESERVATION
     element = "IMG"
     scaling = "DEF"
     baseHP = 1203.0
@@ -38,6 +38,8 @@ class Aventurine(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
+    # Default = RelicStats(6, 2, 1, 5, 4, 3, 3, 0, 4, 2, 13, 7, "DEF%", "SPD", "DEF%", "DEF%")
+    # Bronya Tuning = RelicStats(2, 2, 3, 5, 4, 3, 3, 0, 4, 2, 13, 7, "DEF%", "SPD", "DEF%", "DEF%")
     relicStats = RelicStats(6, 2, 1, 5, 4, 3, 3, 0, 4, 2, 13, 7, "DEF%", "SPD", "DEF%", "DEF%")
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
@@ -69,7 +71,7 @@ class Aventurine(Character):
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["ULT"], [self.element], [2.7, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
         self.currEnergy = self.currEnergy - self.ultCost
         self.blindBetStacks = min(self.blindBetStacks + 4, 10)
-        dbl.append(Debuff("AvenUltCD", self.role, "CD%", 0.15, 1, ["ALL"], 3, 1, False, False))
+        dbl.append(Debuff("AvenUltCD", self.role, "CD%", 0.15, 1, ["ALL"], 3, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):

@@ -8,7 +8,7 @@ class Swordplay(Lightcone):
     baseATK = 476.28
     baseDEF = 330.75
 
-    def __init__(self, wearerRole, level):
+    def __init__(self, wearerRole, level=5):
         super().__init__(wearerRole, level)
     
     def equip(self):

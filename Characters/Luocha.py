@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class Luocha(Character):
     # Standard Character Settings
     name = "Luocha"
-    path = "ABU"
+    path = Path.ABUNDANCE
     element = "IMG"
     scaling = "ATK"
     baseHP = 1280.7

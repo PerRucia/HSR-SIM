@@ -5,14 +5,14 @@ from Relics.Messenger import Messenger
 from Planars.Keel import Keel
 from RelicStats import RelicStats
 from Buff import *
+from Misc import *
 from Result import *
-from Result import Special
 from Turn import Turn
 
 class HuoHuo(Character):
     # Standard Character Settings
     name = "HuoHuo"
-    path = "ABU"
+    path = Path.ABUNDANCE
     element = "WIN"
     scaling = "HP"
     baseHP = 1358.3

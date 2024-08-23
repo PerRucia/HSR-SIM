@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class Gallagher(Character):
     # Standard Character Settings
     name = "Gallagher"
-    path = "ABU"
+    path = Path.ABUNDANCE
     element = "FIR"
     scaling = "ATK"
     baseHP = 1305.4
@@ -61,6 +61,7 @@ class Gallagher(Character):
         if self.enhancedBasic:
             self.enhancedBasic = False
             tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [2.75, 0], [30, 0], 20, self.scaling, 1, "GallyEnhancedBasic"))
+            dbl.append(Debuff("NectarBlitz", self.role, "DMG%", 0, self.getTargetID(enemyID), ["ALL"], 2, 1, False, [0, 0], False))
         else:
             tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [1.1, 0], [10, 0], 20, self.scaling, 1, "GallyBasic"))
         return bl, dbl, al, dl, tl
@@ -75,7 +76,7 @@ class Gallagher(Character):
         self.currEnergy = self.currEnergy - self.ultCost
         self.enhancedBasic = True
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["ULT"], [self.element], [1.65, 0], [20, 0], 5, self.scaling, 0, "GallyUlt"))
-        dbl.append(Debuff("Besotted", self.role, "VULN", 0.132, "ALL", ["BREAK"], 3, 1, False, False)) # 3 turns from e4
+        dbl.append(Debuff("Besotted", self.role, "VULN", 0.132, "ALL", ["BREAK"], 3, 1, False, [0, 0], False)) # 3 turns from e4
         al.append(Advance("GallyUltAdv", self.role, 1.0))
         return bl, dbl, al, dl, tl
     

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class Pela(Character):
     # Standard Character Settings
     name = "Pela"
-    path = "NIH"
+    path = Path.NIHILITY
     element = "ICE"
     scaling = "ATK"
     baseHP = 987.8
@@ -64,7 +64,7 @@ class Pela(Character):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["SKL"], [self.element], [2.31 + 0.4, 0], [20, 0], 20, self.scaling, -1, "PelaSkill")) # bonus 0.4 from e6
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element], [0, 0], [0, 0], 11, self.scaling, 0, "PelaTalentERR"))
-        dbl.append(Debuff("PelaIceRes", self.role, "ICEPEN", 0.12, self.getTargetID(enemyID), ["ALL"], 1, 1, False, False)) # e4
+        dbl.append(Debuff("PelaIceRes", self.role, "ICEPEN", 0.12, self.getTargetID(enemyID), ["ALL"], 1, 1, False, [0, 0], False)) # e4
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -72,7 +72,7 @@ class Pela(Character):
         self.currEnergy = self.currEnergy - self.ultCost
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["ULT"], [self.element], [1.08 + 0.4, 0], [10, 0], 20, self.scaling, 0, "PelaUlt")) # bonus 0.4 from e6
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element], [0, 0], [0, 0], 11, self.scaling, 0, "PelaTalentERR"))
-        dbl.append(Debuff("PelaUltShred", self.role, "SHRED", 0.42, "ALL", ["ALL"], 2, 1, False, False))
+        dbl.append(Debuff("PelaUltShred", self.role, "SHRED", 0.42, "ALL", ["ALL"], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     
