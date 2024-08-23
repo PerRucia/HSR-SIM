@@ -1,9 +1,12 @@
 import logging
 from Enemy import Enemy
-from Characters.Topaz import Topaz
+from Summons import *
+from HelperFuncs import *
+from Misc import *
+from Characters.Feixiao import Feixiao
 # BiS Team
 from Characters.Robin import Robin
-from Characters.Feixiao import *
+from Characters.Topaz import Topaz
 from Characters.Aventurine import Aventurine
 # F2P Team
 from Characters.Hunt7th import Hunt7th
@@ -12,9 +15,6 @@ from Characters.Gallagher import Gallagher
 # Extra Characters
 from Characters.Jiaoqiu import Jiaoqiu
 from Characters.Yunli import Yunli
-from Summons import *
-from HelperFuncs import *
-from Misc import *
 
 # Enemy Settings
 enemyLevel = 95
@@ -38,7 +38,7 @@ startingSP = 3
 spGain = 0
 spUsed = 0
 totalEnemyAttacks = 0
-logLevel = logging.CRITICAL
+logLevel = logging.DEBUG
 # CRITICAL: Only prints the main action taken during each turn + ultimates
 # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
 # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn

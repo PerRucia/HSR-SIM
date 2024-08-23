@@ -53,3 +53,8 @@ class Role(Enum):
     SUP1 = auto()
     SUP2 = auto()
     SUS = auto()
+    
+class Scaling(Enum):
+    ATK = auto()
+    HP = auto()
+    DEF = auto()

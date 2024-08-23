@@ -8,7 +8,7 @@ class UnjustDestinyAven(Lightcone):
     baseATK = 423.36
     baseDEF = 661.50
 
-    def __init__(self, wearerRole, level):
+    def __init__(self, wearerRole, level=1):
         super().__init__(wearerRole, level)
     
     def equip(self):

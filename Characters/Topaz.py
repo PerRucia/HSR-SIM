@@ -47,7 +47,7 @@ class Topaz(Character):
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon: int = 0) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = Swordplay(role, 5)
+        self.lightcone = Swordplay(role)
         self.relic1 = DukeTopaz(role, 4)
         self.relic2 = None
         self.planar = Duran(role)

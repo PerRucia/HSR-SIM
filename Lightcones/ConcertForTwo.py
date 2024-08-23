@@ -8,7 +8,7 @@ class ConcertForTwo(Lightcone):
     baseATK = 370.44
     baseDEF = 463.05
 
-    def __init__(self, wearerRole, level, uptime=1):
+    def __init__(self, wearerRole, level=5, uptime=1):
         super().__init__(wearerRole, level)
         self.uptime = uptime
     

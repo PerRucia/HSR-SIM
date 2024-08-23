@@ -42,18 +42,21 @@ class Aventurine(Character):
     # Bronya Tuning = RelicStats(2, 2, 3, 5, 4, 3, 3, 0, 4, 2, 13, 7, "DEF%", "SPD", "DEF%", "DEF%")
     relicStats = RelicStats(6, 2, 1, 5, 4, 3, 3, 0, 4, 2, 13, 7, "DEF%", "SPD", "DEF%", "DEF%")
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon = 0) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = ConcertForTwo(role, level=5)
+        self.lightcone = ConcertForTwo(role)
         self.relic1 = Knight(role, 2)
         self.relic2 = Messenger(role, 2, False)
         self.planar = Keel(role)
+        self.eidolon = eidolon
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
         bl.append(Buff("AvenTraceDEF", "DEF%", 0.35, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
         bl.append(Buff("AvenTraceDMG", "DMG%", 0.144, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
         bl.append(Buff("AvenTraceERS", "ERS%", 0.10, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+        if self.eidolon >= 1:
+            bl.append(Buff("AvenE1CD", "CD%", 0.20, "ALL", ["ALL"], 1, 1, "SELF", "PERM"))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
