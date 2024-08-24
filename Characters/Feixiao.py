@@ -69,7 +69,7 @@ class Feixiao(Character):
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         basicMul = 1.1 if self.eidolon >= 3 else 1.0
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [basicMul, 0], [10, 0], 0.5, self.scaling, 1, "FexiaoBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [basicMul, 0], [10, 0], 0.5, self.scaling, 1, "FexiaoBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -80,9 +80,9 @@ class Feixiao(Character):
         fuaMul = 1.21 if self.eidolon >= 5 else 1.1
         e6Bonus = 1.4 if self.eidolon == 6 else 0
         atkType = ["FUA", "ULT", "DUKEFUA"] if self.eidolon == 6 else ["FUA", "DUKEFUA"]
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["SKL"], [self.element], [sklMul, 0], [20, 0], 0.5, self.scaling, -1, "FeixiaoSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["SKL"], [self.element], [sklMul, 0], [20, 0], 0.5, self.scaling, -1, "FeixiaoSkill"))
         self.fuas = self.fuas + 1
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", atkType, [self.element], [fuaMul + e6Bonus, 0], [5 + e4Bonus, 0], 0.5 + e2Bonus, self.scaling, 0, "FeixiaoSkillFUA"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, atkType, [self.element], [fuaMul + e6Bonus, 0], [5 + e4Bonus, 0], 0.5 + e2Bonus, self.scaling, 0, "FeixiaoSkillFUA"))
         bl.append(Buff("FeixiaoSkillATK", "ATK%", 0.48, self.role, ["ALL"], 3, 1, Role.SELF, TickDown.END))
         bl.append(Buff("FeixiaoFuaDMG", "DMG%", 0.60, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         if self.eidolon >= 4:
@@ -96,8 +96,8 @@ class Feixiao(Character):
         boltMul = 0.978 if self.eidolon >= 3 else 0.9
         finalMul = 1.728 if self.eidolon >= 3 else 1.6
         for i in range(6):
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["ULT", "FUA", "DUKEULT"], [self.element], [boltMul * dmgMul[i], 0], [10, 0], 0, self.scaling, 0, "FeixiaoUlt"))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["ULT", "FUA", "DUKEULT"], [self.element], [finalMul * dmgMul[5], 0], [0, 0], 0, self.scaling, 0, "FeixiaoUltFinal"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["ULT", "FUA", "DUKEULT"], [self.element], [boltMul * dmgMul[i], 0], [10, 0], 0, self.scaling, 0, "FeixiaoUlt"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["ULT", "FUA", "DUKEULT"], [self.element], [finalMul * dmgMul[5], 0], [0, 0], 0, self.scaling, 0, "FeixiaoUltFinal"))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):
@@ -107,7 +107,7 @@ class Feixiao(Character):
         fuaMul = 1.21 if self.eidolon >= 5 else 1.1
         e6Bonus = 1.4 if self.eidolon == 6 else 0
         atkType = ["FUA", "ULT", "DUKEFUA"] if self.eidolon == 6 else ["FUA", "DUKEFUA"]
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", atkType, [self.element], [fuaMul + e6Bonus, 0], [5 + e4Bonus, 0], 0.5 + e2Bonus, self.scaling, 0, "FeixiaoFua"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, atkType, [self.element], [fuaMul + e6Bonus, 0], [5 + e4Bonus, 0], 0.5 + e2Bonus, self.scaling, 0, "FeixiaoFua"))
         bl.append(Buff("FeixiaoFuaDMG", "DMG%", 0.60, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         if self.eidolon >= 4:
             bl.append(Buff("FeixiaoE4SPD", "SPD%", 0.08, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
@@ -115,15 +115,15 @@ class Feixiao(Character):
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if turn.moveType != "NA" and turn.moveName not in bonusDMG:
+        if turn.moveType != AtkTarget.NA and turn.moveName not in bonusDMG:
             if self.fuaTrigger:
                 self.fuaTrigger = False
                 bl, dbl, al, dl, tl = self.useFua()
             if "FUA" in turn.atkType and self.eidolon >= 2 and self.e2Count > 0:
                 self.e2Count = max(0, self.e2Count - 1)
-                tl.append(Turn(self.name, self.role, self.defaultTarget, "NA", ["ALL"], [self.element], [0, 0], [0, 0], 1.0, self.scaling, 0, "FeixiaoAllyEnergy(E2FUA)"))
+                tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.NA, ["ALL"], [self.element], [0, 0], [0, 0], 1.0, self.scaling, 0, "FeixiaoAllyEnergy(E2FUA)"))
             else:
-                tl.append(Turn(self.name, self.role, self.defaultTarget, "NA", ["ALL"], [self.element], [0, 0], [0, 0], 0.5, self.scaling, 0, "FeixiaoAllyEnergy"))
+                tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.NA, ["ALL"], [self.element], [0, 0], [0, 0], 0.5, self.scaling, 0, "FeixiaoAllyEnergy"))
         return bl, dbl, al, dl, tl
     
     def takeTurn(self) -> str:
@@ -141,10 +141,10 @@ class Feixiao(Character):
     def handleSpecialStart(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         if specialRes.specialName == "FeixiaoTech":
-            tl.append(Turn(self.name, self.role, self.defaultTarget, "AOE", ["TECH"], [self.element], [2.0, 0], [20, 0], 1.5, self.scaling, 0, "FeixiaoTech"))
+            tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.AOE, ["TECH"], [self.element], [2.0, 0], [20, 0], 1.5, self.scaling, 0, "FeixiaoTech"))
         elif specialRes.specialName == "Feixiao":
             if self.fuaTrigger and specialRes.attr2 and not self.firstTurn:
-                tl.append(Turn(self.name, self.role, self.defaultTarget, "NA", ["ALL"], [self.element], [0, 0], [0, 0], 0.5, self.scaling, 0, "FeixiaPityEnergy"))
+                tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.NA, ["ALL"], [self.element], [0, 0], [0, 0], 0.5, self.scaling, 0, "FeixiaPityEnergy"))
         self.canUlt = specialRes.attr1
         return bl, dbl, al, dl ,tl
     

@@ -61,17 +61,17 @@ class Aventurine(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "AvenBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "AvenBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0, 0], 30, self.scaling, -1, "AvenSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["SKL"], [self.element], [0, 0], [0, 0], 30, self.scaling, -1, "AvenSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["ULT"], [self.element], [2.7, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["ULT"], [self.element], [2.7, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
         self.currEnergy = self.currEnergy - self.ultCost
         self.blindBetStacks = min(self.blindBetStacks + 4, 10)
         dbl.append(Debuff("AvenUltCD", self.role, "CD%", 0.15, 1, ["ALL"], 3, 1, False, [0, 0], False))
@@ -80,9 +80,9 @@ class Aventurine(Character):
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useFua(enemyID)
         self.blindBetStacks = self.blindBetStacks - 7
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["FUA"], [self.element], [0.25, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUA"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["FUA"], [self.element], [0.25, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUA"))
         for _ in range(6):
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["FUA"], [self.element], [0.25, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUAExtras"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["FUA"], [self.element], [0.25, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUAExtras"))
         return bl, dbl, al, dl, tl
     
     def useHit(self, enemyID=-1):

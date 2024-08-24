@@ -32,13 +32,13 @@ slot3 = Aventurine(2, Role.SUS, 0)
 slot4 = Topaz(3, Role.SUBDPS, 0)
 
 # Simulation Settings
-cycleLimit = 5
+cycleLimit = 50
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
 spUsed = 0
 totalEnemyAttacks = 0
-logLevel = logging.DEBUG
+logLevel = logging.CRITICAL
 # CRITICAL: Only prints the main action taken during each turn + ultimates
 # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
 # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn

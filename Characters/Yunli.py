@@ -54,34 +54,34 @@ class Yunli(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "YunliBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "YunliBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "BLAST", ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling, -1, "YunliSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, ["SKL"], [self.element], [1.2, 0.6], [20, 10], 30, self.scaling, -1, "YunliSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         self.currEnergy = self.currEnergy - self.ultCost
         self.cullActive = True
         bl, dbl, al, dl, *_ = super().useUlt(enemyID)
-        return bl, dbl, al, dl, [Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "YunliUlt")]
+        return bl, dbl, al, dl, [Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "YunliUlt")]
     
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl, *_ = super().useFua(enemyID)
         if self.cullActive:
             self.fuas = self.fuas - 1
             self.cullActive = False
-            turnList = [Turn(self.name, self.role, self.getTargetID(enemyID), "BLAST", ["ULT", "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain")]
+            turnList = [Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, ["ULT", "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain")]
             for _ in range(6):
-                turnList.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["ULT", "FUA"], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
+                turnList.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["ULT", "FUA"], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
             return bl, dbl, al, dl, turnList
-        return bl, dbl, al, dl, [Turn(self.name, self.role, self.getTargetID(enemyID), "BLAST", ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0, "YunliFUA")]
+        return bl, dbl, al, dl, [Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0, "YunliFUA")]
     
     def useHit(self, enemyID=-1):
         bl, dbl, al, dl, tl = self.useFua(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element], [0, 0], [0, 0], 15, self.scaling, 0, "YunliHitERR"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["ALL"], [self.element], [0, 0], [0, 0], 15, self.scaling, 0, "YunliHitERR"))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
@@ -110,8 +110,8 @@ class Yunli(Character):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         self.aggroMultiplier = specialRes.attr1
         self.hasSpecial = False
-        tl.append(Turn(self.name, self.role, self.defaultTarget, "BLAST", ["ULT", "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
+        tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.BLAST, ["ULT", "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
         for _ in range(6):
-            tl.append(Turn(self.name, self.role, self.defaultTarget, "ST", ["ULT", "FUA"], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
+            tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.SINGLE, ["ULT", "FUA"], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
         return bl, dbl, al, dl, tl
     

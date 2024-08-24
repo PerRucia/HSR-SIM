@@ -53,19 +53,19 @@ class Fuxuan(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [0.5, 0], [10, 0], 20, self.scaling, 1, "FuxuanBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [0.5, 0], [10, 0], 20, self.scaling, 1, "FuxuanBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0, 0], 50, self.scaling, -1, "FuxuanSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["SKL"], [self.element], [0, 0], [0, 0], 50, self.scaling, -1, "FuxuanSkill"))
         bl.append(Buff("FuxuanCR", "CR%", 0.12, Role.SELF, ["ALL"], 3, 1, self.role, TickDown.START))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["ULT"], [self.element], [1.0, 0], [20, 0], 5, self.scaling, 0, "FuxuanUlt"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, ["ULT"], [self.element], [1.0, 0], [20, 0], 5, self.scaling, 0, "FuxuanUlt"))
         return bl, dbl, al, dl, tl
     
     

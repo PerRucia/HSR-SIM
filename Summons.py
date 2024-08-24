@@ -45,7 +45,7 @@ class Numby(Summon):
     
     def takeTurn(self) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay], list[Turn]]:
         bl, dbl, al, dl, tl = super().takeTurn()
-        tl.append(Turn(self.name, self.ownerRole, -1, "NA", ["ALL"], [self.element], [0, 0], [0, 0], 0, self.scaling, 0, "NumbyGoGo"))
+        tl.append(Turn(self.name, self.ownerRole, -1, AtkTarget.NA, ["ALL"], [self.element], [0, 0], [0, 0], 0, self.scaling, 0, "NumbyGoGo"))
         return bl, dbl, al, dl, tl
     
 class Fuyuan(Summon):
@@ -60,5 +60,5 @@ class Fuyuan(Summon):
     
     def takeTurn(self) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay], list[Turn]]:
         bl, dbl, al, dl, tl = super().takeTurn()
-        tl.append(Turn(self.name, self.ownerRole, -1, "NA", ["ALL"], [self.element], [0, 0], [0, 0], 0, self.scaling, 0, "FuyuanGoGo"))
+        tl.append(Turn(self.name, self.ownerRole, -1, AtkTarget.NA, ["ALL"], [self.element], [0, 0], [0, 0], 0, self.scaling, 0, "FuyuanGoGo"))
         return bl, dbl, al, dl, tl

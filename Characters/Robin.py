@@ -60,12 +60,12 @@ class Robin(Character):
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         e2ERR = 1 if self.eidolon >= 2 else 0
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 22 + e2ERR, self.scaling, 1, "RobinBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.0, 0], [10, 0], 22 + e2ERR, self.scaling, 1, "RobinBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RobinSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RobinSkill"))
         bl.append(Buff("RobinSklDMG", "DMG%", 0.5, Role.ALL, ["ALL"], 3, 1, self.role, TickDown.START))
         return bl, dbl, al, dl, tl
     
@@ -79,18 +79,18 @@ class Robin(Character):
             bl.append(Buff("RobinE1Pen", "PEN", 0.24, Role.ALL, ["ALL"], 1, 1, self.role, TickDown.START))
         if self.eidolon >= 2:
             bl.append(Buff("RobinE2SPD", "SPD%", 0.16, Role.ALL, ["FUA"], 1, 1, self.role, TickDown.START)) 
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinUlt"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinUlt"))
         al.append(Advance("RobinUltADV", Role.ALL, 1.0))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
         e2ERR = 1 if self.eidolon >= 2 else 0
-        if (turn.moveName not in bonusDMG) and (turn.moveType != "NA"):
+        if (turn.moveName not in bonusDMG) and (turn.moveType != AtkTarget.NA):
             if self.canBeAdv: # not in concerto state, only provide extra ERR
-                tl.append(Turn(self.name, self.role, turn.targetID, "NA", ["ULT"], [self.element], [0, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinBonusERR"))
+                tl.append(Turn(self.name, self.role, turn.targetID, AtkTarget.NA, ["ULT"], [self.element], [0, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinBonusERR"))
             else: # in concerto state, provide both additional dmg and extra ERR
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], "NA", ["ULT"], [self.element], [1.2, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinConcertoDMG"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0], AtkTarget.NA, ["ULT"], [self.element], [1.2, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinConcertoDMG"))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
@@ -113,7 +113,7 @@ class Robin(Character):
         bl, dbl, al, dl, tl = super().handleSpecialStart(special)
         if self.techErr:
             self.techErr = False
-            tl.append(Turn(self.name, self.role, self.defaultTarget, "NA", ["BSC"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinTechEnergy"))
+            tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.NA, ["BSC"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinTechEnergy"))
         if not self.canBeAdv:
             bl.append(Buff("RobinUltBuff", "ATK", self.atkStat * 0.228 + 200, Role.ALL, ["ALL"], 1, 1, self.role, TickDown.START))
         return bl, dbl, al, dl, tl

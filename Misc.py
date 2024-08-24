@@ -78,6 +78,14 @@ class TickDown(Enum):
     PERM = auto()
     
 class AtkTarget(Enum):
-    SINGLE = auto()
-    BLAST = auto()
-    AOE = auto()
+    SINGLE = "ST"
+    BLAST = "BLAST"
+    AOE = "AOE"
+    NA = "NA"
+    STBREAK = "STBREAK"
+    BLASTBREAK = "BLASTBREAK"
+    AOEBREAK = "AOEBREAK"
+    STSB = "STSBREAK"
+    BLASTSB = "BLASTSBREAK"
+    AOESB = "AOESBREAK"
+    

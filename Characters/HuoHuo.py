@@ -56,12 +56,12 @@ class HuoHuo(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [0.5, 0], [10, 0], 20, self.scaling, 1, "HuoHuoBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [0.5, 0], [10, 0], 20, self.scaling, 1, "HuoHuoBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0,0], 36, self.scaling, -1, "HuoHuoSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["SKL"], [self.element], [0, 0], [0,0], 36, self.scaling, -1, "HuoHuoSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -71,7 +71,7 @@ class HuoHuo(Character):
         bl.append(Buff("HuoHuoERR", "ERR_F", self.ally1Energy, self.ally1Role, ["ALL"], 1, 1, self.ally1Role, TickDown.PERM))
         bl.append(Buff("HuoHuoERR", "ERR_F", self.ally2Energy, self.ally2Role, ["ALL"], 1, 1, self.ally2Role, TickDown.PERM))
         bl.append(Buff("HuoHuoERR", "ERR_F", self.ally3Energy, self.ally3Role, ["ALL"], 1, 1, self.ally3Role, TickDown.PERM))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "HuoHuoULT"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "HuoHuoULT"))
         return bl, dbl, al, dl, tl
     
     def special(self):

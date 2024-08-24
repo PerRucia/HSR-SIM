@@ -62,7 +62,7 @@ class Moze(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [1.1, 0], [10, 0], 20, self.scaling, 1, "MozeBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.1, 0], [10, 0], 20, self.scaling, 1, "MozeBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -72,7 +72,7 @@ class Moze(Character):
         self.currAV = 1000
         dbl.append(Debuff("MozePreyCD", self.role, "CD%", 0.40, self.getTargetID(enemyID), ["ALL"], 1000, 1, False, [0, 0], False)) # 40% CD from E2
         dbl.append(Debuff("MozePreyVULN", self.role, "VULN", 0.25, self.getTargetID(enemyID), ["FUA"], 1000, 1, False, [0, 0], False)) 
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["SKL"], [self.element], [1.65, 0], [20, 0], 30, self.scaling, -1, "MozeSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["SKL"], [self.element], [1.65, 0], [20, 0], 30, self.scaling, -1, "MozeSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -81,9 +81,9 @@ class Moze(Character):
             self.fuaRegainSP = False
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["ULT", "FUA", "DUKEULT"], [self.element], [2.916, 0], [30, 0], 5, self.scaling, 0, "MozeULT"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["ULT", "FUA", "DUKEULT"], [self.element], [2.916, 0], [30, 0], 5, self.scaling, 0, "MozeULT"))
         self.fuas = self.fuas + 1
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["FUA", "DUKEFUA"], [self.element], [1.76 + 0.25, 0], [10, 0], 10, self.scaling, spRegen, "MozeUltFUA"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["FUA", "DUKEFUA"], [self.element], [1.76 + 0.25, 0], [10, 0], 10, self.scaling, spRegen, "MozeUltFUA"))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):
@@ -91,17 +91,17 @@ class Moze(Character):
         spRegen = 1 if self.fuaRegainSP else 0
         if spRegen == 1:
             self.fuaRegainSP = False
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["FUA", "DUKEFUA"], [self.element], [1.76 + 0.25, 0], [10, 0], 10, self.scaling, spRegen, "MozeFUA"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["FUA", "DUKEFUA"], [self.element], [1.76 + 0.25, 0], [10, 0], 10, self.scaling, spRegen, "MozeFUA"))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if turn.moveType != "NA" and turn.moveName not in bonusDMG:
+        if turn.moveType != AtkTarget.NA and turn.moveName not in bonusDMG:
             self.charge = self.charge - 1
             if self.charge < 9 and self.charge % 3 == 0 and not self.canBeAdv: #0, 3, 6, use Fua
                 bl, dbl, al, dl, tl = self.useFua(result.enemiesHit[0])
             if self.charge >= 0:
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], "ST", ["BONUS"], [self.element], [0.33, 0], [0, 0], 2, self.scaling, 0, "MozeBonusDMG"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0], AtkTarget.SINGLE, ["BONUS"], [self.element], [0.33, 0], [0, 0], 2, self.scaling, 0, "MozeBonusDMG"))
             if self.charge == 0 and not self.canBeAdv: # charge reaches 0 while in departed state
                 self.canBeAdv = True # exit departed state
                 self.currAV = 10000 / self.currSPD # rest AV to his current speed

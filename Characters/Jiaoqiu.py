@@ -59,12 +59,12 @@ class Jiaoqiu(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "JiaoqiuBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "JiaoqiuBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "BLAST", ["SKL"], [self.element], [1.5, 0.9], [20, 10], 30, self.scaling, -1, "JiaoqiuSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, ["SKL"], [self.element], [1.5, 0.9], [20, 10], 30, self.scaling, -1, "JiaoqiuSkill"))
         dbl.append(Debuff("AshenRoasted", self.role, "VULN", 0.10, self.getTargetID(enemyID), ["ALL"], 2, 5, True, [1.8, 1.8], True))
         dbl.append(Debuff("AshenRoasted", self.role, "VULN", 0.10, self.getTargetID(enemyID), ["ALL"], 2, 5, True, [1.8, 0], False))
         return bl, dbl, al, dl, tl
@@ -74,7 +74,7 @@ class Jiaoqiu(Character):
         self.fieldCount = 3
         self.offTurnCount = 6
         self.currEnergy = self.currEnergy - self.ultCost
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["ULT"], [self.element], [1.0, 0], [20, 0], 5, self.scaling, 0, "JiaoqiuUlt"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, ["ULT"], [self.element], [1.0, 0], [20, 0], 5, self.scaling, 0, "JiaoqiuUlt"))
         dbl.append(Debuff("JQUltVuln", self.role, "VULN", 0.15, Role.ALL, ["ULT"], 1000, 1, False, [0, 0], False))
         for _ in range(self.maxAshenStacks):
             dbl.append(Debuff("AshenRoasted", self.role, "VULN", 0.10, Role.ALL, ["ALL"], 2, 5, True, [1.8, 0], False))

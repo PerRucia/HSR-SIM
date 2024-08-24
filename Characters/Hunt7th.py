@@ -44,7 +44,7 @@ class Hunt7th(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 17, 7, "CR%", "SPD", "DMG%", "ATK%")
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, masterRole: str = "DPS") -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, masterRole: str = Role.DPS) -> None:
         super().__init__(pos, role, defaultTarget)
         self.lightcone = Swordplay(role, 5)
         self.relic1 = Musketeer(role, 4)
@@ -70,19 +70,19 @@ class Hunt7th(Character):
             bl.append(Buff("H7MasterBuffBE", "BE%", 0.36, self.masterRole, ["ALL"], 2, 1, self.masterRole, TickDown.END))
             if self.ultEnhanced:
                 self.ultEnhanced = False
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["EBSC", "BSC", "UltEBSC"], [self.element, self.masterElement], [1.1, 0], [5, 0], 35, self.scaling, 0, "H7UltEnhancedBSC"))
+                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["EBSC", "BSC", "UltEBSC"], [self.element, self.masterElement], [1.1, 0], [5, 0], 35, self.scaling, 0, "H7UltEnhancedBSC"))
                 for _ in range(4):
-                    tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["EBSC", "BSC", "UltEBSC"], [self.element, self.masterElement], [1.1, 0], [5, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["EBSC", "BSC", "UltEBSC"], [self.element, self.masterElement], [2.1472, 0], [9.76, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
+                    tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["EBSC", "BSC", "UltEBSC"], [self.element, self.masterElement], [1.1, 0], [5, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
+                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["EBSC", "BSC", "UltEBSC"], [self.element, self.masterElement], [2.1472, 0], [9.76, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
             else:
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["EBSC", "BSC"], [self.element, self.masterElement], [1.1, 0], [5, 0], 35, self.scaling, 0, "H7EnhancedBSC"))
+                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["EBSC", "BSC"], [self.element, self.masterElement], [1.1, 0], [5, 0], 35, self.scaling, 0, "H7EnhancedBSC"))
                 for _ in range(2):
-                    tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["EBSC", "BSC"], [self.element, self.masterElement], [1.1, 0], [5, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["EBSC", "BSC"], [self.element, self.masterElement], [1.2936, 0], [5.88, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
+                    tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["EBSC", "BSC"], [self.element, self.masterElement], [1.1, 0], [5, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
+                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["EBSC", "BSC"], [self.element, self.masterElement], [1.2936, 0], [5.88, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
         else:
             self.charges = min(10, self.charges + 1)
             logger.warning(f"ALERT: H7 gained 1 charge from MarchBasic | Total: {self.charges}")
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element, self.masterElement], [1.1, 0], [10, 0], 25, self.scaling, 1, "H7Basic"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element, self.masterElement], [1.1, 0], [10, 0], 25, self.scaling, 1, "H7Basic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -90,14 +90,14 @@ class Hunt7th(Character):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         bl.append(Buff("H7MasterSPD", "SPD%", 0.108, self.masterRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)) # e1 buff
         bl.append(Buff("H7SelfSPD", "SPD%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element, self.masterElement], [0, 0], [0, 0], 35 + extraErr, self.scaling, -1, "H7Skill")) # e4 energy buff 30 + 5
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["ALL"], [self.element, self.masterElement], [0, 0], [0, 0], 35 + extraErr, self.scaling, -1, "H7Skill")) # e4 energy buff 30 + 5
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
         self.ultEnhanced = True
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["ULT"], [self.element, self.masterElement], [2.592, 0], [30, 0], 5, self.scaling, 0, "H7Ult"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["ULT"], [self.element, self.masterElement], [2.592, 0], [30, 0], 5, self.scaling, 0, "H7Ult"))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
@@ -109,7 +109,7 @@ class Hunt7th(Character):
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if (turn.charRole == self.masterRole) and (turn.moveName not in bonusDMG) and (turn.moveType != "NA") and (not self.firstTurn):
+        if (turn.charRole == self.masterRole) and (turn.moveName not in bonusDMG) and (turn.moveType != AtkTarget.NA) and (not self.firstTurn):
             self.charges = min(10, self.charges + 1)
             logger.warning(f"ALERT: H7 gained 1 charge from {turn.moveName} | Total: {self.charges}")
             if self.fuaTrigger and (not "FUA" in turn.atkType):
@@ -117,7 +117,7 @@ class Hunt7th(Character):
                 logger.warning(f"ALERT: H7 gained 1 charge from MarchFUA | Total: {self.charges}")
                 self.fuaTrigger = False
                 self.fuas = self.fuas + 1
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], "ST", ["FUA"], [self.element, self.masterElement], [0.6, 0], [1, 0], 5, self.scaling, 0, "MarchFUA"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0], AtkTarget.SINGLE, ["FUA"], [self.element, self.masterElement], [0.6, 0], [1, 0], 5, self.scaling, 0, "MarchFUA"))
         if self.charges >= 7 and not self.advanced:
             self.advanced = True
             al.append(Advance("H7EnhancedADV", self.role, 1.0))

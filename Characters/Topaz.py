@@ -68,7 +68,7 @@ class Topaz(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC", "FUA"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "TopazBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC", "FUA"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "TopazBasic"))
         if self.eidolon >= 1:
             dbl.append(Debuff("DebtorCD", self.role, "CD%", 0.25, self.getTargetID(enemyID), ["FUA"], 1000, 2, False, [0, 0], False))
         al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
@@ -81,16 +81,16 @@ class Topaz(Character):
             dbl.append(Debuff("DebtorCD", self.role, "CD%", 0.25, self.getTargetID(enemyID), ["FUA"], 1000, 2, False, [0, 0], False))
         if self.windfallCount > 0:
             self.windfallCount = self.windfallCount - 1
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["SKL", "FUA", "TOPAZULT"], [self.element], [3.0, 0], [20, 0], 40, self.scaling, -1, "TopazEnhancedSkill"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["SKL", "FUA", "TOPAZULT"], [self.element], [3.0, 0], [20, 0], 40, self.scaling, -1, "TopazEnhancedSkill"))
         else:
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["SKL", "FUA", "TOPAZFUA"], [self.element], [1.5, 0], [20, 0], 30, self.scaling, -1, "TopazSkill"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["SKL", "FUA", "TOPAZFUA"], [self.element], [1.5, 0], [20, 0], 30, self.scaling, -1, "TopazSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
         self.windfallCount = 2
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TopazUlt"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["ALL"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TopazUlt"))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
@@ -113,9 +113,9 @@ class Topaz(Character):
                 dbl.append(Debuff("DebtorCD", self.role, "CD%", 0.25, self.defaultTarget, ["FUA"], 1000, 2, False, [0, 0], False))
             if self.windfallCount > 0:
                 self.windfallCount = self.windfallCount - 1
-                tl.append(Turn(self.name, self.role, self.defaultTarget, "ST", ["FUA", "TOPAZULT"], [self.element], [3.0, 0], [20, 0], errGain + 10, self.scaling, 0, "TopazEnhancedFUA"))
+                tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.SINGLE, ["FUA", "TOPAZULT"], [self.element], [3.0, 0], [20, 0], errGain + 10, self.scaling, 0, "TopazEnhancedFUA"))
             else:
-                tl.append(Turn(self.name, self.role, self.defaultTarget, "ST", ["FUA", "TOPAZFUA"], [self.element], [1.5, 0], [20, 0], errGain, self.scaling, 0, "TopazFUA"))
+                tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.SINGLE, ["FUA", "TOPAZFUA"], [self.element], [1.5, 0], [20, 0], errGain, self.scaling, 0, "TopazFUA"))
         return bl, dbl, al, dl, tl    
     
     def special(self):

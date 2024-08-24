@@ -17,5 +17,5 @@ class Messenger(Relic):
     def useUlt(self, enemyID):
         bl, dbl, al, dl = super().useUlt(enemyID)
         if self.allyUlt:
-            bl.append(Buff("MessengerUltSPD", "SPD%", 0.12, "ALL", ["ALL"], 1, 1, Role.SELF, TickDown.END))
+            bl.append(Buff("MessengerUltSPD", "SPD%", 0.12, Role.ALL, ["ALL"], 1, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl

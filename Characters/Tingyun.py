@@ -49,13 +49,13 @@ class Tingyun(Character):
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [1.1, 0], [10, 0], 25, self.scaling, 1, "TingyunBasic"))
-        tl.append(Turn(self.name, self.beneTarget, self.getTargetID(enemyID), "ST", ["BSC"], [self.element], [0.66, 0], [0, 0], 0, "ATK", 0, "TYAllyBonus"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.1, 0], [10, 0], 25, self.scaling, 1, "TingyunBasic"))
+        tl.append(Turn(self.name, self.beneTarget, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [0.66, 0], [0, 0], 0, "ATK", 0, "TYAllyBonus"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "TingyunSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "TingyunSkill"))
         bl.append(Buff("Benediction", "ATK%", 0.55, self.beneTarget, ["ALL"], 3, 1, self.beneTarget, TickDown.END))
         bl.append(Buff("TingyunSkillSPD", "SPD%", 0.2, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
@@ -63,15 +63,15 @@ class Tingyun(Character):
     def useUlt(self, enemyID=-1):
         self.currEnergy = self.currEnergy - self.ultCost
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TingyunUlt"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TingyunUlt"))
         bl.append(Buff("TingyunUltEnergy", "ERR_F", 60, self.beneTarget, ["ALL"], 1, 1, self.beneTarget, TickDown.PERM))
         bl.append(Buff("TingyunUltDMG", "DMG%", 0.56, self.beneTarget, ["ALL"], 2, 1, self.beneTarget, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if (turn.charRole == self.beneTarget) and (turn.moveName not in bonusDMG) and (turn.moveType != "NA"):
-            tl.append(Turn(self.name, self.beneTarget, result.enemiesHit[0], "ST", ["BSC"], [self.element], [0.64, 0], [0, 0], 0, "ATK", 0, "TYBeneBonus"))
+        if (turn.charRole == self.beneTarget) and (turn.moveName not in bonusDMG) and (turn.moveType != AtkTarget.NA):
+            tl.append(Turn(self.name, self.beneTarget, result.enemiesHit[0], AtkTarget.SINGLE, ["BSC"], [self.element], [0.64, 0], [0, 0], 0, "ATK", 0, "TYBeneBonus"))
         return bl, dbl, al, dl, tl
     
     

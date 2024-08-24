@@ -234,7 +234,7 @@ def addEnergy(playerTeam: list[Character], enemyTeam: list[Enemy], numAttacks: i
     finalEnergy = [sum(values) for values in zip(chanceAOE, chanceBlast, chanceST)]
     for i in range(len(playerTeam)):
         char = playerTeam[i]
-        placeHolderTurn = Turn(char.name, char.role, -1, "NA", ["ALL"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "HitEnergyPlaceholder")
+        placeHolderTurn = Turn(char.name, char.role, -1, AtkTarget.NA, ["ALL"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "HitEnergyPlaceholder")
         errMul = getMulERR(char, enemyTeam[0], buffList, [], placeHolderTurn) if not char.specialEnergy else 0
         if numAttacks != 0:
             char.addEnergy(finalEnergy[i] * errMul) 
@@ -362,7 +362,7 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         if enemyBroken:
             anyBroken = True
             ele = turn.element[0]
-            enemyBreakMul = getMulENEMY(char, enemy, buffList, debuffList, Turn(char.name, char.role, enemy.enemyID, "NA", ["BREAK"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "PlaceholderTurn"))
+            enemyBreakMul = getMulENEMY(char, enemy, buffList, debuffList, Turn(char.name, char.role, enemy.enemyID, AtkTarget.NA, ["BREAK"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "PlaceholderTurn"))
             wbDmg += eleDct[ele.value] * wbMultiplier * enemy.maxToughnessMul * charBE * enemyBreakMul
             newDelays.extend(wbDelay(ele, charBE, enemy))
             newDebuff.append(wbDebuff(ele, char.role, charBE, enemy))
@@ -380,12 +380,13 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         elif breakType == "SUPER": # superbreak logic
             pass
         return
+    
     enemiesHit = []
-    if "BREAK" in turn.moveType:
-        if "SP" in turn.moveType: # superbreak logic
+    if "BREAK" in turn.moveType.value:
+        if "SBREAK" in turn.moveType.value: # superbreak logic
             pass
         else:
-            if turn.moveType == "AOEBREAK":
+            if turn.moveType == AtkTarget.AOEBREAK:
                 for enemy in enemyTeam:
                     enemiesHit.append(enemy.enemyID)
                     processBreak(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0], "BREAK")
@@ -401,14 +402,14 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
                         adj_enemy = enemyTeam[enemyID]
                         enemiesHit.append(adj_enemy.enemyID) 
                         processBreak(turn, adj_enemy, turn.brkSplit[1], turn.dmgSplit[1], "BREAK")
-    elif turn.moveType == "AOE":
+    elif turn.moveType == AtkTarget.AOE:
         # AOE Attack
         for enemy in enemyTeam:
             enemiesHit.append(enemy.enemyID)
             a, b = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0])
             newDebuff.extend(a)
             newDelay.extend(b)
-    elif turn.moveType == "NA":
+    elif turn.moveType == AtkTarget.NA:
         if turn.moveName == "RobinConcertoDMG":
             char = findCharName(playerTeam, "Robin")
             enemy = findBestEnemy(char, enemyTeam, buffList, debuffList, turn)
@@ -442,7 +443,7 @@ def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], player
             newList.append(buff)
     for eb in errBuffs:
         char = findCharRole(playerTeam, eb.target)
-        placeholderTurn = Turn(char.name, char.role, 0, "NA", ["ALL"], ["ALL"], [0, 0], [0, 0], 0, char.scaling, 0, "PlaceHolderTurn: ERR")
+        placeholderTurn = Turn(char.name, char.role, 0, AtkTarget.NA, ["ALL"], ["ALL"], [0, 0], [0, 0], 0, char.scaling, 0, "PlaceHolderTurn: ERR")
         charERR = getMulERR(char, enemyTeam[0], buffList, debuffList, placeholderTurn)
         if not char.specialEnergy:
             if eb.buffType == "ERR_T":
@@ -456,7 +457,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
         
         if specStr == "updateRobinATK":
             char = findCharName(playerTeam, "Robin")
-            res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
+            res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, AtkTarget.NA, ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
             if "RobinUltBuff" in getBuffNames(buffList):
                 robinUltBuff = findBuffName(buffList, "RobinUltBuff")
                 res -= robinUltBuff.getBuffVal()
@@ -491,7 +492,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
         
         elif specStr == "getAvenDEF":
             char = findCharName(playerTeam, "Aventurine")
-            avenDef = getBaseValue(char, buffList, Turn(char.name, char.role, -1, "NA", ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateAvenDEF"))
+            avenDef = getBaseValue(char, buffList, Turn(char.name, char.role, -1, AtkTarget.NA, ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateAvenDEF"))
             aggroList = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
             bbList = [2 * aggroList[i] if i == char.pos else 1 * aggroList[i] for i in range(4)]
             return Special(name=specStr, attr1=avenDef, attr2=sum(bbList))
@@ -530,7 +531,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
         
         elif specStr == "CheckRuanMeiBE":
             rm = findCharName(playerTeam, "Ruan Mei")
-            be = getCharStat("BE%", rm, enemyTeam[0], buffList, debuffList, Turn(rm.name, rm.role, -1, "NA", ["ALL"], [rm.element], [0, 0], [0, 0], 0, rm.scaling, 0, "updateRMBE"))
+            be = getCharStat("BE%", rm, enemyTeam[0], buffList, debuffList, Turn(rm.name, rm.role, -1, AtkTarget.NA, ["ALL"], [rm.element], [0, 0], [0, 0], 0, rm.scaling, 0, "updateRMBE"))
             return Special(name=specStr, attr1=be)
         
         elif specStr == "Jiaoqiu":
@@ -538,12 +539,12 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
             ashenList = [db.stacks for db in debuffList if db.name == "AshenRoasted"]
             maxStacks = max(ashenList) if len(ashenList) > 0 else 0
             tickField = True if unit.name == "Jiaoqiu" else False
-            ehr = getCharStat("EHR%", jq, enemyTeam[0], buffList, debuffList, Turn(jq.name, jq.role, -1, "NA", ["ALL"], [jq.element], [0, 0], [0, 0], 0, jq.scaling, 0, "updateJQEHR"))
+            ehr = getCharStat("EHR%", jq, enemyTeam[0], buffList, debuffList, Turn(jq.name, jq.role, -1, AtkTarget.NA, ["ALL"], [jq.element], [0, 0], [0, 0], 0, jq.scaling, 0, "updateJQEHR"))
             return Special(name=specStr, attr1=ehr, attr2=maxStacks, attr3=tickField)
         
         elif specStr == "Bronya":
             bronya = findCharName(playerTeam, "Bronya")
-            cd = getCharStat("CD%", bronya, enemyTeam[0], buffList, debuffList, Turn(bronya.name, bronya.role, -1, "NA", ["ALL"], [bronya.element], [0, 0], [0, 0], 0, bronya.scaling, 0, "updateBronyaCD"))
+            cd = getCharStat("CD%", bronya, enemyTeam[0], buffList, debuffList, Turn(bronya.name, bronya.role, -1, AtkTarget.NA, ["ALL"], [bronya.element], [0, 0], [0, 0], 0, bronya.scaling, 0, "updateBronyaCD"))
             if "BronyaUltATK" in getBuffNames(buffList):
                 cd -= findBuffName(buffList, "BronyaUltCD").getBuffVal()
             return Special(name=specStr, attr1=cd)
