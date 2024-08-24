@@ -612,15 +612,15 @@ def checkValidList(list1: list, list2: list) -> bool:
     return any(l1 in set2 for l1 in list1)
 
 def getBaseValue(char, buffList: list[Buff], turn: Turn) -> float: 
-    if turn.scaling == "ATK" or turn.scaling == "DEF" or turn.scaling == "HP": # normal scaling attacks
+    if turn.scaling == Scaling.ATK or turn.scaling == Scaling.DEF or turn.scaling == Scaling.HP: # normal scaling attacks
         return getScalingValues(char, buffList, turn.atkType)
     else:
         return 0
     
-def getScalingValues(char, buffList: list[Buff], atkType: list[str]) -> float:
+def getScalingValues(char: Character, buffList: list[Buff], atkType: list[str]) -> float:
     base, mul, flat = char.getBaseStat()
-    mulChecker = f"{char.scaling}%"
-    flatChecker = char.scaling
+    mulChecker = char.scaling.value
+    flatChecker = char.scaling.name
     for buff in buffList:
         if buff.target != char.role:
             continue

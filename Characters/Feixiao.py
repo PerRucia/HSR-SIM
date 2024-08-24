@@ -20,7 +20,7 @@ class Feixiao(Character):
     name = "Feixiao"
     path = Path.HUNT
     element = Element.WIND
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 1047.8
     baseATK = 601.52
     baseDEF = 388.08

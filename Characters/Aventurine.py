@@ -16,7 +16,7 @@ class Aventurine(Character):
     name = "Aventurine"
     path = Path.PRESERVATION
     element = Element.IMAGINARY
-    scaling = "DEF"
+    scaling = Scaling.DEF
     baseHP = 1203.0
     baseATK = 446.29
     baseDEF = 654.88

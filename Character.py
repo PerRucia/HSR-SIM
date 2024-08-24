@@ -5,6 +5,7 @@ from RelicStats import RelicStats
 from Planar import Planar
 from Turn import Turn
 from Result import *
+from Misc import *
 import logging
 
 logger = logging.getLogger(__name__)
@@ -166,11 +167,11 @@ class Character:
         return res, ttl
     
     def getBaseStat(self) -> tuple[float, float, float]:
-        if self.scaling == "ATK":
+        if self.scaling == Scaling.ATK:
             baseStat = self.baseATK + self.lightcone.baseATK
-        if self.scaling == "HP":
+        if self.scaling == Scaling.HP:
             baseStat = self.baseATK + self.lightcone.baseHP
-        if self.scaling == "DEF":
+        if self.scaling == Scaling.DEF:
             baseStat = self.baseDEF + self.lightcone.baseDEF
         return baseStat, *self.getRelicScalingStats()
     

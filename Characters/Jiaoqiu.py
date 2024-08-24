@@ -19,7 +19,7 @@ class Jiaoqiu(Character):
     name = "Jiaoqiu"
     path = Path.NIHILITY
     element = Element.FIRE
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 1358.3
     baseATK = 601.52
     baseDEF = 509.36

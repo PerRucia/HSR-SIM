@@ -18,7 +18,7 @@ class Fuxuan(Character):
     name = "FuXuan"
     path = Path.PRESERVATION
     element = Element.QUANTUM
-    scaling = "HP"
+    scaling = Scaling.HP
     baseHP = 1474.7
     baseATK = 465.70
     baseDEF = 606.38

@@ -1,3 +1,5 @@
+from Misc import *
+
 class RelicStats:
     def __init__(self, spd, hpF, atkF, defF, hpP, atkP, defP, be, ehr, ers, cr, cd, bodyMain, bootMain, sphereMain, ropeMain):
         self.spd = spd
@@ -21,11 +23,11 @@ class RelicStats:
         return sum([1 for item in [self.body, self.boots, self.sphere, self.rope] if item == query])
     
     def getScalingValue(self, scaling: str) -> tuple[float, float]: # returns Scaling%, ScalingFlat
-        if scaling == "HP":
+        if scaling == Scaling.HP:
             return self.getHPPercent(), self.getHPFlat()
-        elif scaling == "ATK":
+        elif scaling == Scaling.ATK:
             return self.getATKPercent(), self.getATKFlat()
-        elif scaling == "DEF":
+        elif scaling == Scaling.DEF:
             return self.getDEFPercent(), self.getDEFFlat()
         return 0, 0
     

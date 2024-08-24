@@ -18,7 +18,7 @@ class Bronya(Character):
     name = "Bronya"
     path = Path.HARMONY
     element = Element.WIND
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 1241.9
     baseATK = 582.12
     baseDEF = 533.61

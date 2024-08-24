@@ -18,7 +18,7 @@ class Luocha(Character):
     name = "Luocha"
     path = Path.ABUNDANCE
     element = Element.IMAGINARY
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 1280.7
     baseATK = 756.76
     baseDEF = 363.82

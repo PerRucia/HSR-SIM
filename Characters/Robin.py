@@ -17,7 +17,7 @@ class Robin(Character):
     name = "Robin"
     path = Path.HARMONY
     element = Element.PHYSICAL
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 1280.7
     baseATK = 640.33
     baseDEF = 485.10

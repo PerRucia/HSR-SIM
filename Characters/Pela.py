@@ -18,7 +18,7 @@ class Pela(Character):
     name = "Pela"
     path = Path.NIHILITY
     element = Element.ICE
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 987.8
     baseATK = 546.84
     baseDEF = 463.05

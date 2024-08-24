@@ -19,7 +19,7 @@ class Gallagher(Character):
     name = "Gallagher"
     path = Path.ABUNDANCE
     element = Element.FIRE
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 1305.4
     baseATK = 529.20
     baseDEF = 441.00

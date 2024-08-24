@@ -14,7 +14,7 @@ class HuoHuo(Character):
     name = "HuoHuo"
     path = Path.ABUNDANCE
     element = Element.WIND
-    scaling = "HP"
+    scaling = Scaling.HP
     baseHP = 1358.3
     baseATK = 601.52
     baseDEF = 509.36

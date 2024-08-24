@@ -18,7 +18,7 @@ class Hunt7th(Character):
     name = "HuntM7"
     path = Path.HUNT
     element = Element.IMAGINARY
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 1058.4
     baseATK = 564.48
     baseDEF = 441.00

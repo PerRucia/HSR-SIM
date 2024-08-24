@@ -19,7 +19,7 @@ class RuanMei(Character):
     name = "Ruan Mei"
     path = Path.HARMONY
     element = Element.ICE
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 1086.6
     baseATK = 659.74
     baseDEF = 485.10

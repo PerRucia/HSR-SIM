@@ -14,7 +14,7 @@ class Yunli(Character):
     name = "Yunli"
     path = Path.DESTRUCTION
     element = Element.PHYSICAL
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 1358.3
     baseATK = 679.14
     baseDEF = 460.85

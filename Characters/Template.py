@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 class Template(Character):
     # Standard Character Settings
-    name = ""
-    path = ""
-    element = ""
-    scaling = ""
+    name = 
+    path = 
+    element = 
+    scaling = 
     baseHP = 0
     baseATK = 0
     baseDEF = 0

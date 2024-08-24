@@ -19,7 +19,7 @@ class Moze(Character):
     name = "Moze"
     path = Path.HUNT
     element = Element.LIGHTNING
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 811.4
     baseATK = 546.84
     baseDEF = 352.80

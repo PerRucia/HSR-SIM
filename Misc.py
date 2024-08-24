@@ -55,6 +55,6 @@ class Role(Enum):
     SUS = auto()
     
 class Scaling(Enum):
-    ATK = auto()
-    HP = auto()
-    DEF = auto()
+    ATK = "ATK%"
+    HP = "HP%"
+    DEF = "DEF%"

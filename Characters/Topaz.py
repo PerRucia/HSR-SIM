@@ -17,7 +17,7 @@ class Topaz(Character):
     name = "Topaz"
     path = Path.HUNT
     element = Element.FIRE
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 931.4
     baseATK = 620.93
     baseDEF = 412.33

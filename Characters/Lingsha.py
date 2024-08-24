@@ -18,7 +18,7 @@ class Lingsha(Character):
     name = "Lingsha"
     path = Path.ABUNDANCE
     element = Element.FIRE
-    scaling = "ATK"
+    scaling = Scaling.ATK   
     baseHP = 1358.3
     baseATK = 679.14
     baseDEF = 436.59
