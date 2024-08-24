@@ -88,9 +88,6 @@ class Character:
     def handleSpecialStart(self, specialRes: Special):
         return *self.parseEquipment("SPECIALS", special=specialRes), []
     
-    def handleSpecialMiddle(self, specialRes: Special):
-        return *self.parseEquipment("SPECIALM", special=specialRes), []
-    
     def handleSpecialEnd(self, specialRes: Special):
         return *self.parseEquipment("SPECIALE", special=specialRes), []
     
@@ -118,8 +115,6 @@ class Character:
                 buffs, debuffs, advs, delays = equipment.useHit(enemyID)
             elif actionType == "SPECIALS":
                 buffs, debuffs, advs, delays = equipment.specialStart(special)
-            elif actionType == "SPECIALM":
-                buffs, debuffs, advs, delays = equipment.specialMiddle(special)
             elif actionType == "SPECIALE":
                 buffs, debuffs, advs, delays = equipment.specialEnd(special)
             elif actionType == "OWN":
@@ -170,7 +165,7 @@ class Character:
         if self.scaling == Scaling.ATK:
             baseStat = self.baseATK + self.lightcone.baseATK
         if self.scaling == Scaling.HP:
-            baseStat = self.baseATK + self.lightcone.baseHP
+            baseStat = self.baseHP + self.lightcone.baseHP
         if self.scaling == Scaling.DEF:
             baseStat = self.baseDEF + self.lightcone.baseDEF
         return baseStat, *self.getRelicScalingStats()

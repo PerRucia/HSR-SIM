@@ -15,23 +15,23 @@ class UnjustDestinyAven(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         defBuff = self.level * 0.06 + 0.34
-        buffList.append(Buff("UnjustDEF", "DEF%", defBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("UnjustDEF", Pwr.DEF_PERCENT, defBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         cdBuff = self.level * 0.06 + 0.34
-        buffList.append(Buff("UnjustCD", "CD%", cdBuff, self.wearerRole, ["ALL"], 2, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("UnjustCD", Pwr.CD_PERCENT, cdBuff, self.wearerRole, ["ALL"], 2, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl = super().useSkl(enemyID)
         cdBuff = self.level * 0.06 + 0.34
-        bl.append(Buff("UnjustCD", "CD%", cdBuff, self.wearerRole, ["ALL"], 2, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("UnjustCD", Pwr.CD_PERCENT, cdBuff, self.wearerRole, ["ALL"], 2, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl = super().useFua(enemyID)
         cdBuff = self.level * 0.06 + 0.34
-        bl.append(Buff("UnjustCD", "CD%", cdBuff, self.wearerRole, ["ALL"], 2, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("UnjustCD", Pwr.CD_PERCENT, cdBuff, self.wearerRole, ["ALL"], 2, 1, Role.SELF, TickDown.PERM))
         vulnDebuff = self.level * 0.015 + 0.085
-        dbl.append(Debuff("UnjustVuln", self.wearerRole, "VULN", vulnDebuff, Role.ALL, ["ALL"], 2, 1, False, [0, 0], False))
+        dbl.append(Debuff("UnjustVuln", self.wearerRole, Pwr.VULN, vulnDebuff, Role.ALL, ["ALL"], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
     

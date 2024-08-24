@@ -17,11 +17,11 @@ class InTheNight(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         crBuff = self.level * 0.03 + 0.15
-        buffList.append(Buff("InTheNightCR", "CR%", crBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("InTheNightCR", Pwr.CR_PERCENT, crBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         dmgBuff = (self.level * 0.01 + 0.05) * self.bonusStacks
         cdBuff = (self.level * 0.02 + 0.1) * self.bonusStacks
-        buffList.append(Buff("InTheNightDMG", "DMG%", dmgBuff, self.wearerRole, ["BSC", "SKL"], 1, 1, Role.SELF, TickDown.PERM))
-        buffList.append(Buff("InTheNightCD", "CD%", cdBuff, self.wearerRole, ["ULT"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("InTheNightDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, ["BSC", "SKL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("InTheNightCD", Pwr.CD_PERCENT, cdBuff, self.wearerRole, ["ULT"], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     

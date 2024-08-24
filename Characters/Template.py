@@ -34,7 +34,7 @@ class Template(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    relicStats = RelicStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "HP%", "HP%", "HP%", "HP%")
+    relicStats = RelicStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT)
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
         super().__init__(pos, role, defaultTarget)

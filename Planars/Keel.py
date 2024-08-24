@@ -9,7 +9,7 @@ class Keel(Planar):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("KeelEFFRES", "ERS%", 0.10, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        buffList.append(Buff(f"KeelCD({self.wearerRole.name})", "CD%", 0.10, Role.ALL, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("KeelEFFRES", Pwr.ERS_PERCENT, 0.10, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff(f"KeelCD({self.wearerRole.name})", Pwr.CD_PERCENT, 0.10, Role.ALL, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     

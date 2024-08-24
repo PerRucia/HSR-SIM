@@ -1,7 +1,8 @@
 from Character import Character
 from Lightcones.VentureForth import VentureForthFeixiao
 from Lightcones.Cruising import Cruising
-from Lightcones.Subscribe import Subscribe
+from Lightcones.Blissful import BlissfulFeixiao
+from Lightcones.Swordplay import Swordplay
 from Relics.WindSoaring import WindSoaringYunli
 from Relics.Duke import DukeFeixiao
 from Planars.Duran import Duran
@@ -44,13 +45,13 @@ class Feixiao(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    # Default = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", "DMG%", "ATK%")
-    # Bronya Tuning = RelicStats(3, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", "DMG%", "ATK%")
-    relicStats = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", "DMG%", "ATK%")
+    # Default = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+    # Bronya Tuning = RelicStats(3, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+    relicStats = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
     def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lcLevel: int = 1, sig: bool = True):
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = VentureForthFeixiao(role, lcLevel) if sig else Cruising(role, 5)
+        self.lightcone = VentureForthFeixiao(role, lcLevel) if sig else Cruising(role)
         self.relic1 = WindSoaringYunli(role, 4) # same as yunli, ult also counts as FuA
         self.relic2 = None
         self.planar = Duran(role)
@@ -58,12 +59,12 @@ class Feixiao(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("FeixiaoTraceCR", "CR%", 0.12, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("FeixiaoTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("FeixiaoTraceDEF", "DEF%", 0.125, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("FeixiaoFuaCD", "CD%", 0.36, self.role, ["FUA"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("FeixiaoTraceCR", Pwr.CR_PERCENT, 0.12, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("FeixiaoTraceATK", Pwr.ATK_PERCENT, 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("FeixiaoTraceDEF", Pwr.DEF_PERCENT, 0.125, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("FeixiaoFuaCD", Pwr.CD_PERCENT, 0.36, self.role, ["FUA"], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon == 6:
-            bl.append(Buff("FeixiaoE6PEN", "PEN", 0.20, self.role, ["ULT"], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("FeixiaoE6PEN", Pwr.PEN, 0.20, self.role, ["ULT"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -83,10 +84,10 @@ class Feixiao(Character):
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["SKL"], [self.element], [sklMul, 0], [20, 0], 0.5, self.scaling, -1, "FeixiaoSkill"))
         self.fuas = self.fuas + 1
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, atkType, [self.element], [fuaMul + e6Bonus, 0], [5 + e4Bonus, 0], 0.5 + e2Bonus, self.scaling, 0, "FeixiaoSkillFUA"))
-        bl.append(Buff("FeixiaoSkillATK", "ATK%", 0.48, self.role, ["ALL"], 3, 1, Role.SELF, TickDown.END))
-        bl.append(Buff("FeixiaoFuaDMG", "DMG%", 0.60, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("FeixiaoSkillATK", Pwr.ATK_PERCENT, 0.48, self.role, ["ALL"], 3, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("FeixiaoFuaDMG", Pwr.DMG_PERCENT, 0.60, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         if self.eidolon >= 4:
-            bl.append(Buff("FeixiaoE4SPD", "SPD%", 0.08, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
+            bl.append(Buff("FeixiaoE4SPD", Pwr.SPD_PERCENT, 0.08, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -108,9 +109,9 @@ class Feixiao(Character):
         e6Bonus = 1.4 if self.eidolon == 6 else 0
         atkType = ["FUA", "ULT", "DUKEFUA"] if self.eidolon == 6 else ["FUA", "DUKEFUA"]
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, atkType, [self.element], [fuaMul + e6Bonus, 0], [5 + e4Bonus, 0], 0.5 + e2Bonus, self.scaling, 0, "FeixiaoFua"))
-        bl.append(Buff("FeixiaoFuaDMG", "DMG%", 0.60, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("FeixiaoFuaDMG", Pwr.DMG_PERCENT, 0.60, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         if self.eidolon >= 4:
-            bl.append(Buff("FeixiaoE4SPD", "SPD%", 0.08, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
+            bl.append(Buff("FeixiaoE4SPD", Pwr.SPD_PERCENT, 0.08, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):

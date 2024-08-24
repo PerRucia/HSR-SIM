@@ -35,7 +35,7 @@ class Luocha(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    relicStats = RelicStats(10, 2, 2, 2, 2, 14, 4, 0, 4, 8, 0, 0, "OGH%", "SPD", "ATK%", "ERR%")
+    relicStats = RelicStats(10, 2, 2, 2, 2, 14, 4, 0, 4, 8, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
         super().__init__(pos, role, defaultTarget)
@@ -46,9 +46,9 @@ class Luocha(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("LuochaTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("LuochaTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("LuochaTraceDEF", "DEF%", 0.125, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LuochaTraceATK", Pwr.ATK_PERCENT, 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LuochaTraceHP", Pwr.HP_PERCENT, 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LuochaTraceDEF", Pwr.DEF_PERCENT, 0.125, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):

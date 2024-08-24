@@ -35,47 +35,47 @@ class RelicStats:
         return self.spd + self.hpFlat + self.atkFlat + self.defFlat + self.hpPercent + self.atkPercent + self.defPercent + self.be + self.ehr + self.ers + self.cr + self.cd
     
     def getSPD(self) -> float:
-        return self.spd * 2.3 + self.findMains("SPD") * 25.032
+        return self.spd * 2.3 + self.findMains(Pwr.SPD) * 25.032
     
     def getHPFlat(self) -> float:
         return 705.6 + self.hpFlat * 38.103755
     
     def getHPPercent(self) -> float:
-        return self.hpPercent * 0.03888 + self.findMains("HP%") * 0.432
+        return self.hpPercent * 0.03888 + self.findMains(Pwr.HP_PERCENT) * 0.432
     
     def getATKFlat(self) -> float:
         return self.atkFlat * 19.051877 + 352.8
     
     def getATKPercent(self) -> float:
-        return self.atkPercent * 0.03888 + self.findMains("ATK%") * 0.432
+        return self.atkPercent * 0.03888 + self.findMains(Pwr.ATK_PERCENT) * 0.432
     
     def getDEFFlat(self) -> float:
         return self.defFlat * 19.051877
     
     def getDEFPercent(self) -> float:
-        return self.defPercent * 0.0486 + self.findMains("DEF%") * 0.54
+        return self.defPercent * 0.0486 + self.findMains(Pwr.DEF_PERCENT) * 0.54
     
     def getBE(self) -> float:
-        return self.be * 0.05832 + self.findMains("BE%") * 0.648
+        return self.be * 0.05832 + self.findMains(Pwr.BE_PERCENT) * 0.648
     
     def getEHR(self) -> float:
-        return self.ehr * 0.03888 + self.findMains("EHR%") * 0.432
+        return self.ehr * 0.03888 + self.findMains(Pwr.EHR_PERCENT) * 0.432
     
     def getERS(self) -> float:
         return self.ers * 0.03888
     
     def getCR(self) -> float:
-        return self.cr * 0.02916 + self.findMains("CR%") * 0.324 + 0.05
+        return self.cr * 0.02916 + self.findMains(Pwr.CR_PERCENT) * 0.324 + 0.05
     
     def getCD(self) -> float:
-        return self.cd * 0.05832 + self.findMains("CD%") * 0.648 + 0.5
+        return self.cd * 0.05832 + self.findMains(Pwr.CD_PERCENT) * 0.648 + 0.5
     
     def getDMG(self) -> float:
-        return self.findMains("DMG%") * 0.388803
+        return self.findMains(Pwr.DMG_PERCENT) * 0.388803
     
     def getERR(self) -> float:
-        return self.findMains("ERR%") * 0.194394
+        return self.findMains(Pwr.ERR_PERCENT) * 0.194394
     
     def getOGH(self) -> float:
-        return self.findMains("OGH%") * 0.345606 
+        return self.findMains(Pwr.OGH_PERCENT) * 0.345606 
         

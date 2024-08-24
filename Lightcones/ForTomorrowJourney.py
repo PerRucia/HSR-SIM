@@ -15,12 +15,12 @@ class Journey(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         atkBuff = self.level * 0.04 + 0.12
-        buffList.append(Buff("JourneyATK", "ATK%", atkBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("JourneyATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     def useUlt(self, enemyID):
         buffList, debuffList, advList, delayList = super().useUlt(enemyID)
         dmgBuff = self.level * 0.03 + 0.15
-        buffList.append(Buff("JourneyUltDMG", "DMG%", dmgBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.END))
+        buffList.append(Buff("JourneyUltDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.END))
         return buffList, debuffList, advList, delayList    
     

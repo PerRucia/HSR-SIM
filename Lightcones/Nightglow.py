@@ -15,14 +15,14 @@ class Nightglow(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         err = (self.level * 0.005 + 0.025) * 5
-        buffList.append(Buff("NightglowERR", "ERR%", err, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("NightglowERR", Pwr.ERR_PERCENT, err, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     def useUlt(self, enemyID):
         buffList, debuffList, advList, delayList = super().useUlt(enemyID)
         atk = self.level * 0.12 + 0.36
         dmg = self.level * 0.04 + 0.20
-        buffList.append(Buff("NightglowATK", "ATK%", atk, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.END))
-        buffList.append(Buff("NightglowDMG", "DMG%", dmg, Role.ALL, ["ALL"], 1, 1, Role.SELF, TickDown.END))
+        buffList.append(Buff("NightglowATK", Pwr.ATK_PERCENT, atk, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.END))
+        buffList.append(Buff("NightglowDMG", Pwr.DMG_PERCENT, dmg, Role.ALL, ["ALL"], 1, 1, Role.SELF, TickDown.END))
         return buffList, debuffList, advList, delayList    
     

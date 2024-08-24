@@ -32,7 +32,7 @@ class Yunli(Character):
     hitMultiplier = 0
     
     # Relic Settings
-    relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 13, 11, "CR%", "ATK%", "DMG%", "ATK%")
+    relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 13, 11, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
         super().__init__(pos, role, defaultTarget)
@@ -44,11 +44,11 @@ class Yunli(Character):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.extend([Buff("YunliSelfATK", "ATK%", 0.3, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
-                         Buff("YunliSelfCD", "CD%", 1.0, self.role, ["ULT"], 1, 1, Role.SELF, TickDown.PERM),
-                         Buff("YunliTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
-                         Buff("YunliTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
-                         Buff("YunliTraceCR", "CR%", 0.067, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)
+        buffList.extend([Buff("YunliSelfATK", Pwr.ATK_PERCENT, 0.3, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("YunliSelfCD", Pwr.CD_PERCENT, 1.0, self.role, ["ULT"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("YunliTraceATK", Pwr.ATK_PERCENT, 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("YunliTraceHP", Pwr.HP_PERCENT, 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("YunliTraceCR", Pwr.CR_PERCENT, 0.067, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)
                          ])
         return buffList, debuffList, advList, delayList
     

@@ -16,7 +16,7 @@ class Resolution(Lightcone):
     def useBsc(self, enemyID):
         bl, dbl, al, dl = super().useBsc(enemyID)
         shredBuff = self.level * 0.01 + 0.11
-        dbl.append(Debuff(f"ResoShred({self.wearerRole.name})", self.wearerRole, "SHRED", shredBuff, enemyID, ["ALL"], 1, 1, False, [0, 0], False))
+        dbl.append(Debuff(f"ResoShred({self.wearerRole.name})", self.wearerRole, Pwr.SHRED, shredBuff, enemyID, ["ALL"], 1, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
 class ResolutionPela(Resolution):
@@ -27,13 +27,13 @@ class ResolutionPela(Resolution):
     def useSkl(self, enemyID):
         bl, dbl, al, dl = super().useSkl(enemyID)
         shredBuff = self.level * 0.01 + 0.11
-        dbl.append(Debuff(f"ResoShred({self.wearerRole.name})", self.wearerRole, "SHRED", shredBuff, enemyID, ["ALL"], 1, 1, False, [0, 0], False))
+        dbl.append(Debuff(f"ResoShred({self.wearerRole.name})", self.wearerRole, Pwr.SHRED, shredBuff, enemyID, ["ALL"], 1, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
     def useUlt(self, enemyID):
         bl, dbl, al, dl = super().useUlt(enemyID)
         shredBuff = self.level * 0.01 + 0.11
-        dbl.append(Debuff(f"ResoShred({self.wearerRole.name})", self.wearerRole, "SHRED", shredBuff, Role.ALL, ["ALL"], 1, 1, False, [0, 0], False))
+        dbl.append(Debuff(f"ResoShred({self.wearerRole.name})", self.wearerRole, Pwr.SHRED, shredBuff, Role.ALL, ["ALL"], 1, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
 class ResolutionJQ(ResolutionPela):

@@ -32,13 +32,13 @@ slot3 = Aventurine(2, Role.SUS, 0)
 slot4 = Topaz(3, Role.SUBDPS, 0)
 
 # Simulation Settings
-cycleLimit = 50
+cycleLimit = 5
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
 spUsed = 0
 totalEnemyAttacks = 0
-logLevel = logging.CRITICAL
+logLevel = logging.DEBUG
 # CRITICAL: Only prints the main action taken during each turn + ultimates
 # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
 # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
@@ -229,24 +229,6 @@ while simAV < avLimit:
     spUsed += spMinus
     
     # Handle any errGain from unit turns
-    teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
-    
-    # Apply any special effects
-    for char in playerTeam:
-        if char.hasSpecial:
-            spec = char.special()
-            specRes = handleSpec(spec, unit, playerTeam, eTeam, teamBuffs, enemyDebuffs, "MIDDLE")
-            bl, dbl, al, dl, tl = char.handleSpecialMiddle(specRes)
-            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
-            turnList.extend(tl)
-    
-    # Handle any attacks from special attacks  
-    teamBuffs, enemyDebuffs, advList, delayList, spPlus, spMinus = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
-    spGain += spPlus
-    spUsed += spMinus
-    turnList = []        
-    
-    # Add Energy if any was provided from special effects
     teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
     
     # Check if any unit can ult

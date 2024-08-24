@@ -6,11 +6,12 @@ eleDct = {"PHY": 2.0, "FIR": 2.0, "WIN": 1.5, "ICE": 1.0, "LNG": 1.0, "QUA": 0.5
 
 atkRatio = [0.55, 0.2, 0.25] # Single Target, Blast Attack, AOE Attack splits for enemy behaviour
 
-class BuffType(Enum):
+class Pwr(Enum):
     SPD = "SPD"
     HP = "HP"
     ATK = "ATK"
     DEF = "DEF"
+    SPD_PERCENT = "SPD%"
     HP_PERCENT = "HP%"
     ATK_PERCENT = "ATK%"
     DEF_PERCENT = "DEF%"
@@ -36,6 +37,12 @@ class BuffType(Enum):
     PHYPEN = "PHYPEN"
     QUAPEN = "QUAPEN"
     IMGPEN = "IMGPEN"
+    ENTANGLE = "ENTANGLE"
+    SHOCK = "SHOCK"
+    WINDSHEAR = "WINDSHEAR"
+    FREEZE = "FREEZE"
+    BURN = "BURN"
+    BLEED = "BLEED"
     
 class Element(Enum):
     WIND = "WIN"
@@ -88,4 +95,5 @@ class AtkTarget(Enum):
     STSB = "STSBREAK"
     BLASTSB = "BLASTSBREAK"
     AOESB = "AOESBREAK"
+    DOT = "DOT"
     

@@ -38,9 +38,7 @@ class Aventurine(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    # Default = RelicStats(6, 2, 1, 5, 4, 3, 3, 0, 4, 2, 13, 7, "DEF%", "SPD", "DEF%", "DEF%")
-    # Bronya Tuning = RelicStats(2, 2, 3, 5, 4, 3, 3, 0, 4, 2, 13, 7, "DEF%", "SPD", "DEF%", "DEF%")
-    relicStats = RelicStats(6, 2, 1, 5, 4, 3, 3, 0, 4, 2, 13, 7, "DEF%", "SPD", "DEF%", "DEF%")
+    relicStats = RelicStats(6, 2, 1, 5, 4, 3, 3, 0, 4, 2, 13, 7, Pwr.DEF_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.DEF_PERCENT)
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon = 0) -> None:
         super().__init__(pos, role, defaultTarget)
@@ -52,11 +50,11 @@ class Aventurine(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("AvenTraceDEF", "DEF%", 0.35, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("AvenTraceDMG", "DMG%", 0.144, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("AvenTraceERS", "ERS%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("AvenTraceDEF", Pwr.DEF_PERCENT, 0.35, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("AvenTraceDMG", Pwr.DMG_PERCENT, 0.144, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("AvenTraceERS", Pwr.ERS_PERCENT, 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon >= 1:
-            bl.append(Buff("AvenE1CD", "CD%", 0.20, "ALL", ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("AvenE1CD", Pwr.CD_PERCENT, 0.20, Role.ALL, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -74,7 +72,7 @@ class Aventurine(Character):
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["ULT"], [self.element], [2.7, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
         self.currEnergy = self.currEnergy - self.ultCost
         self.blindBetStacks = min(self.blindBetStacks + 4, 10)
-        dbl.append(Debuff("AvenUltCD", self.role, "CD%", 0.15, 1, ["ALL"], 3, 1, False, [0, 0], False))
+        dbl.append(Debuff("AvenUltCD", self.role, Pwr.CD_PERCENT, 0.15, 1, ["ALL"], 3, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):
@@ -112,7 +110,7 @@ class Aventurine(Character):
             self.baseDefStat = specialRes.attr1
             self.bbPerHit = specialRes.attr2
             crBuff = min((self.baseDefStat - 1600) // 100, 24)
-            bl.append(Buff("AvenBonusCR", "CR%", 0.02 * crBuff, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("AvenBonusCR", Pwr.CR_PERCENT, 0.02 * crBuff, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl, tl
     
     

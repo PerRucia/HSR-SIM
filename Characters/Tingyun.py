@@ -29,7 +29,7 @@ class Tingyun(Character):
     beneTarget = Role.DPS
     
     # Relic Settings
-    relicStats = RelicStats(9, 2, 2, 5, 2, 4, 6, 6, 3, 6, 3, 0, "ATK%", "SPD", "ATK%", "ERR%")
+    relicStats = RelicStats(9, 2, 2, 5, 2, 4, 6, 6, 3, 6, 3, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
         super().__init__(pos, role, defaultTarget)
@@ -40,38 +40,38 @@ class Tingyun(Character):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.extend([Buff("TingyunBasicDMG", "DMG%", 0.4, self.role, ["BSC"], 1, 1, Role.SELF, TickDown.PERM),
-                         Buff("TingyunTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
-                         Buff("TingyunTraceDEF", "DEF%", 0.225, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
-                         Buff("TingyunTraceDMG", "DMG%", 0.08, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)
+        buffList.extend([Buff("TingyunBasicDMG", Pwr.DMG_PERCENT, 0.4, self.role, ["BSC"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("TingyunTraceATK", Pwr.ATK_PERCENT, 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("TingyunTraceDEF", Pwr.DEF_PERCENT, 0.225, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("TingyunTraceDMG", Pwr.DMG_PERCENT, 0.08, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)
                          ])
         return buffList, debuffList, advList, delayList
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.1, 0], [10, 0], 25, self.scaling, 1, "TingyunBasic"))
-        tl.append(Turn(self.name, self.beneTarget, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [0.66, 0], [0, 0], 0, "ATK", 0, "TYAllyBonus"))
+        tl.append(Turn(self.name, self.beneTarget, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [0.66, 0], [0, 0], 0, Scaling.ATK, 0, "TYAllyBonus"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "TingyunSkill"))
-        bl.append(Buff("Benediction", "ATK%", 0.55, self.beneTarget, ["ALL"], 3, 1, self.beneTarget, TickDown.END))
-        bl.append(Buff("TingyunSkillSPD", "SPD%", 0.2, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("Benediction", Pwr.ATK_PERCENT, 0.55, self.beneTarget, ["ALL"], 3, 1, self.beneTarget, TickDown.END))
+        bl.append(Buff("TingyunSkillSPD", Pwr.SPD_PERCENT, 0.2, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         self.currEnergy = self.currEnergy - self.ultCost
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TingyunUlt"))
-        bl.append(Buff("TingyunUltEnergy", "ERR_F", 60, self.beneTarget, ["ALL"], 1, 1, self.beneTarget, TickDown.PERM))
-        bl.append(Buff("TingyunUltDMG", "DMG%", 0.56, self.beneTarget, ["ALL"], 2, 1, self.beneTarget, TickDown.END))
+        bl.append(Buff("TingyunUltEnergy", Pwr.ERR_F, 60, self.beneTarget, ["ALL"], 1, 1, self.beneTarget, TickDown.PERM))
+        bl.append(Buff("TingyunUltDMG", Pwr.DMG_PERCENT, 0.56, self.beneTarget, ["ALL"], 2, 1, self.beneTarget, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
         if (turn.charRole == self.beneTarget) and (turn.moveName not in bonusDMG) and (turn.moveType != AtkTarget.NA):
-            tl.append(Turn(self.name, self.beneTarget, result.enemiesHit[0], AtkTarget.SINGLE, ["BSC"], [self.element], [0.64, 0], [0, 0], 0, "ATK", 0, "TYBeneBonus"))
+            tl.append(Turn(self.name, self.beneTarget, result.enemiesHit[0], AtkTarget.SINGLE, ["BSC"], [self.element], [0.64, 0], [0, 0], 0, Scaling.ATK, 0, "TYBeneBonus"))
         return bl, dbl, al, dl, tl
     
     

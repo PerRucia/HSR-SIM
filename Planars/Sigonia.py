@@ -13,6 +13,6 @@ class Sigonia(Planar):
         
     def equip(self):
         bl, dbl, al, dl, = super().equip()
-        bl.append(Buff("SigoniaCR", "CR%", 0.04, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("SigoniaCD", "CD%", 0.40 * self.uptime, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("SigoniaCR", Pwr.CR_PERCENT, 0.04, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("SigoniaCD", Pwr.CD_PERCENT, 0.40 * self.uptime, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl

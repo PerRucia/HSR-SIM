@@ -41,7 +41,7 @@ class Buff:
         self.tdType = tdType
         
     def __str__(self) -> str:
-        res = f"{self.name} | {self.buffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
+        res = f"{self.name} | {self.buffType.value} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
         res += f"Remaining Turns: {self.turns} | TickDown: {self.tickDown.name}, {self.tdType.name} | "
         res += f"Target: {self.target.name} | Affects: {self.atkType}"
         return res
@@ -85,7 +85,7 @@ class Debuff:
         self.dotMul = 0
         
     def __str__(self) -> str:
-        res = f"{self.name} | From: {self.charRole.name} | {self.debuffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
+        res = f"{self.name} | From: {self.charRole.name} | {self.debuffType.value} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
         res += f"Remaining Turns: {self.turns} | Target: {self.target} | Affects: {self.atkType} | DOT: {self.isDot} | Blast: {self.isBlast}"
         return res
         

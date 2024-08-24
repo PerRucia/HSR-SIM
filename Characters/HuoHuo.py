@@ -38,7 +38,7 @@ class HuoHuo(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    relicStats = RelicStats(8, 2, 3, 4, 7, 6, 4, 0, 0, 9, 5, 0, "OGH%", "SPD", "HP%", "ERR%")
+    relicStats = RelicStats(8, 2, 3, 4, 7, 6, 4, 0, 0, 9, 5, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.HP_PERCENT, Pwr.ERR_PERCENT)
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
         super().__init__(pos, role, defaultTarget)
@@ -49,9 +49,9 @@ class HuoHuo(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("HHTraceHP", "HP%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("HHTraceERS", "ERS%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("HHTraceSPD", "SPD", 5, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("HHTraceHP", Pwr.HP_PERCENT, 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("HHTraceERS", Pwr.ERS_PERCENT, 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("HHTraceSPD", Pwr.SPD, 5, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -67,10 +67,10 @@ class HuoHuo(Character):
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
-        bl.append(Buff("HuoHuoUltATK", "ATK%", 0.4, Role.ALL, ["ALL"], 2, 1, Role.SELF, TickDown.END))
-        bl.append(Buff("HuoHuoERR", "ERR_F", self.ally1Energy, self.ally1Role, ["ALL"], 1, 1, self.ally1Role, TickDown.PERM))
-        bl.append(Buff("HuoHuoERR", "ERR_F", self.ally2Energy, self.ally2Role, ["ALL"], 1, 1, self.ally2Role, TickDown.PERM))
-        bl.append(Buff("HuoHuoERR", "ERR_F", self.ally3Energy, self.ally3Role, ["ALL"], 1, 1, self.ally3Role, TickDown.PERM))
+        bl.append(Buff("HuoHuoUltATK", Pwr.ATK_PERCENT, 0.4, Role.ALL, ["ALL"], 2, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("HuoHuoERR", Pwr.ERR_F, self.ally1Energy, self.ally1Role, ["ALL"], 1, 1, self.ally1Role, TickDown.PERM))
+        bl.append(Buff("HuoHuoERR", Pwr.ERR_F, self.ally2Energy, self.ally2Role, ["ALL"], 1, 1, self.ally2Role, TickDown.PERM))
+        bl.append(Buff("HuoHuoERR", Pwr.ERR_F, self.ally3Energy, self.ally3Role, ["ALL"], 1, 1, self.ally3Role, TickDown.PERM))
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "HuoHuoULT"))
         return bl, dbl, al, dl, tl
     

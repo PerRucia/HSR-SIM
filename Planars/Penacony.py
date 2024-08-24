@@ -12,7 +12,7 @@ class Penacony(Planar):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("PenaconyERR", "ERR%", 0.05, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.END))
+        buffList.append(Buff("PenaconyERR", Pwr.ERR_PERCENT, 0.05, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.END))
         for role in self.sameEle:
-            buffList.append(Buff("PenaconyDMG", "DMG%", 0.1, role, ["ALL"], 1, 1, role, TickDown.END))
+            buffList.append(Buff("PenaconyDMG", Pwr.DMG_PERCENT, 0.1, role, ["ALL"], 1, 1, role, TickDown.END))
         return buffList, debuffList, advList, delayList

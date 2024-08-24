@@ -40,10 +40,7 @@ class Topaz(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    # CruisingBuild: RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 8, 16, "CR%", "SPD", "DMG%", "ATK%")
-    # SwordplayBuild: RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, "CR%", "SPD", "DMG%", "ATK%")
-    # BronyaBuild: RelicStats(3, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, "CR%", "SPD", "DMG%", "ATK%")
-    relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, "CR%", "SPD", "DMG%", "ATK%")
+    relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon: int = 0) -> None:
         super().__init__(pos, role, defaultTarget)
@@ -52,25 +49,21 @@ class Topaz(Character):
         self.relic2 = None
         self.planar = Duran(role)
         self.eidolon = eidolon
-        if self.lightcone.name == "Swordplay":
-            self.relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, "CR%", "SPD", "DMG%", "ATK%")
-        else:
-            self.relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 8, 16, "CR%", "SPD", "DMG%", "ATK%")
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("TopazTraceDMG", "DMG%", 0.224, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("TopazTraceCR", "CR%", 0.12, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("TopazTraceHP", "HP%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("WindfallCD", "CD%", 0.25, self.role, ["TOPAZULT"], 1, 1, Role.SELF, TickDown.PERM))
-        dbl.append(Debuff("ProofOfDebt", self.role, "VULN", 0.5, self.defaultTarget, ["FUA"], 1000, 1, False, [0, 0], False))
+        bl.append(Buff("TopazTraceDMG", Pwr.DMG_PERCENT, 0.224, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("TopazTraceCR", Pwr.CR_PERCENT, 0.12, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("TopazTraceHP", Pwr.HP_PERCENT, 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("WindfallCD", Pwr.CD_PERCENT, 0.25, self.role, ["TOPAZULT"], 1, 1, Role.SELF, TickDown.PERM))
+        dbl.append(Debuff("ProofOfDebt", self.role, Pwr.VULN, 0.5, self.defaultTarget, ["FUA"], 1000, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC", "FUA"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "TopazBasic"))
         if self.eidolon >= 1:
-            dbl.append(Debuff("DebtorCD", self.role, "CD%", 0.25, self.getTargetID(enemyID), ["FUA"], 1000, 2, False, [0, 0], False))
+            dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.getTargetID(enemyID), ["FUA"], 1000, 2, False, [0, 0], False))
         al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
         return bl, dbl, al, dl, tl
     
@@ -78,7 +71,7 @@ class Topaz(Character):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
         if self.eidolon >= 1:
-            dbl.append(Debuff("DebtorCD", self.role, "CD%", 0.25, self.getTargetID(enemyID), ["FUA"], 1000, 2, False, [0, 0], False))
+            dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.getTargetID(enemyID), ["FUA"], 1000, 2, False, [0, 0], False))
         if self.windfallCount > 0:
             self.windfallCount = self.windfallCount - 1
             tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["SKL", "FUA", "TOPAZULT"], [self.element], [3.0, 0], [20, 0], 40, self.scaling, -1, "TopazEnhancedSkill"))
@@ -99,7 +92,7 @@ class Topaz(Character):
             al.append(Advance("AdvanceWindFallNumby", self.numbyRole, 0.5))
         elif ("FUA" in turn.atkType) and (turn.moveName not in bonusDMG) and (self.defaultTarget in result.enemiesHit):
             if self.eidolon >= 1:
-                dbl.append(Debuff("DebtorCD", self.role, "CD%", 0.25, self.defaultTarget, ["FUA"], 1000, 2, False, [0, 0], False))
+                dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.defaultTarget, ["FUA"], 1000, 2, False, [0, 0], False))
             al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
         return bl, dbl, al, dl, tl
     
@@ -110,7 +103,7 @@ class Topaz(Character):
             self.firstNumby = False
             self.fuas = self.fuas + 1
             if self.eidolon >= 1:
-                dbl.append(Debuff("DebtorCD", self.role, "CD%", 0.25, self.defaultTarget, ["FUA"], 1000, 2, False, [0, 0], False))
+                dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.defaultTarget, ["FUA"], 1000, 2, False, [0, 0], False))
             if self.windfallCount > 0:
                 self.windfallCount = self.windfallCount - 1
                 tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.SINGLE, ["FUA", "TOPAZULT"], [self.element], [3.0, 0], [20, 0], errGain + 10, self.scaling, 0, "TopazEnhancedFUA"))
@@ -129,7 +122,7 @@ class Topaz(Character):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         if specialRes.specialName == "TopazFireCheck":
             if specialRes.attr1:
-                bl.append(Buff("TopazFireDMG", "DMG%", 0.15, self.defaultTarget, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+                bl.append(Buff("TopazFireDMG", Pwr.DMG_PERCENT, 0.15, self.defaultTarget, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         else:
             self.canUlt = specialRes.attr1
         return bl, dbl, al, dl, tl

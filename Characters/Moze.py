@@ -42,7 +42,7 @@ class Moze(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 17, 7, "CR%", "ATK%", "DMG%", "ATK%")
+    relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 17, 7, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
@@ -55,9 +55,9 @@ class Moze(Character):
     def equip(self):
         bl, dbl, al, dl = super().equip()
         al.append(Advance("MozeBattleStart", self.role, 0.30))
-        bl.append(Buff("MozeTraceCD", "CD%", 0.373, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("MozeTraceATK", "ATK%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("MozeTraceHP", "HP%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("MozeTraceCD", Pwr.CD_PERCENT, 0.373, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("MozeTraceATK", Pwr.ATK_PERCENT, 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("MozeTraceHP", Pwr.HP_PERCENT, 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -70,8 +70,8 @@ class Moze(Character):
         self.charge = 9 # reset charge count
         self.canBeAdv = False # enter departed state
         self.currAV = 1000
-        dbl.append(Debuff("MozePreyCD", self.role, "CD%", 0.40, self.getTargetID(enemyID), ["ALL"], 1000, 1, False, [0, 0], False)) # 40% CD from E2
-        dbl.append(Debuff("MozePreyVULN", self.role, "VULN", 0.25, self.getTargetID(enemyID), ["FUA"], 1000, 1, False, [0, 0], False)) 
+        dbl.append(Debuff("MozePreyCD", self.role, Pwr.CD_PERCENT, 0.40, self.getTargetID(enemyID), ["ALL"], 1000, 1, False, [0, 0], False)) # 40% CD from E2
+        dbl.append(Debuff("MozePreyVULN", self.role, Pwr.VULN, 0.25, self.getTargetID(enemyID), ["FUA"], 1000, 1, False, [0, 0], False)) 
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["SKL"], [self.element], [1.65, 0], [20, 0], 30, self.scaling, -1, "MozeSkill"))
         return bl, dbl, al, dl, tl
     
@@ -106,14 +106,14 @@ class Moze(Character):
                 self.canBeAdv = True # exit departed state
                 self.currAV = 10000 / self.currSPD # rest AV to his current speed
                 al.append(Advance("MozeDepartedADV", self.role, 0.20))
-                dbl.append(Debuff("MozePreyVULN", self.role, "VULN", 0.00, self.getTargetID(result.enemiesHit[0]), ["FUA"], 1000, 1, False, [0, 0], False)) 
-                dbl.append(Debuff("MozePrey", self.role, "CD%", 0.00, self.getTargetID(result.enemiesHit[0]), ["ALL"], 1000, 1, False, [0, 0], False)) # remove 40% CD when not in departed state
+                dbl.append(Debuff("MozePreyVULN", self.role, Pwr.VULN, 0.00, self.getTargetID(result.enemiesHit[0]), ["FUA"], 1000, 1, False, [0, 0], False)) 
+                dbl.append(Debuff("MozePrey", self.role, Pwr.CD_PERCENT, 0.00, self.getTargetID(result.enemiesHit[0]), ["ALL"], 1000, 1, False, [0, 0], False)) # remove 40% CD when not in departed state
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
         bl, dbl, al, dl, tl = super().ownTurn(result)
         if result.turnName == "MozeULT":
-            bl.append(Buff("MozeUltBuff", "DMG%", 0.30, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
+            bl.append(Buff("MozeUltBuff", Pwr.DMG_PERCENT, 0.30, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def reduceAV(self, reduceValue: float):

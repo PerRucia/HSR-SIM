@@ -17,25 +17,25 @@ class FinalVictorFeixiao(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         atkBuff = self.level * 0.02 + 0.10
-        buffList.append(Buff("FinalVictorATK", "ATK%", atkBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("FinalVictorATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl = super().useBsc(enemyID)
         for _ in range(3):
-            bl.append(Buff("FinalVictorCD", "CD%", self.cdBuff, self.wearerRole, ["ALL"], 1, 4, Role.SELF, TickDown.PERM))
+            bl.append(Buff("FinalVictorCD", Pwr.CD_PERCENT, self.cdBuff, self.wearerRole, ["ALL"], 1, 4, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl = super().useSkl(enemyID)
         for _ in range(4):
-            bl.append(Buff("FinalVictorCD", "ATK%", self.cdBuff, self.wearerRole, ["ALL"], 1, 4, Role.SELF, TickDown.PERM))
+            bl.append(Buff("FinalVictorCD", Pwr.ATK_PERCENT, self.cdBuff, self.wearerRole, ["ALL"], 1, 4, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl = super().useUlt(enemyID)
         for _ in range(4):
-            bl.append(Buff("FinalVictorCD", "ATK%", self.cdBuff, self.wearerRole, ["ALL"], 1, 4, Role.SELF, TickDown.PERM))
+            bl.append(Buff("FinalVictorCD", Pwr.ATK_PERCENT, self.cdBuff, self.wearerRole, ["ALL"], 1, 4, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     
