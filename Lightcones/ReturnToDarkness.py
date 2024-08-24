@@ -16,7 +16,7 @@ class ReturnToDarkness(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         crBuff = self.level * 0.03 + 0.09
-        buffList.append(Buff("DarknessCR", "CR%", crBuff, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("DarknessCR", "CR%", crBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return buffList, debuffList, advList, delayList
     
     

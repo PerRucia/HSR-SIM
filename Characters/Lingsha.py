@@ -32,7 +32,7 @@ class Lingsha(Character):
     
     # Unique Character Properties
     hasSummon = True
-    fuyuanRole = "Fuyuan"
+    fuyuanRole = Role.FUYUAN
     count = 2
     
     # Relic Settings
@@ -49,10 +49,10 @@ class Lingsha(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("LingshaTraceBE", "BE%", 0.373, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("LingshaTraceATK", "ATK%", 0.1, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("LingshaTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("LingshaBEtoATK", "ATK%", 0.5, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+        bl.append(Buff("LingshaTraceBE", "BE%", 0.373, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("LingshaTraceATK", "ATK%", 0.1, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("LingshaTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("LingshaBEtoATK", "ATK%", 0.5, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -71,7 +71,7 @@ class Lingsha(Character):
         self.currEnergy = self.currEnergy - self.ultCost
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["ULT"], [self.element], [1.5, 0], [20, 0], 5, self.scaling, 0, "LingshaUlt"))
         al.append(Advance("LingshaADV", self.fuyuanRole, 1.0))
-        dbl.append(Debuff("LingshaBefog", self.role, "VULN", 0.25, "ALL", ["BREAK"], 2, 1, False, [0, 0], False))
+        dbl.append(Debuff("LingshaBefog", self.role, "VULN", 0.25, Role.ALL, ["BREAK"], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):

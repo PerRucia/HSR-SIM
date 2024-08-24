@@ -50,10 +50,10 @@ class Gallagher(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("GallyTraceERS", "ERS%", 0.28 + 0.5, self.role, ["ALL"], 1, 1, "SELF", "PERM")) # 50% from e1
-        bl.append(Buff("GallyTraceBE", "BE%", 0.133 + 0.2, self.role, ["ALL"], 1, 1, "SELF", "PERM")) # 20% from e6
-        bl.append(Buff("GallyTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("GallyTraceWBE", "WBE%", 0.20, self.role, ["ALL"], 1, 1, "SELF", "PERM")) # from e6
+        bl.append(Buff("GallyTraceERS", "ERS%", 0.28 + 0.5, self.role, ["ALL"], 1, 1, Role.SELF, "PERM")) # 50% from e1
+        bl.append(Buff("GallyTraceBE", "BE%", 0.133 + 0.2, self.role, ["ALL"], 1, 1, Role.SELF, "PERM")) # 20% from e6
+        bl.append(Buff("GallyTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("GallyTraceWBE", "WBE%", 0.20, self.role, ["ALL"], 1, 1, Role.SELF, "PERM")) # from e6
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -76,7 +76,7 @@ class Gallagher(Character):
         self.currEnergy = self.currEnergy - self.ultCost
         self.enhancedBasic = True
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["ULT"], [self.element], [1.65, 0], [20, 0], 5, self.scaling, 0, "GallyUlt"))
-        dbl.append(Debuff("Besotted", self.role, "VULN", 0.132, "ALL", ["BREAK"], 3, 1, False, [0, 0], False)) # 3 turns from e4
+        dbl.append(Debuff("Besotted", self.role, "VULN", 0.132, Role.ALL, ["BREAK"], 3, 1, False, [0, 0], False)) # 3 turns from e4
         al.append(Advance("GallyUltAdv", self.role, 1.0))
         return bl, dbl, al, dl, tl
     

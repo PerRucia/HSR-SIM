@@ -15,19 +15,19 @@ def getBuffNames(lst: list) -> list:
 def parseBuffs(lst: list[Buff], playerTeam: list[Character]) -> list:
     buffList = []
     for buff in lst:
-        if buff.target == "ALL": #teamwide buff, need to add 4 instances
+        if buff.target == Role.ALL: #teamwide buff, need to add 4 instances
             for char in playerTeam:
-                target = char.role if (buff.tickDown == "SELF") else buff.tickDown
+                target = char.role if (buff.tickDown == Role.SELF) else buff.tickDown
                 buffList.append(Buff(buff.name, buff.buffType, buff.val, char.role, buff.atkType, buff.turns, buff.stackLimit, target, buff.tdType))
         else: #single target buff, only add one instance
-            target = buff.target if (buff.tickDown == "SELF") else buff.tickDown
+            target = buff.target if (buff.tickDown == Role.SELF) else buff.tickDown
             buffList.append(Buff(buff.name, buff.buffType, buff.val, buff.target, buff.atkType, buff.turns, buff.stackLimit, target, buff.tdType))
     return buffList
 
 def parseDebuffs(lst: list[Debuff], enemyTeam: list[Enemy]) -> list[Debuff]:
     debuffList = []
     for d in lst:
-        if d.target == "ALL": # AoE debuff, need to add 1 instace per enemy
+        if d.target == Role.ALL: # AoE debuff, need to add 1 instace per enemy
             for i in range(len(enemyTeam)):
                 newDebuff = Debuff(d.name, d.charRole, d.debuffType, d.val, i, d.atkType, d.turns, d.stackLimit, d.isDot, d.dotSplit, d.isBlast)
                 newDebuff.dotMul = d.dotSplit[0]
@@ -47,7 +47,7 @@ def parseDebuffs(lst: list[Debuff], enemyTeam: list[Enemy]) -> list[Debuff]:
 def parseAdvance(lst: list[Advance], playerTeam: list[Character]) -> list[Advance]:
     advList = []
     for adv in lst:
-        if adv.targetRole == "ALL": # Teamwide advance
+        if adv.targetRole == Role.ALL: # Teamwide advance
             for char in playerTeam:
                 advList.append(Advance(adv.name, char.role, adv.advPercent))
         else: # Single advance
@@ -57,7 +57,7 @@ def parseAdvance(lst: list[Advance], playerTeam: list[Character]) -> list[Advanc
 def parseDelay(lst: list[Delay], enemyTeam: list[Enemy]) -> list[Delay]:
     delayList = []
     for delay in lst:
-        if delay.target == "ALL":
+        if delay.target == Role.ALL:
             for enemy in enemyTeam:
                 delayList.append(Delay(delay.name, delay.delayPercent, enemy.enemyID, delay.reqBroken, delay.stackable))
         else:
@@ -67,10 +67,10 @@ def parseDelay(lst: list[Delay], enemyTeam: list[Enemy]) -> list[Delay]:
 def parseTurns(lst: list[Turn], playerTeam: list[Character]) -> list[Turn]:
     turnList = []
     for turn in lst:
-        if turn.charRole == "ALL":
+        if turn.charRole == Role.ALL:
             for char in playerTeam:
                 turnList.append(Turn(turn.charName, char.role, turn.targetID, turn.moveType, turn.atkType, turn.element, turn.dmgSplit, turn.brkSplit, turn.errGain, turn.scaling, turn.spChange, turn.moveName))
-        elif turn.charRole == "TEAM":
+        elif turn.charRole == Role.TEAM:
             for char in playerTeam:
                 if char.name == turn.charName:
                     continue
@@ -205,9 +205,9 @@ def addEnergy(playerTeam: list[Character], enemyTeam: list[Enemy], numAttacks: i
         if char.path == Path.DESTRUCTION:
             if char.lightcone.name == "Dance at Sunset":
                 aggro += Path.DESTRUCTION.value * 5
-            if checkInTeam("Lynx", playerTeam) and char.role == "DPS":
+            if checkInTeam("Lynx", playerTeam) and char.role == Role.DPS:
                 aggro += Path.DESTRUCTION.value * 5
-            if checkInTeam("March7th", playerTeam) and char.role == "DPS":
+            if checkInTeam("March7th", playerTeam) and char.role == Role.DPS:
                 aggro += Path.DESTRUCTION.value * 5
         elif char.path == Path.PRESERVATION:
             if char.name == "Gepard":
@@ -556,7 +556,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
     elif typ == "END":
         if specStr == "updateRobinATK":
             currChar = sorted(playerTeam, key=lambda char: char.currAV)[0]
-            res = True if ((currChar.role == "DPS") and unit.isChar() and not unit.isSummon()) else False
+            res = True if ((currChar.role == Role.DPS) and unit.isChar() and not unit.isSummon()) else False
             return Special(name=specStr, attr1=res)
         else:
             return Special(name=specStr)

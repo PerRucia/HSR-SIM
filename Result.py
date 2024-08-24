@@ -12,7 +12,7 @@ class Result:
         self.enemiesHit = enemiesHit
         
     def __str__(self) -> str:
-        return f"{self.turnName} | {self.charName} | {self.charRole} | DMG: {self.turnDmg:.3f} | Enemies Hit: {self.enemiesHit} | WB: {self.brokenEnemy} | WB DMG: {self.wbDmg:.3f} | Energy: {self.errGain:.3f}"
+        return f"{self.turnName} | {self.charName} | {self.charRole.name} | DMG: {self.turnDmg:.3f} | Enemies Hit: {self.enemiesHit} | WB: {self.brokenEnemy} | WB DMG: {self.wbDmg:.3f} | Energy: {self.errGain:.3f}"
     
 class Special:
     def __init__(self, name: str, attr1=None, attr2=None, attr3=None):

@@ -7,9 +7,10 @@ Returns 4 lists:
 '''
 from Turn import *
 from Result import *
+from Misc import *
 
 class Equipment:
-    def __init__(self, wearerRole: str):
+    def __init__(self, wearerRole: Scaling):
         self.wearerRole = wearerRole
     
     def equip(self, enemyID=-1): # init function to add base buffs to wearer

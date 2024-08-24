@@ -14,7 +14,7 @@ class SSS(Planar):
     def equip(self):
         bl, dbl, al, dl, = super().equip()
         if self.wearerSPD >= 120:
-            bl.append(Buff("SSSATK", "ATK%", 0.24, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+            bl.append(Buff("SSSATK", "ATK%", 0.24, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
         else:
-            bl.append(Buff("SSSATK", "ATK%", 0.12, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+            bl.append(Buff("SSSATK", "ATK%", 0.12, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return bl, dbl, al, dl

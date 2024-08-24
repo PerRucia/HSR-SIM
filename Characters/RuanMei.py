@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class RuanMei(Character):
     # Standard Character Settings
-    name = "Ruan Mei"
+    name = "RuanMei"
     path = Path.HARMONY
     element = Element.ICE
     scaling = Scaling.ATK
@@ -49,14 +49,14 @@ class RuanMei(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("RuanMeiTechERR", "ERR_T", 30, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("RuanMeiWBE", "WBE%", 0.50, "ALL", ["ALL"], 3, 1, self.role, "START"))
-        bl.append(Buff("RuanMeiDMG", "DMG%", 0.68, "ALL", ["ALL"], 3, 1, self.role, "START"))
-        bl.append(Buff("RuanMeiSPD", "SPD%", 0.10, "ALL", ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("RuanTraceBE", "BE%", 0.373, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("RuanTraceDEF", "DEF%", 0.225, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("RuanTraceSPD", "SPD", 5, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("RuanTeamBE", "BE%", 0.20, "ALL", ["ALL"], 1, 1, "SELF", "PERM"))
+        bl.append(Buff("RuanMeiTechERR", "ERR_T", 30, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("RuanMeiWBE", "WBE%", 0.50, Role.ALL, ["ALL"], 3, 1, self.role, "START"))
+        bl.append(Buff("RuanMeiDMG", "DMG%", 0.68, Role.ALL, ["ALL"], 3, 1, self.role, "START"))
+        bl.append(Buff("RuanMeiSPD", "SPD%", 0.10, Role.ALL, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("RuanTraceBE", "BE%", 0.373, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("RuanTraceDEF", "DEF%", 0.225, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("RuanTraceSPD", "SPD", 5, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("RuanTeamBE", "BE%", 0.20, Role.ALL, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -67,16 +67,16 @@ class RuanMei(Character):
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RuanMeiSkill"))
-        bl.append(Buff("RuanMeiWBE", "WBE%", 0.50, "ALL", ["ALL"], 3, 1, self.role, "START"))
-        bl.append(Buff("RuanMeiDMG", "DMG%", 0.68, "ALL", ["ALL"], 3, 1, self.role, "START"))
+        bl.append(Buff("RuanMeiWBE", "WBE%", 0.50, Role.ALL, ["ALL"], 3, 1, self.role, "START"))
+        bl.append(Buff("RuanMeiDMG", "DMG%", 0.68, Role.ALL, ["ALL"], 3, 1, self.role, "START"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RuanMeiUlt"))
-        bl.append(Buff("RuanMeiPEN", "PEN", 0.25, "ALL", ["ALL"], 2, 1, self.role, "START"))
-        dl.append(Delay("Thanatoplum", 0.1 + self.beStat * 0.2, "ALL", True, False))
+        bl.append(Buff("RuanMeiPEN", "PEN", 0.25, Role.ALL, ["ALL"], 2, 1, self.role, "START"))
+        dl.append(Delay("Thanatoplum", 0.1 + self.beStat * 0.2, Role.ALL, True, False))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):

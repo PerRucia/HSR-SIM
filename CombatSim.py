@@ -26,19 +26,19 @@ weaknesses = [Element.WIND, Element.FIRE, Element.IMAGINARY, Element.LIGHTNING]
 actionOrder = [1,1,2] # determines how many attacks enemies will have per turn
 
 # Character Settings
-slot1 = Feixiao(0, "DPS", 0, eidolon=0, sig=True)
-slot2 = Robin(1, "SUP1", 0)
-slot3 = Aventurine(2, "SUS", 0)
-slot4 = Topaz(3, "SUBDPS", 0)
+slot1 = Feixiao(0, Role.DPS, 0, eidolon=0, sig=False)
+slot2 = Robin(1, Role.SUP1, 0)
+slot3 = Aventurine(2, Role.SUS, 0)
+slot4 = Topaz(3, Role.SUBDPS, 0)
 
 # Simulation Settings
-cycleLimit = 5
+cycleLimit = 50
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
 spUsed = 0
 totalEnemyAttacks = 0
-logLevel = logging.DEBUG
+logLevel = logging.CRITICAL
 # CRITICAL: Only prints the main action taken during each turn + ultimates
 # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
 # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
@@ -103,7 +103,7 @@ delayList = delayAdjustment(eTeam, delayList, enemyDebuffs) # apply any "on batt
 
 allUnits = sortUnits(playerTeam + eTeam + summons)
 setPriority(allUnits)
-    
+
 # Simulator Loop
 logging.critical("\n==========COMBAT SIMULATION STARTED==========")
 simAV = 0

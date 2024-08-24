@@ -1,6 +1,7 @@
 from Buff import Buff
 from Planar import Planar
 from Delay import *
+from Misc import *
 
 class Vonwacq(Planar):
     name = "Sprightly Vonwacq"
@@ -9,6 +10,6 @@ class Vonwacq(Planar):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("VonwacqERR", "ERR%", 0.05, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("VonwacqERR", "ERR%", 0.05, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
         advList.append(Advance("VonwacqADV", self.wearerRole, 0.4))
         return buffList, debuffList, advList, delayList

@@ -51,10 +51,10 @@ class Jiaoqiu(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("JQTraceEHR", "EHR%", 0.28, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("JQTraceDMG", "DMG%", 0.144, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("JQTraceSPD", "SPD", 5.0, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("JQStartERR", "ERR_T", 15, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+        bl.append(Buff("JQTraceEHR", "EHR%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("JQTraceDMG", "DMG%", 0.144, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("JQTraceSPD", "SPD", 5.0, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("JQStartERR", "ERR_T", 15, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -75,9 +75,9 @@ class Jiaoqiu(Character):
         self.offTurnCount = 6
         self.currEnergy = self.currEnergy - self.ultCost
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["ULT"], [self.element], [1.0, 0], [20, 0], 5, self.scaling, 0, "JiaoqiuUlt"))
-        dbl.append(Debuff("JQUltVuln", self.role, "VULN", 0.15, "ALL", ["ULT"], 1000, 1, False, [0, 0], False))
+        dbl.append(Debuff("JQUltVuln", self.role, "VULN", 0.15, Role.ALL, ["ULT"], 1000, 1, False, [0, 0], False))
         for _ in range(self.maxAshenStacks):
-            dbl.append(Debuff("AshenRoasted", self.role, "VULN", 0.10, "ALL", ["ALL"], 2, 5, True, [1.8, 0], False))
+            dbl.append(Debuff("AshenRoasted", self.role, "VULN", 0.10, Role.ALL, ["ALL"], 2, 5, True, [1.8, 0], False))
         return bl, dbl, al, dl, tl
     
     def useHit(self, enemyID=-1):
@@ -95,11 +95,11 @@ class Jiaoqiu(Character):
         self.ehrStat = specialRes.attr1
         self.maxAshenStacks = specialRes.attr2
         bonusATKStacks = min(4, (self.ehrStat * 100 - 80) // 15)
-        bl.append(Buff(self.name, "ATK%", bonusATKStacks * 0.6, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+        bl.append(Buff(self.name, "ATK%", bonusATKStacks * 0.6, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
         if specialRes.attr3:
             self.fieldCount = max(0, self.fieldCount - 1) # tick down field stacks at start of turn
         if self.fieldCount == 0: # dispell debuff once field is removed
-            dbl.append(Debuff("JQUltVuln", self.role, "VULN", 0.0, "ALL", ["ULT"], 1000, 1, False, [0, 0], False))
+            dbl.append(Debuff("JQUltVuln", self.role, "VULN", 0.0, Role.ALL, ["ULT"], 1000, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     

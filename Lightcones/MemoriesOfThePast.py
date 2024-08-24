@@ -9,19 +9,19 @@ class MOTP(Lightcone):
     baseATK = 423.36
     baseDEF = 396.90
 
-    def __init__(self, wearerRole, level):
+    def __init__(self, wearerRole, level=5):
         super().__init__(wearerRole, level)
     
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         breakBuff = self.level * 0.07 + 0.21
-        buffList.append(Buff("MotpBE", "BE%", breakBuff, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("MotpBE", "BE%", breakBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return buffList, debuffList, advList, delayList
     
     def useBsc(self, enemyID):
         buffList, debuffList, advList, delayList = super().useBsc(enemyID)
         errGain = self.level + 3
-        buffList.append(Buff("MotpBonusEnergy", "ERR_T", errGain, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("MotpBonusEnergy", "ERR_T", errGain, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return buffList, debuffList, advList, delayList
     
     

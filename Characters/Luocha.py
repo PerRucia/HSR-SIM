@@ -46,9 +46,9 @@ class Luocha(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("LuochaTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("LuochaTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("LuochaTraceDEF", "DEF%", 0.125, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+        bl.append(Buff("LuochaTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("LuochaTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("LuochaTraceDEF", "DEF%", 0.125, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):

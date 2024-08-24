@@ -12,6 +12,6 @@ class Salsotto(Planar):
         
     def equip(self):
         bl, dbl, al, dl, = super().equip()
-        bl.append(Buff("SalsottoCR", "CR%", 0.08, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("SalsottoDMG", "DMG%", 0.15, self.wearerRole, ["ULT", "FUA"], 1, 1, "SELF", "PERM"))
+        bl.append(Buff("SalsottoCR", "CR%", 0.08, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("SalsottoDMG", "DMG%", 0.15, self.wearerRole, ["ULT", "FUA"], 1, 1, Role.SELF, "PERM"))
         return bl, dbl, al, dl

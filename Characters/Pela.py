@@ -46,11 +46,11 @@ class Pela(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("PelaTraceEHR", "EHR%", 0.1, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("PelaTraceDMG", "DMG%", 0.224, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("PelaTraceATK", "ATK%", 0.18, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("PelaTeamEHR", "EHR%", 0.1, "ALL", ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("PelaDebuffBonusDMG", "DMG%", 0.2, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+        bl.append(Buff("PelaTraceEHR", "EHR%", 0.1, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("PelaTraceDMG", "DMG%", 0.224, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("PelaTraceATK", "ATK%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("PelaTeamEHR", "EHR%", 0.1, Role.ALL, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("PelaDebuffBonusDMG", "DMG%", 0.2, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -72,7 +72,7 @@ class Pela(Character):
         self.currEnergy = self.currEnergy - self.ultCost
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "AOE", ["ULT"], [self.element], [1.08 + 0.4, 0], [10, 0], 20, self.scaling, 0, "PelaUlt")) # bonus 0.4 from e6
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element], [0, 0], [0, 0], 11, self.scaling, 0, "PelaTalentERR"))
-        dbl.append(Debuff("PelaUltShred", self.role, "SHRED", 0.42, "ALL", ["ALL"], 2, 1, False, [0, 0], False))
+        dbl.append(Debuff("PelaUltShred", self.role, "SHRED", 0.42, Role.ALL, ["ALL"], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     

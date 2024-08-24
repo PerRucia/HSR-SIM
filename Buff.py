@@ -26,9 +26,10 @@ atkTypes = ["BASIC", "SKILL", "ULT", "FUA", "ALL"]
 tickDown = ["ENEMY", "SELF", "DPS", "SUP1", "SUP2", "SUS"] | determines on whose turn this buff ticks down on, if set to "SELF", will tick down on "SELF"'s turn
 tdType = ["PERM", "START", "END"] | determines whether the buff ticks down, PERM = permanent buff, START = at start of turn, END = at end of turn
 '''
+from Misc import *
 
 class Buff:
-    def __init__(self, name: str, buffType: str, val: float, target: str, atkType: list, turns: int, stackLimit: int, tickDown: str, tdType: str):
+    def __init__(self, name: str, buffType: str, val: float, target: Role, atkType: list, turns: int, stackLimit: int, tickDown: Role, tdType: str):
         self.name = name
         self.buffType = buffType
         self.val = val
@@ -43,8 +44,8 @@ class Buff:
         
     def __str__(self) -> str:
         res = f"{self.name} | {self.buffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
-        res += f"Remaining Turns: {self.turns} | TickDown: {self.tickDown}, {self.tdType} | "
-        res += f"Target: {self.target} | Affects: {self.atkType}"
+        res += f"Remaining Turns: {self.turns} | TickDown: {self.tickDown.name}, {self.tdType} | "
+        res += f"Target: {self.target.name} | Affects: {self.atkType}"
         return res
         
     def reduceTurns(self) -> None:
@@ -69,7 +70,7 @@ class Buff:
         self.val = val
         
 class Debuff:
-    def __init__(self, name: str, charRole: str, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int, isDot: bool, dotSplit, isBlast: bool):
+    def __init__(self, name: str, charRole: Role, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int, isDot: bool, dotSplit, isBlast: bool):
         self.name = name
         self.charRole = charRole
         self.debuffType = debuffType
@@ -86,7 +87,7 @@ class Debuff:
         self.dotMul = 0
         
     def __str__(self) -> str:
-        res = f"{self.name} | From: {self.charRole} | {self.debuffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
+        res = f"{self.name} | From: {self.charRole.name} | {self.debuffType} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
         res += f"Remaining Turns: {self.turns} | Target: {self.target} | Affects: {self.atkType} | DOT: {self.isDot} | Blast: {self.isBlast}"
         return res
         

@@ -1,5 +1,6 @@
 from Relic import Relic
 from Buff import Buff
+from Misc import *
 
 class Knight(Relic):
     name = "Knight of Purity Palace"
@@ -9,6 +10,6 @@ class Knight(Relic):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("KnightRelicDEF", "DEF%", 0.15, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("KnightRelicDEF", "DEF%", 0.15, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return buffList, debuffList, advList, delayList
     

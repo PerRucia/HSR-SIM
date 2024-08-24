@@ -10,7 +10,7 @@ class PastAndFuture(Lightcone):
     baseATK = 423.36
     baseDEF = 396.90
 
-    def __init__(self, wearerRole, level=5, targetRole: str = "DPS"):
+    def __init__(self, wearerRole, level=5, targetRole = Role.DPS):
         super().__init__(wearerRole, level)
         self.targetRole = targetRole
     

@@ -13,7 +13,7 @@ class Tingyun(Character):
     name = "Tingyun"
     path = Path.HARMONY
     element = Element.LIGHTNING
-    scaling = "ATK"
+    scaling = Scaling.ATK
     baseHP = 846.70
     baseATK = 529.20
     baseDEF = 396.90
@@ -26,7 +26,7 @@ class Tingyun(Character):
     dmgDct = {"BSC": 0, "BREAK": 0}
     
     # Unique Character Properties
-    beneTarget = "DPS"
+    beneTarget = Role.DPS
     
     # Relic Settings
     relicStats = RelicStats(9, 2, 2, 5, 2, 4, 6, 6, 3, 6, 3, 0, "ATK%", "SPD", "ATK%", "ERR%")
@@ -40,10 +40,10 @@ class Tingyun(Character):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.extend([Buff("TingyunBasicDMG", "DMG%", 0.4, self.role, ["BSC"], 1, 1, "SELF", "PERM"),
-                         Buff("TingyunTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, "SELF", "PERM"),
-                         Buff("TingyunTraceDEF", "DEF%", 0.225, self.role, ["ALL"], 1, 1, "SELF", "PERM"),
-                         Buff("TingyunTraceDMG", "DMG%", 0.08, self.role, ["ALL"], 1, 1, "SELF", "PERM")
+        buffList.extend([Buff("TingyunBasicDMG", "DMG%", 0.4, self.role, ["BSC"], 1, 1, Role.SELF, "PERM"),
+                         Buff("TingyunTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"),
+                         Buff("TingyunTraceDEF", "DEF%", 0.225, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"),
+                         Buff("TingyunTraceDMG", "DMG%", 0.08, self.role, ["ALL"], 1, 1, Role.SELF, "PERM")
                          ])
         return buffList, debuffList, advList, delayList
     
@@ -57,7 +57,7 @@ class Tingyun(Character):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "TingyunSkill"))
         bl.append(Buff("Benediction", "ATK%", 0.55, self.beneTarget, ["ALL"], 3, 1, self.beneTarget, "END"))
-        bl.append(Buff("TingyunSkillSPD", "SPD%", 0.2, self.role, ["ALL"], 1, 1, "SELF", "END"))
+        bl.append(Buff("TingyunSkillSPD", "SPD%", 0.2, self.role, ["ALL"], 1, 1, Role.SELF, "END"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):

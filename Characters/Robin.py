@@ -45,15 +45,15 @@ class Robin(Character):
         self.lightcone = Journey(role)
         self.relic1 = Musketeer(role, 2)
         self.relic2 = Prisoner(role, 2)
-        self.planar = Lushaka(role, "DPS")
+        self.planar = Lushaka(role, Role.DPS)
         self.eidolon = eidolon
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("RobinCD", "CD%", 0.2, "ALL", ["ALL"], 1, 1, "SELF", "PERM"))
-        buffList.append(Buff("RobinTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        buffList.append(Buff("RobinTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        buffList.append(Buff("RobinTraceSPD", "SPD", 5, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("RobinCD", "CD%", 0.2, Role.ALL, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        buffList.append(Buff("RobinTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        buffList.append(Buff("RobinTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        buffList.append(Buff("RobinTraceSPD", "SPD", 5, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
         advList.append(Advance("RobinStartADV", self.role, 0.25))
         return buffList, debuffList, advList, delayList
     
@@ -66,7 +66,7 @@ class Robin(Character):
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RobinSkill"))
-        bl.append(Buff("RobinSklDMG", "DMG%", 0.5, "ALL", ["ALL"], 3, 1, self.role, "START"))
+        bl.append(Buff("RobinSklDMG", "DMG%", 0.5, Role.ALL, ["ALL"], 3, 1, self.role, "START"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -74,13 +74,13 @@ class Robin(Character):
         self.canBeAdv = False
         self.currAV = 10000 / 90
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
-        bl.append(Buff("RobinFuaCD", "CD%", 0.25, "ALL", ["FUA"], 1, 1, self.role, "START"))
+        bl.append(Buff("RobinFuaCD", "CD%", 0.25, Role.ALL, ["FUA"], 1, 1, self.role, "START"))
         if self.eidolon >= 1:
-            bl.append(Buff("RobinE1Pen", "PEN", 0.24, "ALL", ["ALL"], 1, 1, self.role, "START"))
+            bl.append(Buff("RobinE1Pen", "PEN", 0.24, Role.ALL, ["ALL"], 1, 1, self.role, "START"))
         if self.eidolon >= 2:
-            bl.append(Buff("RobinE2SPD", "SPD%", 0.16, "ALL", ["FUA"], 1, 1, self.role, "START")) 
+            bl.append(Buff("RobinE2SPD", "SPD%", 0.16, Role.ALL, ["FUA"], 1, 1, self.role, "START")) 
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinUlt"))
-        al.append(Advance("RobinUltADV", "ALL", 1.0))
+        al.append(Advance("RobinUltADV", Role.ALL, 1.0))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
@@ -115,7 +115,7 @@ class Robin(Character):
             self.techErr = False
             tl.append(Turn(self.name, self.role, self.defaultTarget, "NA", ["BSC"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinTechEnergy"))
         if not self.canBeAdv:
-            bl.append(Buff("RobinUltBuff", "ATK", self.atkStat * 0.228 + 200, "ALL", ["ALL"], 1, 1, self.role, "START"))
+            bl.append(Buff("RobinUltBuff", "ATK", self.atkStat * 0.228 + 200, Role.ALL, ["ALL"], 1, 1, self.role, "START"))
         return bl, dbl, al, dl, tl
     
     def handleSpecialEnd(self, specialRes: Special):

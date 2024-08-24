@@ -9,19 +9,19 @@ class VentureForth(Lightcone):
     baseATK = 635.04
     baseDEF = 463.05
 
-    def __init__(self, wearerRole, level):
+    def __init__(self, wearerRole, level=1):
         super().__init__(wearerRole, level)
     
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         crBuff = self.level * 0.025 + 0.125
-        buffList.append(Buff("VentureCR", "CR%", crBuff, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("VentureCR", "CR%", crBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return buffList, debuffList, advList, delayList
     
     def useFua(self, enemyID):
         bl, dbl, al, dl = super().useFua(enemyID)
         shredBuff = self.level * 0.03 + 0.24
-        bl.append(Buff("VentureSHRED", "SHRED", shredBuff, self.wearerRole, ["ULT"], 2, 2, "SELF", "END"))
+        bl.append(Buff("VentureSHRED", "SHRED", shredBuff, self.wearerRole, ["ULT"], 2, 2, Role.SELF, "END"))
         return bl, dbl, al, dl
     
 class VentureForthFeixiao(VentureForth):
@@ -31,13 +31,13 @@ class VentureForthFeixiao(VentureForth):
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl = super().useSkl(enemyID)
         shredBuff = self.level * 0.03 + 0.24
-        bl.append(Buff("VentureSHRED", "SHRED", shredBuff, self.wearerRole, ["ULT"], 2, 2, "SELF", "END"))
+        bl.append(Buff("VentureSHRED", "SHRED", shredBuff, self.wearerRole, ["ULT"], 2, 2, Role.SELF, "END"))
         return bl, dbl, al, dl
     
     def useUlt(self, enemyID):
         bl, dbl, al, dl = super().useUlt(enemyID)
         shredBuff = self.level * 0.03 + 0.24
-        bl.append(Buff("VentureSHRED", "SHRED", shredBuff, self.wearerRole, ["ULT"], 2, 2, "SELF", "END"))
+        bl.append(Buff("VentureSHRED", "SHRED", shredBuff, self.wearerRole, ["ULT"], 2, 2, Role.SELF, "END"))
         return bl, dbl, al, dl
     
     

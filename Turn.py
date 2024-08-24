@@ -24,7 +24,7 @@ class Turn:
         self.moveName = moveName
         
     def __str__(self) -> str:
-        res = f"{self.moveName} | {self.charName} | {self.charRole} | "
+        res = f"{self.moveName} | {self.charName} | {self.charRole.name} | "
         res += f"{self.moveType} attack | {[e.value for e in self.element]} | {self.atkType} | "
         res += f"Scaling: {self.scaling.name} | Enemy Target: {self.targetID} | "
         res += f"DMG/BREAK Splits: {self.dmgSplit}/{self.brkSplit} | "

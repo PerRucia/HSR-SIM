@@ -47,7 +47,7 @@ class Character:
         self.defaultTarget = defaultTarget
         
     def __str__(self) -> str:
-        res = f"{self.name} | {self.element.name}-{self.path.name} | {self.role} | POS:{self.pos}\n"
+        res = f"{self.name} | {self.element.name}-{self.path.name} | {self.role.name} | POS:{self.pos}\n"
         res += f"{self.lightcone}\n"
         res += f"{self.relic1}" + (f"| {self.relic2}\n" if self.relic2 != None else "\n")
         res += f"{self.planar}"

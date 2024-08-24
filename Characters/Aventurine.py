@@ -52,11 +52,11 @@ class Aventurine(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("AvenTraceDEF", "DEF%", 0.35, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("AvenTraceDMG", "DMG%", 0.144, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("AvenTraceERS", "ERS%", 0.10, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+        bl.append(Buff("AvenTraceDEF", "DEF%", 0.35, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("AvenTraceDMG", "DMG%", 0.144, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("AvenTraceERS", "ERS%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
         if self.eidolon >= 1:
-            bl.append(Buff("AvenE1CD", "CD%", 0.20, "ALL", ["ALL"], 1, 1, "SELF", "PERM"))
+            bl.append(Buff("AvenE1CD", "CD%", 0.20, "ALL", ["ALL"], 1, 1, Role.SELF, "PERM"))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -112,7 +112,7 @@ class Aventurine(Character):
             self.baseDefStat = specialRes.attr1
             self.bbPerHit = specialRes.attr2
             crBuff = min((self.baseDefStat - 1600) // 100, 24)
-            bl.append(Buff("AvenBonusCR", "CR%", 0.02 * crBuff, self.role, ["ALL"], 1, 1, "SELF", "PERM"))
+            bl.append(Buff("AvenBonusCR", "CR%", 0.02 * crBuff, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return bl, dbl, al, dl, tl
     
     

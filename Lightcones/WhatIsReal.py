@@ -9,13 +9,13 @@ class WhatIsReal(Lightcone):
     baseATK = 423.36
     baseDEF = 330.75
 
-    def __init__(self, wearerRole, level):
+    def __init__(self, wearerRole, level=5):
         super().__init__(wearerRole, level)
     
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         beBuff = self.level * 0.06 + 0.18
-        buffList.append(Buff("WhatIsRealBE", "BE%", beBuff, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("WhatIsRealBE", "BE%", beBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return buffList, debuffList, advList, delayList
     
     

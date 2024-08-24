@@ -12,7 +12,6 @@ class Rutilant(Planar):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("RutilantCR", "CR%", 0.08, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("RutilantBasicDMG", "DMG%", 0.20, self.wearerRole, ["BSC"], 1, 1, "SELF", "PERM"))
-        bl.append(Buff("RutilantSkillDMG", "DMG%", 0.20, self.wearerRole, ["SKL"], 1, 1, "SELF", "PERM"))
+        bl.append(Buff("RutilantCR", "CR%", 0.08, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("RutilantBonusDMG", "DMG%", 0.20, self.wearerRole, ["BSC", "SKL"], 1, 1, Role.SELF, "PERM"))
         return bl, dbl, al, dl

@@ -1,5 +1,6 @@
 from Relic import Relic
 from Buff import Buff
+from Misc import *
 
 class Longevous(Relic):
     name = "Longevous Disciple"
@@ -9,11 +10,11 @@ class Longevous(Relic):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("LongevousHP", "HP%", 0.12, self.wearerRole, ["ALL"], 1, 1, "SELF", "PERM"))
+        buffList.append(Buff("LongevousHP", "HP%", 0.12, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
         return buffList, debuffList, advList, delayList
     
     def useHit(self, enemyID):
         bl, dbl, al, dl = super().useHit(enemyID)
         if self.setType == 4:
-            bl.append(Buff("LongevousCR", "CR%", 0.08, self.wearerRole, ["ALL"], 2, 2, "SELF", "END"))
+            bl.append(Buff("LongevousCR", "CR%", 0.08, self.wearerRole, ["ALL"], 2, 2, Role.SELF, "END"))
         return bl, dbl, al, dl

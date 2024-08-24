@@ -10,7 +10,7 @@ class Multi(Lightcone):
     baseATK = 317.52
     baseDEF = 198.45
 
-    def __init__(self, wearerRole, level):
+    def __init__(self, wearerRole, level=5):
         super().__init__(wearerRole, level)
     
     def useBsc(self, enemyID):
