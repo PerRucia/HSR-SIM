@@ -254,18 +254,19 @@ def tickDebuffs(enemy: Enemy, debuffList: list[Debuff]) -> list[Debuff]:
                 debuff.reduceTurns()
                 newList.append(debuff)
             else:
-                logging.info(f"Debuff {debuff.name} expired")
+                logging.info(f"        Debuff {debuff.name} expired")
         else:
             newList.append(debuff)
     return newList
 
 def tickBuffs(charRole: str, buffList: list[Buff], tdType: str) -> list[Buff]:
     newList = []
+    cmp = TickDown.START if tdType == "START" else TickDown.END
     for buff in buffList:
-        if buff.tdType == tdType: # must match tdType to tickdown
+        if buff.tdType == cmp: # must match tdType to tickdown
             if buff.tickDown == charRole: # must match charRole to tickdown
                 if buff.turns <= 1:
-                    logging.info(f"Buff {buff.name} expired")
+                    logging.info(f"        Buff {buff.name} expired")
                     continue
                 buff.reduceTurns()
         newList.append(buff)

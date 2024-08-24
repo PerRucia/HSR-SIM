@@ -49,13 +49,13 @@ class Bronya(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("BronyaTech", "ATK%", 0.15, Role.ALL, ["ALL"], 2, 1, Role.SELF, "END"))
-        bl.append(Buff("BronyaBasicCR", "CR%", 1.0, self.role, ["BSC"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("BronyaTeamDEF", "DEF%", 2.0, Role.ALL, ["ALL"], 2, 1, Role.SELF, "END"))
-        bl.append(Buff("BronyaTraceDMG", "DMG%", 0.224, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("BronyaTraceCD", "CD%", 0.24, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("BronyaTraceERS", "ERS%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("BronyaFeixiaoUltDMG", "DMG%", 0.66, self.targetRole, ["ULT"], 1, 1, self.targetRole, "PERM"))
+        bl.append(Buff("BronyaTech", "ATK%", 0.15, Role.ALL, ["ALL"], 2, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("BronyaBasicCR", "CR%", 1.0, self.role, ["BSC"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("BronyaTeamDEF", "DEF%", 2.0, Role.ALL, ["ALL"], 2, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("BronyaTraceDMG", "DMG%", 0.224, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("BronyaTraceCD", "CD%", 0.24, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("BronyaTraceERS", "ERS%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("BronyaFeixiaoUltDMG", "DMG%", 0.66, self.targetRole, ["ULT"], 1, 1, self.targetRole, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -67,7 +67,7 @@ class Bronya(Character):
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0.0, 0], [0, 0], 30, self.scaling, -1, "BronyaSkill"))
-        bl.append(Buff("BronyaSkillDMG", "DMG%", 0.66, self.targetRole, ["ALL"], 1, 1, self.targetRole, "END"))
+        bl.append(Buff("BronyaSkillDMG", "DMG%", 0.66, self.targetRole, ["ALL"], 1, 1, self.targetRole, TickDown.END))
         if self.role != self.targetRole:
             al.append(Advance("BronyaForward", self.targetRole, 1.0))
         return bl, dbl, al, dl, tl
@@ -76,8 +76,8 @@ class Bronya(Character):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
         tl.append(Turn(self.name, self.role, -1, "NA", ["ULT"], [self.element], [0.0, 0], [0, 0], 5, self.scaling, 0, "BronyaUlt"))
-        bl.append(Buff("BronyaUltATK", "ATK%", 0.55, Role.ALL, ["ALL"], 2, 1, Role.SELF, "END"))
-        bl.append(Buff("BronyaUltCD", "CD%", 0.16 * self.cdStat + 0.20, "ALL", ["ALL"], 2, 1, Role.SELF, "END"))
+        bl.append(Buff("BronyaUltATK", "ATK%", 0.55, Role.ALL, ["ALL"], 2, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("BronyaUltCD", "CD%", 0.16 * self.cdStat + 0.20, "ALL", ["ALL"], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def special(self):

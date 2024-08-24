@@ -15,7 +15,7 @@ class Texture(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         ersBuff = self.level * 0.02 + 0.06
-        buffList.append(Buff("TextureERS", "ERS%", ersBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        buffList.append(Buff("TextureERS", "ERS%", ersBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     

@@ -49,9 +49,9 @@ class HuoHuo(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("HHTraceHP", "HP%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("HHTraceERS", "ERS%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("HHTraceSPD", "SPD", 5, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("HHTraceHP", "HP%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("HHTraceERS", "ERS%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("HHTraceSPD", "SPD", 5, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -67,10 +67,10 @@ class HuoHuo(Character):
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
-        bl.append(Buff("HuoHuoUltATK", "ATK%", 0.4, Role.ALL, ["ALL"], 2, 1, Role.SELF, "END"))
-        bl.append(Buff("HuoHuoERR", "ERR_F", self.ally1Energy, self.ally1Role, ["ALL"], 1, 1, self.ally1Role, "PERM"))
-        bl.append(Buff("HuoHuoERR", "ERR_F", self.ally2Energy, self.ally2Role, ["ALL"], 1, 1, self.ally2Role, "PERM"))
-        bl.append(Buff("HuoHuoERR", "ERR_F", self.ally3Energy, self.ally3Role, ["ALL"], 1, 1, self.ally3Role, "PERM"))
+        bl.append(Buff("HuoHuoUltATK", "ATK%", 0.4, Role.ALL, ["ALL"], 2, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("HuoHuoERR", "ERR_F", self.ally1Energy, self.ally1Role, ["ALL"], 1, 1, self.ally1Role, TickDown.PERM))
+        bl.append(Buff("HuoHuoERR", "ERR_F", self.ally2Energy, self.ally2Role, ["ALL"], 1, 1, self.ally2Role, TickDown.PERM))
+        bl.append(Buff("HuoHuoERR", "ERR_F", self.ally3Energy, self.ally3Role, ["ALL"], 1, 1, self.ally3Role, TickDown.PERM))
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "HuoHuoULT"))
         return bl, dbl, al, dl, tl
     

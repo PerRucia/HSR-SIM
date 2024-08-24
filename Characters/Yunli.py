@@ -44,11 +44,11 @@ class Yunli(Character):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.extend([Buff("YunliSelfATK", "ATK%", 0.3, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"),
-                         Buff("YunliSelfCD", "CD%", 1.0, self.role, ["ULT"], 1, 1, Role.SELF, "PERM"),
-                         Buff("YunliTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"),
-                         Buff("YunliTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"),
-                         Buff("YunliTraceCR", "CR%", 0.067, self.role, ["ALL"], 1, 1, Role.SELF, "PERM")
+        buffList.extend([Buff("YunliSelfATK", "ATK%", 0.3, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("YunliSelfCD", "CD%", 1.0, self.role, ["ULT"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("YunliTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("YunliTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("YunliTraceCR", "CR%", 0.067, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)
                          ])
         return buffList, debuffList, advList, delayList
     

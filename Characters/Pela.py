@@ -46,11 +46,11 @@ class Pela(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("PelaTraceEHR", "EHR%", 0.1, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("PelaTraceDMG", "DMG%", 0.224, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("PelaTraceATK", "ATK%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("PelaTeamEHR", "EHR%", 0.1, Role.ALL, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("PelaDebuffBonusDMG", "DMG%", 0.2, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("PelaTraceEHR", "EHR%", 0.1, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("PelaTraceDMG", "DMG%", 0.224, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("PelaTraceATK", "ATK%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("PelaTeamEHR", "EHR%", 0.1, Role.ALL, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("PelaDebuffBonusDMG", "DMG%", 0.2, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):

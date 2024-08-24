@@ -15,7 +15,7 @@ class WhatIsReal(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         beBuff = self.level * 0.06 + 0.18
-        buffList.append(Buff("WhatIsRealBE", "BE%", beBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        buffList.append(Buff("WhatIsRealBE", "BE%", beBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     

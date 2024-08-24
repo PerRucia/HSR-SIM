@@ -59,10 +59,10 @@ class Topaz(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("TopazTraceDMG", "DMG%", 0.224, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("TopazTraceCR", "CR%", 0.12, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("TopazTraceHP", "HP%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("WindfallCD", "CD%", 0.25, self.role, ["TOPAZULT"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("TopazTraceDMG", "DMG%", 0.224, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("TopazTraceCR", "CR%", 0.12, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("TopazTraceHP", "HP%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("WindfallCD", "CD%", 0.25, self.role, ["TOPAZULT"], 1, 1, Role.SELF, TickDown.PERM))
         dbl.append(Debuff("ProofOfDebt", self.role, "VULN", 0.5, self.defaultTarget, ["FUA"], 1000, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
@@ -129,7 +129,7 @@ class Topaz(Character):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         if specialRes.specialName == "TopazFireCheck":
             if specialRes.attr1:
-                bl.append(Buff("TopazFireDMG", "DMG%", 0.15, self.defaultTarget, ["ALL"], 1, 1, Role.SELF, "PERM"))
+                bl.append(Buff("TopazFireDMG", "DMG%", 0.15, self.defaultTarget, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         else:
             self.canUlt = specialRes.attr1
         return bl, dbl, al, dl, tl

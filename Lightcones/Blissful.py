@@ -17,9 +17,9 @@ class Blissful(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         crBuff = self.level * 0.03 + 0.15
-        buffList.append(Buff("BlissfulCR", "CR%", crBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        buffList.append(Buff("BlissfulCR", "CR%", crBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         dmgBuff = self.level * 0.05 + 0.25
-        buffList.append(Buff("BlissfulDMG", "DMG%", dmgBuff, self.wearerRole, ["FUA"], 1, 1, Role.SELF, "PERM"))
+        buffList.append(Buff("BlissfulDMG", "DMG%", dmgBuff, self.wearerRole, ["FUA"], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     def useFua(self, enemyID):

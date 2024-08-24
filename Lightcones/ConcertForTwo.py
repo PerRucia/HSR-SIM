@@ -16,9 +16,9 @@ class ConcertForTwo(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         defBuff = self.level * 0.04 + 0.12
-        buffList.append(Buff("ConcertConeDEF", "DEF%", defBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        buffList.append(Buff("ConcertConeDEF", "DEF%", defBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         dmgBuff = (self.level * 0.01 + 0.03) * 4 * self.uptime
-        buffList.append(Buff("ConcertConeDMG", "DMG%", dmgBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        buffList.append(Buff("ConcertConeDMG", "DMG%", dmgBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     

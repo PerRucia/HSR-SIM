@@ -49,10 +49,10 @@ class Lingsha(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("LingshaTraceBE", "BE%", 0.373, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("LingshaTraceATK", "ATK%", 0.1, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("LingshaTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("LingshaBEtoATK", "ATK%", 0.5, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("LingshaTraceBE", "BE%", 0.373, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaTraceATK", "ATK%", 0.1, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaBEtoATK", "ATK%", 0.5, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):

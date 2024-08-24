@@ -13,7 +13,7 @@ class Izumo(Planar):
         
     def equip(self):
         bl, dbl, al, dl, = super().equip()
-        bl.append(Buff("IzumoATK", "ATK%", 0.12, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("IzumoATK", "ATK%", 0.12, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         if self.sharedPath:
-            bl.append(Buff("IzumoCR", "CR%", 0.12, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+            bl.append(Buff("IzumoCR", "CR%", 0.12, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl

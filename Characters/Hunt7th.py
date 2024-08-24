@@ -55,19 +55,19 @@ class Hunt7th(Character):
     def equip(self):
         bl, dbl, al, dl = super().equip()
         al.append(Advance("H7StartAdv", self.role, 0.25))
-        bl.append(Buff("H7enhancedBasicCD", "CD%", 0.5, self.role, ["UltEBSC"], 1, 1, Role.SELF, "END")) # e6 buff
-        bl.append(Buff("H7enhancedBasicDMG", "DMG%", 0.88, self.role, ["EBSC"], 1, 1, Role.SELF, "PERM")) # e6 buff
-        bl.append(Buff("H7TraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("H7TraceCD", "CD%", 0.24, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("H7TraceDEF", "DEF%", 0.125, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("H7enhancedBasicCD", "CD%", 0.5, self.role, ["UltEBSC"], 1, 1, Role.SELF, TickDown.END)) # e6 buff
+        bl.append(Buff("H7enhancedBasicDMG", "DMG%", 0.88, self.role, ["EBSC"], 1, 1, Role.SELF, TickDown.PERM)) # e6 buff
+        bl.append(Buff("H7TraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("H7TraceCD", "CD%", 0.24, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("H7TraceDEF", "DEF%", 0.125, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         if self.charges >= 7:
             self.charges = self.charges - 7
-            bl.append(Buff("H7MasterBuffCD", "CD%", 0.60, self.masterRole, ["ALL"], 2, 1, self.masterRole, "END"))
-            bl.append(Buff("H7MasterBuffBE", "BE%", 0.36, self.masterRole, ["ALL"], 2, 1, self.masterRole, "END"))
+            bl.append(Buff("H7MasterBuffCD", "CD%", 0.60, self.masterRole, ["ALL"], 2, 1, self.masterRole, TickDown.END))
+            bl.append(Buff("H7MasterBuffBE", "BE%", 0.36, self.masterRole, ["ALL"], 2, 1, self.masterRole, TickDown.END))
             if self.ultEnhanced:
                 self.ultEnhanced = False
                 tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["EBSC", "BSC", "UltEBSC"], [self.element, self.masterElement], [1.1, 0], [5, 0], 35, self.scaling, 0, "H7UltEnhancedBSC"))
@@ -88,8 +88,8 @@ class Hunt7th(Character):
     def useSkl(self, enemyID=-1):
         extraErr = 30 if self.firstTurn else 0
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        bl.append(Buff("H7MasterSPD", "SPD%", 0.108, self.masterRole, ["ALL"], 1, 1, Role.SELF, "PERM")) # e1 buff
-        bl.append(Buff("H7SelfSPD", "SPD%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("H7MasterSPD", "SPD%", 0.108, self.masterRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)) # e1 buff
+        bl.append(Buff("H7SelfSPD", "SPD%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ALL"], [self.element, self.masterElement], [0, 0], [0, 0], 35 + extraErr, self.scaling, -1, "H7Skill")) # e4 energy buff 30 + 5
         return bl, dbl, al, dl, tl
     
@@ -139,7 +139,7 @@ class Hunt7th(Character):
     def handleSpecialStart(self, specialRes: Special):
         self.masterElement = specialRes.attr1
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
-        bl.append(Buff("MarchBonusERR", "ERR_T", 30, self.role, ["ALL"], 1, 1, Role.SELF, "END"))
+        bl.append(Buff("MarchBonusERR", "ERR_T", 30, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     

@@ -13,7 +13,7 @@ class Eagle(Relic):
     def equip(self):
         bl, debuffList, advList, delayList = super().equip()
         if self.wearerEle == Element.WIND:
-            bl.append(Buff("EagleDMG", "DMG%", 0.10, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+            bl.append(Buff("EagleDMG", "DMG%", 0.10, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, debuffList, advList, delayList
     
     def useUlt(self, enemyID):

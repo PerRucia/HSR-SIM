@@ -55,9 +55,9 @@ class Moze(Character):
     def equip(self):
         bl, dbl, al, dl = super().equip()
         al.append(Advance("MozeBattleStart", self.role, 0.30))
-        bl.append(Buff("MozeTraceCD", "CD%", 0.373, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("MozeTraceATK", "ATK%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("MozeTraceHP", "HP%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("MozeTraceCD", "CD%", 0.373, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("MozeTraceATK", "ATK%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("MozeTraceHP", "HP%", 0.10, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -113,7 +113,7 @@ class Moze(Character):
     def ownTurn(self, result: Result):
         bl, dbl, al, dl, tl = super().ownTurn(result)
         if result.turnName == "MozeULT":
-            bl.append(Buff("MozeUltBuff", "DMG%", 0.30, self.role, ["ALL"], 2, 1, Role.SELF, "END"))
+            bl.append(Buff("MozeUltBuff", "DMG%", 0.30, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def reduceAV(self, reduceValue: float):

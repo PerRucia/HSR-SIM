@@ -51,10 +51,10 @@ class Jiaoqiu(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("JQTraceEHR", "EHR%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("JQTraceDMG", "DMG%", 0.144, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("JQTraceSPD", "SPD", 5.0, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("JQStartERR", "ERR_T", 15, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("JQTraceEHR", "EHR%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JQTraceDMG", "DMG%", 0.144, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JQTraceSPD", "SPD", 5.0, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JQStartERR", "ERR_T", 15, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -95,7 +95,7 @@ class Jiaoqiu(Character):
         self.ehrStat = specialRes.attr1
         self.maxAshenStacks = specialRes.attr2
         bonusATKStacks = min(4, (self.ehrStat * 100 - 80) // 15)
-        bl.append(Buff(self.name, "ATK%", bonusATKStacks * 0.6, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff(self.name, "ATK%", bonusATKStacks * 0.6, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         if specialRes.attr3:
             self.fieldCount = max(0, self.fieldCount - 1) # tick down field stacks at start of turn
         if self.fieldCount == 0: # dispell debuff once field is removed

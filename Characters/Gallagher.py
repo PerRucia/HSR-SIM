@@ -50,10 +50,10 @@ class Gallagher(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("GallyTraceERS", "ERS%", 0.28 + 0.5, self.role, ["ALL"], 1, 1, Role.SELF, "PERM")) # 50% from e1
-        bl.append(Buff("GallyTraceBE", "BE%", 0.133 + 0.2, self.role, ["ALL"], 1, 1, Role.SELF, "PERM")) # 20% from e6
-        bl.append(Buff("GallyTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("GallyTraceWBE", "WBE%", 0.20, self.role, ["ALL"], 1, 1, Role.SELF, "PERM")) # from e6
+        bl.append(Buff("GallyTraceERS", "ERS%", 0.28 + 0.5, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)) # 50% from e1
+        bl.append(Buff("GallyTraceBE", "BE%", 0.133 + 0.2, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)) # 20% from e6
+        bl.append(Buff("GallyTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("GallyTraceWBE", "WBE%", 0.20, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)) # from e6
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):

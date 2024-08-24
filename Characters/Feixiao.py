@@ -58,12 +58,12 @@ class Feixiao(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("FeixiaoTraceCR", "CR%", 0.12, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("FeixiaoTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("FeixiaoTraceDEF", "DEF%", 0.125, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("FeixiaoFuaCD", "CD%", 0.36, self.role, ["FUA"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("FeixiaoTraceCR", "CR%", 0.12, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("FeixiaoTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("FeixiaoTraceDEF", "DEF%", 0.125, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("FeixiaoFuaCD", "CD%", 0.36, self.role, ["FUA"], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon == 6:
-            bl.append(Buff("FeixiaoE6PEN", "PEN", 0.20, self.role, ["ULT"], 1, 1, Role.SELF, "PERM"))
+            bl.append(Buff("FeixiaoE6PEN", "PEN", 0.20, self.role, ["ULT"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -83,10 +83,10 @@ class Feixiao(Character):
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", ["SKL"], [self.element], [sklMul, 0], [20, 0], 0.5, self.scaling, -1, "FeixiaoSkill"))
         self.fuas = self.fuas + 1
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", atkType, [self.element], [fuaMul + e6Bonus, 0], [5 + e4Bonus, 0], 0.5 + e2Bonus, self.scaling, 0, "FeixiaoSkillFUA"))
-        bl.append(Buff("FeixiaoSkillATK", "ATK%", 0.48, self.role, ["ALL"], 3, 1, Role.SELF, "END"))
-        bl.append(Buff("FeixiaoFuaDMG", "DMG%", 0.60, self.role, ["ALL"], 2, 1, Role.SELF, "END"))
+        bl.append(Buff("FeixiaoSkillATK", "ATK%", 0.48, self.role, ["ALL"], 3, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("FeixiaoFuaDMG", "DMG%", 0.60, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         if self.eidolon >= 4:
-            bl.append(Buff("FeixiaoE4SPD", "SPD%", 0.08, self.role, ["ALL"], 2, 1, Role.SELF, "END"))
+            bl.append(Buff("FeixiaoE4SPD", "SPD%", 0.08, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -108,9 +108,9 @@ class Feixiao(Character):
         e6Bonus = 1.4 if self.eidolon == 6 else 0
         atkType = ["FUA", "ULT", "DUKEFUA"] if self.eidolon == 6 else ["FUA", "DUKEFUA"]
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "ST", atkType, [self.element], [fuaMul + e6Bonus, 0], [5 + e4Bonus, 0], 0.5 + e2Bonus, self.scaling, 0, "FeixiaoFua"))
-        bl.append(Buff("FeixiaoFuaDMG", "DMG%", 0.60, self.role, ["ALL"], 2, 1, Role.SELF, "END"))
+        bl.append(Buff("FeixiaoFuaDMG", "DMG%", 0.60, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         if self.eidolon >= 4:
-            bl.append(Buff("FeixiaoE4SPD", "SPD%", 0.08, self.role, ["ALL"], 2, 1, Role.SELF, "END"))
+            bl.append(Buff("FeixiaoE4SPD", "SPD%", 0.08, self.role, ["ALL"], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):

@@ -9,8 +9,8 @@ class Musketeer(Relic):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("MuskATK", "ATK%", 0.12, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        buffList.append(Buff("MuskATK", "ATK%", 0.12, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         if self.setType == 4:
-            buffList.append(Buff("MuskSPD", "SPD%", 0.06, self.wearerRole, ["ALL"], 1, 1, Role.SELF, "PERM"))
-            buffList.append(Buff("MuskATK", "DMG%", 0.10, self.wearerRole, ["BSC"], 1, 1, Role.SELF, "PERM"))
+            buffList.append(Buff("MuskSPD", "SPD%", 0.06, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+            buffList.append(Buff("MuskATK", "DMG%", 0.10, self.wearerRole, ["BSC"], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList

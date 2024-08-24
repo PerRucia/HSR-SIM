@@ -26,19 +26,19 @@ weaknesses = [Element.WIND, Element.FIRE, Element.IMAGINARY, Element.LIGHTNING]
 actionOrder = [1,1,2] # determines how many attacks enemies will have per turn
 
 # Character Settings
-slot1 = Feixiao(0, Role.DPS, 0, eidolon=0, sig=False)
+slot1 = Feixiao(0, Role.DPS, 0, eidolon=0, sig=True)
 slot2 = Robin(1, Role.SUP1, 0)
 slot3 = Aventurine(2, Role.SUS, 0)
 slot4 = Topaz(3, Role.SUBDPS, 0)
 
 # Simulation Settings
-cycleLimit = 50
+cycleLimit = 5
 avLimit = 150 + 100 * (cycleLimit - 1)
 startingSP = 3
 spGain = 0
 spUsed = 0
 totalEnemyAttacks = 0
-logLevel = logging.CRITICAL
+logLevel = logging.DEBUG
 # CRITICAL: Only prints the main action taken during each turn + ultimates
 # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
 # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn

@@ -40,10 +40,10 @@ class Tingyun(Character):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.extend([Buff("TingyunBasicDMG", "DMG%", 0.4, self.role, ["BSC"], 1, 1, Role.SELF, "PERM"),
-                         Buff("TingyunTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"),
-                         Buff("TingyunTraceDEF", "DEF%", 0.225, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"),
-                         Buff("TingyunTraceDMG", "DMG%", 0.08, self.role, ["ALL"], 1, 1, Role.SELF, "PERM")
+        buffList.extend([Buff("TingyunBasicDMG", "DMG%", 0.4, self.role, ["BSC"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("TingyunTraceATK", "ATK%", 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("TingyunTraceDEF", "DEF%", 0.225, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM),
+                         Buff("TingyunTraceDMG", "DMG%", 0.08, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)
                          ])
         return buffList, debuffList, advList, delayList
     
@@ -56,16 +56,16 @@ class Tingyun(Character):
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "TingyunSkill"))
-        bl.append(Buff("Benediction", "ATK%", 0.55, self.beneTarget, ["ALL"], 3, 1, self.beneTarget, "END"))
-        bl.append(Buff("TingyunSkillSPD", "SPD%", 0.2, self.role, ["ALL"], 1, 1, Role.SELF, "END"))
+        bl.append(Buff("Benediction", "ATK%", 0.55, self.beneTarget, ["ALL"], 3, 1, self.beneTarget, TickDown.END))
+        bl.append(Buff("TingyunSkillSPD", "SPD%", 0.2, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         self.currEnergy = self.currEnergy - self.ultCost
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TingyunUlt"))
-        bl.append(Buff("TingyunUltEnergy", "ERR_F", 60, self.beneTarget, ["ALL"], 1, 1, self.beneTarget, "PERM"))
-        bl.append(Buff("TingyunUltDMG", "DMG%", 0.56, self.beneTarget, ["ALL"], 2, 1, self.beneTarget, "END"))
+        bl.append(Buff("TingyunUltEnergy", "ERR_F", 60, self.beneTarget, ["ALL"], 1, 1, self.beneTarget, TickDown.PERM))
+        bl.append(Buff("TingyunUltDMG", "DMG%", 0.56, self.beneTarget, ["ALL"], 2, 1, self.beneTarget, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):

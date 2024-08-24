@@ -46,9 +46,9 @@ class Fuxuan(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("FXTraceERS", "ERS%", 0.1, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("FXTraceCR", "CR%", 0.187, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
-        bl.append(Buff("FXTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, "PERM"))
+        bl.append(Buff("FXTraceERS", "ERS%", 0.1, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("FXTraceCR", "CR%", 0.187, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("FXTraceHP", "HP%", 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
@@ -59,7 +59,7 @@ class Fuxuan(Character):
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), "NA", ["SKL"], [self.element], [0, 0], [0, 0], 50, self.scaling, -1, "FuxuanSkill"))
-        bl.append(Buff("FuxuanCR", "CR%", 0.12, Role.SELF, ["ALL"], 3, 1, self.role, "END"))
+        bl.append(Buff("FuxuanCR", "CR%", 0.12, Role.SELF, ["ALL"], 3, 1, self.role, TickDown.START))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
