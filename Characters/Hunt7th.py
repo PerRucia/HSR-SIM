@@ -42,15 +42,15 @@ class Hunt7th(Character):
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 17, 7, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, masterRole = Role.DPS, lc = None, r1 = None, r2 = None, pl = None) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, masterRole = Role.DPS, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
         super().__init__(pos, role, defaultTarget)
         self.lightcone = lc if lc else Swordplay(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Rutilant(role)
         self.masterRole = masterRole
+        self.relicStats = subs if subs else RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 17, 7, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

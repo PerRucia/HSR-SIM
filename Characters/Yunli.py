@@ -32,15 +32,15 @@ class Yunli(Character):
     hitMultiplier = 0
     
     # Relic Settings
-    relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 13, 11, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
         super().__init__(pos, role, defaultTarget)
         self.lightcone = lc if lc else Aeon(role, 5)
         self.relic1 = r1 if r1 else WindSoaringYunli(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)
         self.currEnergy = self.maxEnergy / 2
+        self.relicStats = subs if subs else RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 13, 11, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()

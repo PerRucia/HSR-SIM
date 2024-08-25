@@ -29,14 +29,14 @@ class Tingyun(Character):
     beneTarget = Role.DPS
     
     # Relic Settings
-    relicStats = RelicStats(9, 2, 2, 5, 2, 4, 6, 6, 3, 6, 3, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
         super().__init__(pos, role, defaultTarget)
         self.lightcone = lc if lc else MOTP(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Vonwacq(role)
+        self.relicStats = subs if subs else RelicStats(9, 2, 2, 5, 2, 4, 6, 6, 3, 6, 3, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
