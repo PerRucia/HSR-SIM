@@ -1,7 +1,4 @@
 from Character import Character
-from Lightcones.Aeon import Sunset
-from Relics.WindSoaring import WindSoaringYunli
-from Planars.Duran import Duran
 from RelicStats import RelicStats
 from Buff import *
 from Result import *
@@ -36,12 +33,13 @@ class Template(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     relicStats = RelicStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = None
-        self.relic1 = None
-        self.relic2 = None
-        self.planar = None
+        self.lightcone = lc if lc else None
+        self.relic1 = r1 if r1 else None
+        self.relic2 = r2 if r2 else None
+        self.planar = pl if pl else None
+        self.relicStats = subs if subs else RelicStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT)
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

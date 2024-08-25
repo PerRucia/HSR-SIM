@@ -37,12 +37,12 @@ class Luocha(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     relicStats = RelicStats(10, 2, 2, 2, 2, 14, 4, 0, 4, 8, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = Multi(role, 5)
-        self.relic1 = Musketeer(role, 4)
-        self.relic2 = None
-        self.planar = Keel(role)
+        self.lightcone = lc if lc else Multi(role, 5)
+        self.relic1 = r1 if r1 else Musketeer(role, 4)
+        self.relic2 = r2 if r2 else None
+        self.planar = pl if pl else Keel(role)
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

@@ -42,12 +42,12 @@ class Topaz(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     relicStats = RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon: int = 0) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon: int = 0, lc = None, r1 = None, r2 = None, pl = None) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = Swordplay(role)
-        self.relic1 = DukeTopaz(role, 4)
-        self.relic2 = None
-        self.planar = Duran(role)
+        self.lightcone = lc if lc else Swordplay(role)
+        self.relic1 = r1 if r1 else DukeTopaz(role, 4)
+        self.relic2 = r2 if r2 else None
+        self.planar = pl if pl else Duran(role)
         self.eidolon = eidolon
         
     def equip(self):

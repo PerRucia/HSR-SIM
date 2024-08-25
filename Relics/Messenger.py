@@ -5,7 +5,7 @@ from Misc import *
 class Messenger(Relic):
     name = "Messenger Traversing Hackerspace"
     
-    def __init__(self, wearerRole, setType, allyUlt):
+    def __init__(self, wearerRole, setType, allyUlt=False):
         super().__init__(wearerRole, setType)
         self.allyUlt = allyUlt
         

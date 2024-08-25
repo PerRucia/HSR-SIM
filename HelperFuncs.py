@@ -272,7 +272,7 @@ def tickBuffs(charRole: str, buffList: list[Buff], tdType: str) -> list[Buff]:
         newList.append(buff)
     return newList
 
-def takeDebuffDMG(enemy: Enemy, playerTeam: list[Character], buffList: list[Buff], debuffList: list[Debuff]):
+def takeDebuffDMG(enemy: Enemy, playerTeam: list[Character], buffList: list[Buff], debuffList: list[Debuff]) -> float:
     dmg = 0
     dotList = [debuff for debuff in debuffList if ((debuff.target == enemy.enemyID) and (debuff.isDot or debuff.debuffType == "FREEZE" or debuff.debuffType == "ENTANGLE"))]
     for dot in dotList:
@@ -297,6 +297,7 @@ def takeDebuffDMG(enemy: Enemy, playerTeam: list[Character], buffList: list[Buff
             dmg += dotDmg
             logger.warning(f"    DEBUFF - {enemy.name} took {dotDmg:.3f} Debuff damage from {dot.name}")
     enemy.addDebuffDMG(dmg)
+    return dmg
 
 def findCharRole(playerTeam: list[Character], charRole: str) -> Character:
     for char in playerTeam:

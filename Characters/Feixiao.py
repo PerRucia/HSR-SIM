@@ -49,12 +49,12 @@ class Feixiao(Character):
     # Bronya Tuning = RelicStats(3, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     relicStats = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lcLevel: int = 1, sig: bool = True):
+    def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lcLevel: int = 1, lc = None, r1 = None, r2 = None, pl = None, sig = True):
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = VentureForthFeixiao(role, lcLevel) if sig else Cruising(role)
-        self.relic1 = WindSoaringYunli(role, 4) # same as yunli, ult also counts as FuA
-        self.relic2 = None
-        self.planar = Duran(role)
+        self.lightcone = lc if lc else (VentureForthFeixiao(role, lcLevel) if sig else Cruising(role))
+        self.relic1 = r1 if r1 else WindSoaringYunli(role, 4) # same as yunli, ult also counts as FuA
+        self.relic2 = r2 if r2 else None
+        self.planar = pl if pl else Duran(role)
         self.eidolon = eidolon
         
     def equip(self):

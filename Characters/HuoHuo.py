@@ -40,12 +40,12 @@ class HuoHuo(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     relicStats = RelicStats(8, 2, 3, 4, 7, 6, 4, 0, 0, 9, 5, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.HP_PERCENT, Pwr.ERR_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = PostOp(self.role, 5)
-        self.relic1 = Messenger(self.role, 2, True)
-        self.relic2 = Longevous(self.role, 2)
-        self.planar = Keel(self.role)
+        self.lightcone = lc if lc else PostOp(self.role, 5)
+        self.relic1 = r1 if r1 else Messenger(self.role, 2, True)
+        self.relic2 = r2 if r2 else Longevous(self.role, 2)
+        self.planar = pl if pl else Keel(self.role)
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

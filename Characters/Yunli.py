@@ -34,12 +34,12 @@ class Yunli(Character):
     # Relic Settings
     relicStats = RelicStats(0, 0, 2, 2, 2, 2, 4, 4, 4, 4, 13, 11, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = Aeon(role, 5)
-        self.relic1 = WindSoaringYunli(role, 4)
-        self.relic2 = None
-        self.planar = Duran(role)
+        self.lightcone = lc if lc else Aeon(role, 5)
+        self.relic1 = r1 if r1 else WindSoaringYunli(role, 4)
+        self.relic2 = r2 if r2 else None
+        self.planar = pl if pl else Duran(role)
         self.currEnergy = self.maxEnergy / 2
         
     def equip(self):

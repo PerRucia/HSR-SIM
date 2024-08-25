@@ -40,12 +40,12 @@ class Lingsha(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     relicStats = RelicStats(10, 2, 2, 2, 2, 2, 2, 15, 3, 8, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.BE_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = PostOp(role, 5)
-        self.relic1 = Messenger(role, 2, False)
-        self.relic2 = Thief(role, 2)
-        self.planar = Keel(role)
+        self.lightcone = lc if lc else PostOp(role, 5)
+        self.relic1 = r1 if r1 else Messenger(role, 2, False)
+        self.relic2 = r2 if r2 else Thief(role, 2)
+        self.planar = pl if pl else Keel(role)
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

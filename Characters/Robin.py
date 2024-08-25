@@ -40,12 +40,12 @@ class Robin(Character):
     # Relic Settings
     relicStats = RelicStats(14, 5, 6, 3, 7, 6, 6, 0, 0, 5, 0, 0, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon=0) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon=0, lc = None, r1 = None, r2 = None, pl = None) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = Journey(role)
-        self.relic1 = Musketeer(role, 2)
-        self.relic2 = Prisoner(role, 2)
-        self.planar = Lushaka(role, Role.DPS)
+        self.lightcone = lc if lc else Journey(role)
+        self.relic1 = r1 if r1 else Musketeer(role, 2)
+        self.relic2 = r2 if r2 else Prisoner(role, 2)
+        self.planar = pl if pl else Lushaka(role, Role.DPS)
         self.eidolon = eidolon
         
     def equip(self):
