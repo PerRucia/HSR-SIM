@@ -15,13 +15,13 @@ class MOTP(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         breakBuff = self.level * 0.07 + 0.21
-        buffList.append(Buff("MotpBE", Pwr.BE_PERCENT, breakBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("MotpBE", Pwr.BE_PERCENT, breakBuff, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     def useBsc(self, enemyID):
         buffList, debuffList, advList, delayList = super().useBsc(enemyID)
         errGain = self.level + 3
-        buffList.append(Buff("MotpBonusEnergy", Pwr.ERR_T, errGain, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("MotpBonusEnergy", Pwr.ERR_T, errGain, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     

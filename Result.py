@@ -2,7 +2,7 @@ class Result:
     def __init__(self, charName: str, charRole: str, atkType: list, eleType: list, broken: bool, turnDmg: float, wbDmg: float, errGain: float, turnName: str, enemiesHit: list[int]):
         self.charName = charName
         self.charRole = charRole
-        self.atkType = atkType[0]
+        self.atkType = atkType
         self.eleType = eleType
         self.brokenEnemy = broken
         self.turnDmg = turnDmg

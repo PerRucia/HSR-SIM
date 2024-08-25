@@ -25,7 +25,7 @@ class Character:
     currEnergy = maxEnergy / 2
     currAV = 100.0
     rotation = ["E", "A", "A"]
-    dmgDct = {"BSC": 0, "SKL": 0, "ULT": 0, "BREAK": 0}
+    dmgDct = {Move.BSC: 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0}
     hasSpecial = False
     hasSummon = False
     specialEnergy = False
@@ -66,7 +66,7 @@ class Character:
     
     def useUlt(self, enemyID=-1):
         self.ults = self.ults + 1
-        return *self.parseEquipment("ULT", enemyID=enemyID), []
+        return *self.parseEquipment(Move.ULT, enemyID=enemyID), []
         
     def useFua(self, enemyID=-1):
         self.fuas = self.fuas + 1
@@ -76,9 +76,9 @@ class Character:
         return *self.parseEquipment("HIT", enemyID=enemyID), []
     
     def ownTurn(self, result: Result):
-        if result.atkType in self.dmgDct:
-            self.dmgDct[result.atkType] = self.dmgDct[result.atkType] + result.turnDmg
-        self.dmgDct["BREAK"] = self.dmgDct["BREAK"] + result.wbDmg
+        if result.atkType[0] in self.dmgDct:
+            self.dmgDct[result.atkType[0]] = self.dmgDct[result.atkType[0]] + result.turnDmg
+        self.dmgDct[Move.BRK] = self.dmgDct[Move.BRK] + result.wbDmg
         self.currEnergy = min(self.maxEnergy, self.currEnergy + result.errGain)
         return *self.parseEquipment("OWN", result=result), []
     
@@ -105,7 +105,7 @@ class Character:
                 buffs, debuffs, advs, delays = equipment.useBsc(enemyID)
             elif actionType == "SKILL":
                 buffs, debuffs, advs, delays = equipment.useSkl(enemyID)
-            elif actionType == "ULT":
+            elif actionType == Move.ULT:
                 buffs, debuffs, advs, delays = equipment.useUlt(enemyID)
             elif actionType == "FUA":
                 buffs, debuffs, advs, delays = equipment.useFua(enemyID)
@@ -158,7 +158,7 @@ class Character:
         ttl = sum(self.dmgDct.values())
         res = ""
         for key, val in self.dmgDct.items():
-            res += f"-{key}: {val:.3f} | {val / ttl * 100 if ttl > 0 else 0:.3f}%\n"
+            res += f"-{key.name}: {val:.3f} | {val / ttl * 100 if ttl > 0 else 0:.3f}%\n"
         return res, ttl
     
     def getBaseStat(self) -> tuple[float, float, float]:

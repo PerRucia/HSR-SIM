@@ -3,7 +3,6 @@ from enum import Enum, auto
 bonusDMG = {"AvenFUAExtras", "TYAllyBonus", "TYBeneBonus", "YunliCullBounce", "FeixiaoUlt", "RobinConcertoDMG", "H7UltEnhancedBSCExtras", "H7EnhancedBSCExtras", "MozeBonusDMG", "RuanMeiBreakBonus", "LingshaFuaExtra"}
 wbMultiplier = 3767.5533
 eleDct = {"PHY": 2.0, "FIR": 2.0, "WIN": 1.5, "ICE": 1.0, "LNG": 1.0, "QUA": 0.5, "IMG": 0.5}
-
 atkRatio = [0.55, 0.2, 0.25] # Single Target, Blast Attack, AOE Attack splits for enemy behaviour
 
 class Pwr(Enum):
@@ -29,7 +28,6 @@ class Pwr(Enum):
     PEN = "PEN"
     ERR_T = "ERR_T"
     ERR_F = "ERR_F"
-    ALL = "ALL"
     ICEPEN = "ICEPEN"
     FIRPEN = "FIRPEN"
     LNGPEN = "LNGPEN"
@@ -96,4 +94,21 @@ class AtkTarget(Enum):
     BLASTSB = "BLASTSBREAK"
     AOESB = "AOESBREAK"
     DOT = "DOT"
+    DEBUFF = "DEBUFF"
     
+class Move(Enum):
+    BSC = auto()
+    SKL = auto()
+    ULT = auto()
+    FUA = auto()
+    BRK = auto()
+    DOT = auto()
+    ALL = auto()
+    TECH = auto()
+    # Special Buffs/Moves
+    DUKEFUA = auto()
+    DUKEULT = auto()
+    TOPAZULT = auto()
+    TOPAZFUA = auto()
+
+penDct = {Element.PHYSICAL: Pwr.PHYPEN, Element.FIRE: Pwr.FIRPEN, Element.WIND: Pwr.WINPEN, Element.ICE: Pwr.ICEPEN, Element.QUANTUM: Pwr.QUAPEN, Element.LIGHTNING: Pwr.LNGPEN, Element.IMAGINARY: Pwr.IMGPEN}

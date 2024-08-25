@@ -29,7 +29,7 @@ class Gallagher(Character):
     ultCost = 110
     currAV = 0
     rotation = ["A"] # Adjust accordingly
-    dmgDct = {"BSC": 0, "ULT": 0, "BREAK": 0} # Adjust accordingly
+    dmgDct = {Move.BSC: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
     hasSpecial = True
     
     # Unique Character Properties
@@ -50,33 +50,33 @@ class Gallagher(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("GallyTraceERS", Pwr.ERS_PERCENT, 0.28 + 0.5, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)) # 50% from e1
-        bl.append(Buff("GallyTraceBE", Pwr.BE_PERCENT, 0.133 + 0.2, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)) # 20% from e6
-        bl.append(Buff("GallyTraceHP", Pwr.HP_PERCENT, 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("GallyTraceWBE", Pwr.WB_EFF, 0.20, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM)) # from e6
+        bl.append(Buff("GallyTraceERS", Pwr.ERS_PERCENT, 0.28 + 0.5, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM)) # 50% from e1
+        bl.append(Buff("GallyTraceBE", Pwr.BE_PERCENT, 0.133 + 0.2, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM)) # 20% from e6
+        bl.append(Buff("GallyTraceHP", Pwr.HP_PERCENT, 0.18, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("GallyTraceWBE", Pwr.WB_EFF, 0.20, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM)) # from e6
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         if self.enhancedBasic:
             self.enhancedBasic = False
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [2.75, 0], [30, 0], 20, self.scaling, 1, "GallyEnhancedBasic"))
-            dbl.append(Debuff("NectarBlitz", self.role, Pwr.DMG_PERCENT, 0, self.getTargetID(enemyID), ["ALL"], 2, 1, False, [0, 0], False))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.BSC], [self.element], [2.75, 0], [30, 0], 20, self.scaling, 1, "GallyEnhancedBasic"))
+            dbl.append(Debuff("NectarBlitz", self.role, Pwr.DMG_PERCENT, 0, self.getTargetID(enemyID), [Move.ALL], 2, 1, False, [0, 0], False))
         else:
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.1, 0], [10, 0], 20, self.scaling, 1, "GallyBasic"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.BSC], [self.element], [1.1, 0], [10, 0], 20, self.scaling, 1, "GallyBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["SKL"], [self.element], [0, 0], [0, 0], 30, self.scaling, -1, "GallySkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, [Move.SKL], [self.element], [0, 0], [0, 0], 30, self.scaling, -1, "GallySkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
         self.enhancedBasic = True
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, ["ULT"], [self.element], [1.65, 0], [20, 0], 5, self.scaling, 0, "GallyUlt"))
-        dbl.append(Debuff("Besotted", self.role, Pwr.VULN, 0.132, Role.ALL, ["BREAK"], 3, 1, False, [0, 0], False)) # 3 turns from e4
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, [Move.ULT], [self.element], [1.65, 0], [20, 0], 5, self.scaling, 0, "GallyUlt"))
+        dbl.append(Debuff("Besotted", self.role, Pwr.VULN, 0.132, Role.ALL, [Move.BRK], 3, 1, False, [0, 0], False)) # 3 turns from e4
         al.append(Advance("GallyUltAdv", self.role, 1.0))
         return bl, dbl, al, dl, tl
     

@@ -28,7 +28,7 @@ class Lingsha(Character):
     ultCost = 110
     currAV = 0
     rotation = ["E", "A", "A"] # Adjust accordingly
-    dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0, "BREAK": 0} # Adjust accordingly
+    dmgDct = {Move.BSC: 0, "FUA": 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     hasSummon = True
@@ -49,29 +49,29 @@ class Lingsha(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("LingshaTraceBE", Pwr.BE_PERCENT, 0.373, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("LingshaTraceATK", Pwr.ATK_PERCENT, 0.1, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("LingshaTraceHP", Pwr.HP_PERCENT, 0.18, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("LingshaBEtoATK", Pwr.ATK_PERCENT, 0.5, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaTraceBE", Pwr.BE_PERCENT, 0.373, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaTraceATK", Pwr.ATK_PERCENT, 0.1, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaTraceHP", Pwr.HP_PERCENT, 0.18, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaBEtoATK", Pwr.ATK_PERCENT, 0.5, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.0, 0], [10, 0], 30, self.scaling, 1, "LingshaBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.BSC], [self.element], [1.0, 0], [10, 0], 30, self.scaling, 1, "LingshaBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, ["SKL"], [self.element], [0.8, 0], [10, 0], 30, self.scaling, -1, "LingshaSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, [Move.SKL], [self.element], [0.8, 0], [10, 0], 30, self.scaling, -1, "LingshaSkill"))
         al.append(Advance("LingshaADV", self.fuyuanRole, 0.2))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, ["ULT"], [self.element], [1.5, 0], [20, 0], 5, self.scaling, 0, "LingshaUlt"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, [Move.ULT], [self.element], [1.5, 0], [20, 0], 5, self.scaling, 0, "LingshaUlt"))
         al.append(Advance("LingshaADV", self.fuyuanRole, 1.0))
-        dbl.append(Debuff("LingshaBefog", self.role, Pwr.VULN, 0.25, Role.ALL, ["BREAK"], 2, 1, False, [0, 0], False))
+        dbl.append(Debuff("LingshaBefog", self.role, Pwr.VULN, 0.25, Role.ALL, [Move.BRK], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):

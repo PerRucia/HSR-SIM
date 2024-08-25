@@ -29,7 +29,7 @@ class RuanMei(Character):
     ultCost = 130
     currAV = 0
     rotation = ["E", "A", "A"] # Adjust accordingly
-    dmgDct = {"BSC": 0, "BREAK": 0} # Adjust accordingly
+    dmgDct = {Move.BSC: 0, Move.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     beStat = 0
@@ -49,40 +49,40 @@ class RuanMei(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("RuanMeiTechERR", Pwr.ERR_T, 30, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("RuanMeiWBE", Pwr.WB_EFF, 0.50, Role.ALL, ["ALL"], 3, 1, self.role, TickDown.START))
-        bl.append(Buff("RuanMeiDMG", Pwr.DMG_PERCENT, 0.68, Role.ALL, ["ALL"], 3, 1, self.role, TickDown.START))
-        bl.append(Buff("RuanMeiSPD", Pwr.SPD_PERCENT, 0.10, Role.ALL, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("RuanTraceBE", Pwr.BE_PERCENT, 0.373, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("RuanTraceDEF", Pwr.DEF_PERCENT, 0.225, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("RuanTraceSPD", Pwr.SPD, 5, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("RuanTeamBE", Pwr.BE_PERCENT, 0.20, Role.ALL, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("RuanMeiTechERR", Pwr.ERR_T, 30, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("RuanMeiWBE", Pwr.WB_EFF, 0.50, Role.ALL, [Move.ALL], 3, 1, self.role, TickDown.START))
+        bl.append(Buff("RuanMeiDMG", Pwr.DMG_PERCENT, 0.68, Role.ALL, [Move.ALL], 3, 1, self.role, TickDown.START))
+        bl.append(Buff("RuanMeiSPD", Pwr.SPD_PERCENT, 0.10, Role.ALL, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("RuanTraceBE", Pwr.BE_PERCENT, 0.373, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("RuanTraceDEF", Pwr.DEF_PERCENT, 0.225, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("RuanTraceSPD", Pwr.SPD, 5, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("RuanTeamBE", Pwr.BE_PERCENT, 0.20, Role.ALL, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.0, 0], [10, 0], 25, self.scaling, 1, "RuanMeiBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.BSC], [self.element], [1.0, 0], [10, 0], 25, self.scaling, 1, "RuanMeiBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["SKL"], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RuanMeiSkill"))
-        bl.append(Buff("RuanMeiWBE", Pwr.WB_EFF, 0.50, Role.ALL, ["ALL"], 3, 1, self.role, TickDown.START))
-        bl.append(Buff("RuanMeiDMG", Pwr.DMG_PERCENT, 0.68, Role.ALL, ["ALL"], 3, 1, self.role, TickDown.START))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, [Move.SKL], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RuanMeiSkill"))
+        bl.append(Buff("RuanMeiWBE", Pwr.WB_EFF, 0.50, Role.ALL, [Move.ALL], 3, 1, self.role, TickDown.START))
+        bl.append(Buff("RuanMeiDMG", Pwr.DMG_PERCENT, 0.68, Role.ALL, [Move.ALL], 3, 1, self.role, TickDown.START))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, ["ULT"], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RuanMeiUlt"))
-        bl.append(Buff("RuanMeiPEN", Pwr.PEN, 0.25, Role.ALL, ["ALL"], 2, 1, self.role, TickDown.START))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, [Move.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RuanMeiUlt"))
+        bl.append(Buff("RuanMeiPEN", Pwr.PEN, 0.25, Role.ALL, [Move.ALL], 2, 1, self.role, TickDown.START))
         dl.append(Delay("Thanatoplum", 0.1 + self.beStat * 0.2, Role.ALL, True, False))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
         if result.brokenEnemy:
-            tl.append(Turn(self.name, self.role, result.enemiesHit[0], AtkTarget.STBREAK, ["BREAK"], [self.element], [1.2, 0], [0, 0], 0, self.scaling, 0, "RuanMeiBreakBonus"))
+            tl.append(Turn(self.name, self.role, result.enemiesHit[0], AtkTarget.STBREAK, [Move.BRK], [self.element], [1.2, 0], [0, 0], 0, self.scaling, 0, "RuanMeiBreakBonus"))
         return bl, dbl, al, dl, tl
     
     def special(self):

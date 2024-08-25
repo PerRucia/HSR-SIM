@@ -16,25 +16,25 @@ class Aeon(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         dmgBuff = (self.level * 0.03 + 0.09) * self.uptime
-        buffList.append(Buff("AeonDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("AeonDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     def useUlt(self, enemyID):
         bl, dbl, al, dl = super().useUlt(enemyID)
         atkBuff = self.level * 0.02 + 0.06
-        bl.append(Buff("AeonATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, ["ALL"], 1, 4, Role.SELF, TickDown.PERM))
+        bl.append(Buff("AeonATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, [Move.ALL], 1, 4, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useSkl(self, enemyID):
         bl, dbl, al, dl = super().useSkl(enemyID)
         atkBuff = self.level * 0.02 + 0.06
-        bl.append(Buff("AeonATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, ["ALL"], 1, 4, Role.SELF, TickDown.PERM))
+        bl.append(Buff("AeonATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, [Move.ALL], 1, 4, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID):
         bl, dbl, al, dl = super().useBsc(enemyID)
         atkBuff = self.level * 0.02 + 0.06
-        bl.append(Buff("AeonATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, ["ALL"], 1, 4, Role.SELF, TickDown.PERM))
+        bl.append(Buff("AeonATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, [Move.ALL], 1, 4, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     

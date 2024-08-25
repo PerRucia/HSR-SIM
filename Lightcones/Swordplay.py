@@ -15,7 +15,7 @@ class Swordplay(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         dmgBuff = (self.level * 0.02 + 0.06) * 5
-        buffList.append(Buff("SwordplayDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("SwordplayDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
 
     

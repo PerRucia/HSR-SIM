@@ -11,6 +11,6 @@ class Lushaka(Planar):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("LukshakaERR", Pwr.ERR_PERCENT, 0.05, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        buffList.append(Buff(f"LukshakaATK({self.wearerRole.name})", Pwr.ATK_PERCENT, 0.12, self.slot1Role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("LukshakaERR", Pwr.ERR_PERCENT, 0.05, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff(f"LukshakaATK({self.wearerRole.name})", Pwr.ATK_PERCENT, 0.12, self.slot1Role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList

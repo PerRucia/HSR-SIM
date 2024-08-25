@@ -27,7 +27,7 @@ class Template(Character):
     ultCost = 0
     currAV = 0
     rotation = ["E"] # Adjust accordingly
-    dmgDct = {"BSC": 0, "FUA": 0, "SKL": 0, "ULT": 0, "BREAK": 0} # Adjust accordingly
+    dmgDct = {Move.BSC: 0, "FUA": 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     

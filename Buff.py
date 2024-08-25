@@ -1,29 +1,3 @@
-'''
-buffList = [
-    "SPD",
-    "HP",
-    "ATK",
-    "DEF",
-    "HP%",
-    "ATK%",
-    "DEF%",
-    "CR%",
-    "CD%",
-    "BE%",
-    "OGH%",
-    "ERR%",
-    "EHR%",
-    "ERS%",
-    "DMG%",
-    "SHRED",
-    "VULN",
-    "PEN",
-    "ERR" 
-]
-
-targets = ["DPS", "SDPS", "SUP1", "SUP2", "SUS", "ALL"]
-atkTypes = ["BASIC", "SKILL", "ULT", "FUA", "ALL"]
-'''
 from Misc import *
 
 class Buff:
@@ -43,7 +17,7 @@ class Buff:
     def __str__(self) -> str:
         res = f"{self.name} | {self.buffType.value} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
         res += f"Remaining Turns: {self.turns} | TickDown: {self.tickDown.name}, {self.tdType.name} | "
-        res += f"Target: {self.target.name} | Affects: {self.atkType}"
+        res += f"Target: {self.target.name} | Affects: {[a.name for a in self.atkType]}"
         return res
         
     def reduceTurns(self) -> None:
@@ -86,7 +60,7 @@ class Debuff:
         
     def __str__(self) -> str:
         res = f"{self.name} | From: {self.charRole.name} | {self.debuffType.value} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
-        res += f"Remaining Turns: {self.turns} | Target: {self.target} | Affects: {self.atkType} | DOT: {self.isDot} | Blast: {self.isBlast}"
+        res += f"Remaining Turns: {self.turns} | Target: {self.target} | Affects: {[a.name for a in self.atkType]} | DOT: {self.isDot} | Blast: {self.isBlast}"
         return res
         
     def reduceTurns(self) -> None:

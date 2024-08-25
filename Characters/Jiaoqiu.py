@@ -29,7 +29,7 @@ class Jiaoqiu(Character):
     ultCost = 100
     currAV = 0
     rotation = ["E", "A", "A"] # Adjust accordingly
-    dmgDct = {"BSC": 0, "SKL": 0, "ULT": 0, "BREAK": 0} # Adjust accordingly
+    dmgDct = {Move.BSC: 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     hasSpecial = True
@@ -51,22 +51,22 @@ class Jiaoqiu(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("JQTraceEHR", Pwr.ERR_PERCENT, 0.28, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("JQTraceDMG", Pwr.DMG_PERCENT, 0.144, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("JQTraceSPD", Pwr.SPD, 5.0, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("JQStartERR", Pwr.ERR_T, 15, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JQTraceEHR", Pwr.ERR_PERCENT, 0.28, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JQTraceDMG", Pwr.DMG_PERCENT, 0.144, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JQTraceSPD", Pwr.SPD, 5.0, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JQStartERR", Pwr.ERR_T, 15, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["BSC"], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "JiaoqiuBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.BSC], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "JiaoqiuBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, ["SKL"], [self.element], [1.5, 0.9], [20, 10], 30, self.scaling, -1, "JiaoqiuSkill"))
-        dbl.append(Debuff("AshenRoasted", self.role, Pwr.VULN, 0.10, self.getTargetID(enemyID), ["ALL"], 2, 5, True, [1.8, 1.8], True))
-        dbl.append(Debuff("AshenRoasted", self.role, Pwr.VULN, 0.10, self.getTargetID(enemyID), ["ALL"], 2, 5, True, [1.8, 0], False))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, [Move.SKL], [self.element], [1.5, 0.9], [20, 10], 30, self.scaling, -1, "JiaoqiuSkill"))
+        dbl.append(Debuff("AshenRoasted", self.role, Pwr.VULN, 0.10, self.getTargetID(enemyID), [Move.ALL], 2, 5, True, [1.8, 1.8], True))
+        dbl.append(Debuff("AshenRoasted", self.role, Pwr.VULN, 0.10, self.getTargetID(enemyID), [Move.ALL], 2, 5, True, [1.8, 0], False))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -74,17 +74,17 @@ class Jiaoqiu(Character):
         self.fieldCount = 3
         self.offTurnCount = 6
         self.currEnergy = self.currEnergy - self.ultCost
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, ["ULT"], [self.element], [1.0, 0], [20, 0], 5, self.scaling, 0, "JiaoqiuUlt"))
-        dbl.append(Debuff("JQUltVuln", self.role, Pwr.VULN, 0.15, Role.ALL, ["ULT"], 1000, 1, False, [0, 0], False))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, [Move.ULT], [self.element], [1.0, 0], [20, 0], 5, self.scaling, 0, "JiaoqiuUlt"))
+        dbl.append(Debuff("JQUltVuln", self.role, Pwr.VULN, 0.15, Role.ALL, [Move.ULT], 1000, 1, False, [0, 0], False))
         for _ in range(self.maxAshenStacks):
-            dbl.append(Debuff("AshenRoasted", self.role, Pwr.VULN, 0.10, Role.ALL, ["ALL"], 2, 5, True, [1.8, 0], False))
+            dbl.append(Debuff("AshenRoasted", self.role, Pwr.VULN, 0.10, Role.ALL, [Move.ALL], 2, 5, True, [1.8, 0], False))
         return bl, dbl, al, dl, tl
     
     def useHit(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useHit(enemyID)
         self.offTurnCount = max(0, self.offTurnCount - 1)
         if self.offTurnCount > 0:
-            dbl.append(Debuff("AshenRoasted", self.role, Pwr.VULN, 0.10, enemyID, ["ALL"], 2, 5, True, [1.8, 1.8], False))
+            dbl.append(Debuff("AshenRoasted", self.role, Pwr.VULN, 0.10, enemyID, [Move.ALL], 2, 5, True, [1.8, 1.8], False))
         return bl, dbl, al, dl, tl
     
     def special(self):
@@ -95,11 +95,11 @@ class Jiaoqiu(Character):
         self.ehrStat = specialRes.attr1
         self.maxAshenStacks = specialRes.attr2
         bonusATKStacks = min(4, (self.ehrStat * 100 - 80) // 15)
-        bl.append(Buff(self.name, Pwr.ATK_PERCENT, bonusATKStacks * 0.6, self.role, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff(self.name, Pwr.ATK_PERCENT, bonusATKStacks * 0.6, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if specialRes.attr3:
             self.fieldCount = max(0, self.fieldCount - 1) # tick down field stacks at start of turn
         if self.fieldCount == 0: # dispell debuff once field is removed
-            dbl.append(Debuff("JQUltVuln", self.role, Pwr.VULN, 0.0, Role.ALL, ["ULT"], 1000, 1, False, [0, 0], False))
+            dbl.append(Debuff("JQUltVuln", self.role, Pwr.VULN, 0.0, Role.ALL, [Move.ULT], 1000, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     

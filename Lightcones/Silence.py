@@ -17,9 +17,9 @@ class Silence(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         atkBuff = self.level * 0.04 + 0.12
-        buffList.append(Buff("SilenceATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("SilenceATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         crBuff = (self.level * 0.03 + 0.09) * self.uptime
-        buffList.append(Buff("SilenceCR", Pwr.CD_PERCENT, crBuff, self.wearerRole, ["ALL"], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("SilenceCR", Pwr.CD_PERCENT, crBuff, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     
