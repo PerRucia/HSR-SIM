@@ -3,7 +3,7 @@ from Buff import Buff
 from Result import Special
 from Misc import *
 
-class BaptismFeixiao(Lightcone):
+class Baptism(Lightcone):
     name = "Baptism of Pure Thought"
     path = Path.HUNT
     baseHP = 952.6
@@ -14,7 +14,7 @@ class BaptismFeixiao(Lightcone):
     
     def __init__(self, wearerRole, level = 1):
         super().__init__(wearerRole, level)
-    
+
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         cdBuff = self.level * 0.03 + 0.17
@@ -40,12 +40,24 @@ class BaptismFeixiao(Lightcone):
         dmgBuff = self.level * 0.06 + 0.30
         bl.append(Buff("BaptismDispDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, [Move.ALL], 2, 1, Role.SELF, TickDown.END))
         shredBuff = self.level * 0.04 + 0.20
-        bl.append(Buff("BaptismDispSHRED", Pwr.SHRED, shredBuff, self.wearerRole, ["FUA"], 2, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("BaptismDispSHRED", Pwr.SHRED, shredBuff, self.wearerRole, [Move.FUA], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl
+
+class BaptismFeixiao(Baptism):
+    def __init__(self, wearerRole, level = 1):
+        super().__init__(wearerRole, level)
     
     def specialStart(self, special: Special):
         if special.specialName == "Feixiao" or special.specialName == "FeixiaoTech":
             self.targetDebuffs = min(3.0, special.attr3)
         return super().specialStart(special)
     
+class BaptismRatio(Baptism):
+    def __init__(self, wearerRole, level = 1):
+        super().__init__(wearerRole, level)
+
+    def specialStart(self, special: Special):
+        if special.specialName == "Ratio":
+            self.targetDebuffs = min(3.0, special.attr1)
+        return super().specialStart(special)
     

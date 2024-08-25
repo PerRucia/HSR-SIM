@@ -58,11 +58,11 @@ class Character:
     
     def useSkl(self, enemyID=-1):
         self.skills = self.skills + 1
-        return *self.parseEquipment("BASIC", enemyID=enemyID), []
+        return *self.parseEquipment(Move.BSC, enemyID=enemyID), []
     
     def useBsc(self, enemyID=-1):
         self.basics = self.basics + 1
-        return *self.parseEquipment("SKILL", enemyID=enemyID), []
+        return *self.parseEquipment(Move.SKL, enemyID=enemyID), []
     
     def useUlt(self, enemyID=-1):
         self.ults = self.ults + 1
@@ -70,7 +70,7 @@ class Character:
         
     def useFua(self, enemyID=-1):
         self.fuas = self.fuas + 1
-        return *self.parseEquipment("FUA", enemyID=enemyID), []
+        return *self.parseEquipment(Move.FUA, enemyID=enemyID), []
         
     def useHit(self, enemyID=-1):
         return *self.parseEquipment("HIT", enemyID=enemyID), []
@@ -101,13 +101,13 @@ class Character:
             equipmentList.append(self.relic2)
             
         for equipment in equipmentList:
-            if actionType == "BASIC":
+            if actionType == Move.BSC:
                 buffs, debuffs, advs, delays = equipment.useBsc(enemyID)
-            elif actionType == "SKILL":
+            elif actionType == Move.SKL:
                 buffs, debuffs, advs, delays = equipment.useSkl(enemyID)
             elif actionType == Move.ULT:
                 buffs, debuffs, advs, delays = equipment.useUlt(enemyID)
-            elif actionType == "FUA":
+            elif actionType == Move.FUA:
                 buffs, debuffs, advs, delays = equipment.useFua(enemyID)
             elif actionType == "EQUIP":
                 buffs, debuffs, advs, delays = equipment.equip()

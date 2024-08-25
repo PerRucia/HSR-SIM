@@ -28,7 +28,7 @@ class Lingsha(Character):
     ultCost = 110
     currAV = 0
     rotation = ["E", "A", "A"] # Adjust accordingly
-    dmgDct = {Move.BSC: 0, "FUA": 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
+    dmgDct = {Move.BSC: 0, Move.FUA: 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     hasSummon = True
@@ -79,7 +79,7 @@ class Lingsha(Character):
         if self.count == 0 and result.turnName != "FuyuanGoGo" and result.turnName != "LingshaAutoheal":
             self.count = 3
             self.fuas = self.fuas + 1
-            tl.append(Turn(self.name, self.role, self.getTargetID(-1), AtkTarget.AOE, ["FUA"], [self.element], [0.9, 0], [10, 0], 0, self.scaling, 0, "LingshaAutoheal"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(-1), AtkTarget.AOE, [Move.FUA], [self.element], [0.9, 0], [10, 0], 0, self.scaling, 0, "LingshaAutoheal"))
         elif result.turnName == "FuyuanGoGo":
             return self.useFua(-1)
         return bl, dbl, al, dl, tl
@@ -91,8 +91,8 @@ class Lingsha(Character):
          
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useFua(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, ["FUA"], [self.element], [0.75, 0], [10, 0], 0, self.scaling, 0, "LingshaFua"))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["FUA"], [self.element], [0.75, 0], [10, 0], 0, self.scaling, 0, "LingshaFuaExtra"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, [Move.FUA], [self.element], [0.75, 0], [10, 0], 0, self.scaling, 0, "LingshaFua"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.FUA], [self.element], [0.75, 0], [10, 0], 0, self.scaling, 0, "LingshaFuaExtra"))
         return bl, dbl, al, dl, tl
     
     def takeTurn(self) -> str:

@@ -15,8 +15,11 @@ from Characters.Gallagher import Gallagher
 # Extra Characters
 from Characters.Jiaoqiu import Jiaoqiu
 from Characters.Yunli import Yunli
+from Characters.DrRatio import DrRatio
 
-def startSimulator(cycleLimit = 50, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False) -> str:
+cycleLimit = 5
+
+def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False) -> str:
     
     # =============== SETTINGS ===============
     # Enemy Settings
@@ -29,14 +32,14 @@ def startSimulator(cycleLimit = 50, s1: Character = None, s2: Character = None, 
     actionOrder = [1,1,2] # determines how many attacks enemies will have per turn
 
     # Character Settings
-    slot1 = Feixiao(0, Role.DPS, 0, eidolon=0, sig=True)
+    slot1 = Feixiao(0, Role.DPS, 0, eidolon=0)
     slot2 = Robin(1, Role.SUP1, 0)
     slot3 = Aventurine(2, Role.SUS, 0)
     slot4 = Topaz(3, Role.SUBDPS, 0)
 
     # Simulation Settings
     totalEnemyAttacks = 0
-    logLevel = logging.DEBUG
+    logLevel = logging.CRITICAL
     # CRITICAL: Only prints the main action taken during each turn + ultimates
     # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
     # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
@@ -333,4 +336,4 @@ def startSimulator(cycleLimit = 50, s1: Character = None, s2: Character = None, 
     
     return f"Sustained DPAV: {totalDMG / avLimit:.3f}"
 
-print(startSimulator())
+print(startSimulator(cycleLimit=cycleLimit, outputLog=True))

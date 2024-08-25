@@ -485,7 +485,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
                 res = "BronyaUltATK" in getBuffNames(buffList)
             else:
                 res = True
-            return Special(name=specStr, attr1=res, attr2=feixiaoTurn, attr3=numDebuffs)
+            return Special(name=specStr, attr1=True, attr2=feixiaoTurn, attr3=numDebuffs)
         
         elif specStr == "getAvenDEF":
             char = findCharName(playerTeam, "Aventurine")
@@ -520,10 +520,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
             return Special(name=specStr, attr1=res)
         
         elif specStr == "MozeCheckRobin":
-            if not inTeam(playerTeam, "Robin"):
-                res = True
-            else:
-                res = "RobinFuaCD" in getBuffNames(buffList)
+            res = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else False
             return Special(name=specStr, attr1=res)
         
         elif specStr == "CheckRuanMeiBE":
@@ -546,6 +543,11 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
                 cd -= findBuffName(buffList, "BronyaUltCD").getBuffVal()
             return Special(name=specStr, attr1=cd)
         
+        elif specStr == "Ratio":
+            ratioTarget = findCharName(playerTeam, "DrRatio").defaultTarget
+            res = countDebuffs(ratioTarget, debuffList)
+            res2 = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else False
+            return Special(name=specStr, attr1=res, attr2=res2)
         else:
             return Special(name=specStr)
         

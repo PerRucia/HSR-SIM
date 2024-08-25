@@ -24,14 +24,13 @@ class Template(Character):
     ultCost = 0
     currAV = 0
     rotation = ["E"] # Adjust accordingly
-    dmgDct = {Move.BSC: 0, "FUA": 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
+    dmgDct = {Move.BSC: 0, Move.FUA: 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
-    relicStats = RelicStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT)
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
         super().__init__(pos, role, defaultTarget)

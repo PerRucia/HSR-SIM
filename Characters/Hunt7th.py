@@ -28,7 +28,7 @@ class Hunt7th(Character):
     ultCost = 110
     currAV = 0
     rotation = ["A"] # Adjust accordingly
-    dmgDct = {Move.BSC: 0, "FUA": 0, "EBSC": 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
+    dmgDct = {Move.BSC: 0, Move.FUA: 0, "EBSC": 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     hasSpecial = True
@@ -112,12 +112,12 @@ class Hunt7th(Character):
         if (turn.charRole == self.masterRole) and (turn.moveName not in bonusDMG) and (turn.moveType != AtkTarget.NA) and (not self.firstTurn):
             self.charges = min(10, self.charges + 1)
             logger.warning(f"ALERT: H7 gained 1 charge from {turn.moveName} | Total: {self.charges}")
-            if self.fuaTrigger and (not "FUA" in turn.atkType):
+            if self.fuaTrigger and (not Move.FUA in turn.atkType):
                 self.charges = min(10, self.charges + 1)
                 logger.warning(f"ALERT: H7 gained 1 charge from MarchFUA | Total: {self.charges}")
                 self.fuaTrigger = False
                 self.fuas = self.fuas + 1
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], AtkTarget.SINGLE, ["FUA"], [self.element, self.masterElement], [0.6, 0], [1, 0], 5, self.scaling, 0, "MarchFUA"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0], AtkTarget.SINGLE, [Move.FUA], [self.element, self.masterElement], [0.6, 0], [1, 0], 5, self.scaling, 0, "MarchFUA"))
         if self.charges >= 7 and not self.advanced:
             self.advanced = True
             al.append(Advance("H7EnhancedADV", self.role, 1.0))

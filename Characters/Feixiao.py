@@ -1,7 +1,7 @@
 from Character import Character
 from Lightcones.VentureForth import VentureForthFeixiao
 from Lightcones.Cruising import Cruising
-from Lightcones.Blissful import BlissfulFeixiao
+from Lightcones.Baptism import BaptismFeixiao
 from Lightcones.Swordplay import Swordplay
 from Relics.WindSoaring import WindSoaringYunli
 from Relics.Duke import DukeFeixiao
@@ -40,7 +40,7 @@ class Feixiao(Character):
     fuaTrigger = True
     technique = True
     canUlt = False
-    firstTurn = True
+    firstTurn = True    
     e2Count = 6
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
@@ -50,7 +50,7 @@ class Feixiao(Character):
     
     def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lcLevel: int = 1, lc = None, r1 = None, r2 = None, pl = None, subs = None):
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = lc if lc else VentureForthFeixiao(role, lcLevel) 
+        self.lightcone = lc if lc else VentureForthFeixiao(role) 
         self.relic1 = r1 if r1 else WindSoaringYunli(role, 4) # same as yunli, ult also counts as FuA
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)

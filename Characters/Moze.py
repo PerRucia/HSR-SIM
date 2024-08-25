@@ -29,7 +29,7 @@ class Moze(Character):
     ultCost = 120
     currAV = 0
     rotation = ["E"] # Adjust accordingly
-    dmgDct = {Move.BSC: 0, "FUA": 0, Move.SKL: 0, Move.ULT: 0, "BONUS":0, Move.BRK: 0} # Adjust accordingly
+    dmgDct = {Move.BSC: 0, Move.FUA: 0, Move.SKL: 0, Move.ULT: 0, "BONUS":0, Move.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     charge = 0
@@ -71,7 +71,7 @@ class Moze(Character):
         self.canBeAdv = False # enter departed state
         self.currAV = 1000
         dbl.append(Debuff("MozePreyCD", self.role, Pwr.CD_PERCENT, 0.40, self.getTargetID(enemyID), [Move.ALL], 1000, 1, False, [0, 0], False)) # 40% CD from E2
-        dbl.append(Debuff("MozePreyVULN", self.role, Pwr.VULN, 0.25, self.getTargetID(enemyID), ["FUA"], 1000, 1, False, [0, 0], False)) 
+        dbl.append(Debuff("MozePreyVULN", self.role, Pwr.VULN, 0.25, self.getTargetID(enemyID), [Move.FUA], 1000, 1, False, [0, 0], False)) 
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.SKL], [self.element], [1.65, 0], [20, 0], 30, self.scaling, -1, "MozeSkill"))
         return bl, dbl, al, dl, tl
     
@@ -81,9 +81,9 @@ class Moze(Character):
             self.fuaRegainSP = False
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.ULT, "FUA", "DUKEULT"], [self.element], [2.916, 0], [30, 0], 5, self.scaling, 0, "MozeULT"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.ULT, Move.FUA, "DUKEULT"], [self.element], [2.916, 0], [30, 0], 5, self.scaling, 0, "MozeULT"))
         self.fuas = self.fuas + 1
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["FUA", "DUKEFUA"], [self.element], [1.76 + 0.25, 0], [10, 0], 10, self.scaling, spRegen, "MozeUltFUA"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.FUA, "DUKEFUA"], [self.element], [1.76 + 0.25, 0], [10, 0], 10, self.scaling, spRegen, "MozeUltFUA"))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):
@@ -91,7 +91,7 @@ class Moze(Character):
         spRegen = 1 if self.fuaRegainSP else 0
         if spRegen == 1:
             self.fuaRegainSP = False
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, ["FUA", "DUKEFUA"], [self.element], [1.76 + 0.25, 0], [10, 0], 10, self.scaling, spRegen, "MozeFUA"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.FUA, "DUKEFUA"], [self.element], [1.76 + 0.25, 0], [10, 0], 10, self.scaling, spRegen, "MozeFUA"))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
@@ -106,7 +106,7 @@ class Moze(Character):
                 self.canBeAdv = True # exit departed state
                 self.currAV = 10000 / self.currSPD # rest AV to his current speed
                 al.append(Advance("MozeDepartedADV", self.role, 0.20))
-                dbl.append(Debuff("MozePreyVULN", self.role, Pwr.VULN, 0.00, self.getTargetID(result.enemiesHit[0]), ["FUA"], 1000, 1, False, [0, 0], False)) 
+                dbl.append(Debuff("MozePreyVULN", self.role, Pwr.VULN, 0.00, self.getTargetID(result.enemiesHit[0]), [Move.FUA], 1000, 1, False, [0, 0], False)) 
                 dbl.append(Debuff("MozePrey", self.role, Pwr.CD_PERCENT, 0.00, self.getTargetID(result.enemiesHit[0]), [Move.ALL], 1000, 1, False, [0, 0], False)) # remove 40% CD when not in departed state
         return bl, dbl, al, dl, tl
     

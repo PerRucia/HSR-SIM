@@ -24,7 +24,7 @@ class Yunli(Character):
     currAV = 0
     hasSpecial = True
     rotation = ["E", "A"]
-    dmgDct = {Move.BSC: 0, "FUA": 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0}
+    dmgDct = {Move.BSC: 0, Move.FUA: 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0}
     
     # Unique Character Properties
     cullActive = False
@@ -73,11 +73,11 @@ class Yunli(Character):
         if self.cullActive:
             self.fuas = self.fuas - 1
             self.cullActive = False
-            turnList = [Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, [Move.ULT, "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain")]
+            turnList = [Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, [Move.ULT, Move.FUA], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain")]
             for _ in range(6):
-                turnList.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.ULT, "FUA"], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
+                turnList.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.ULT, Move.FUA], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
             return bl, dbl, al, dl, turnList
-        return bl, dbl, al, dl, [Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, ["FUA"], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0, "YunliFUA")]
+        return bl, dbl, al, dl, [Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, [Move.FUA], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0, "YunliFUA")]
     
     def useHit(self, enemyID=-1):
         bl, dbl, al, dl, tl = self.useFua(enemyID)
@@ -95,7 +95,7 @@ class Yunli(Character):
         res = ""
         actMul = self.hitMultiplier + self.aggroMultiplier * (1 - self.hitMultiplier)
         for key, val in self.dmgDct.items():
-            if key == "FUA" or key == Move.ULT:
+            if key == Move.FUA or key == Move.ULT:
                 ttl += val * actMul
             else:
                 ttl += val
@@ -110,8 +110,8 @@ class Yunli(Character):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         self.aggroMultiplier = specialRes.attr1
         self.hasSpecial = False
-        tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.BLAST, [Move.ULT, "FUA"], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
+        tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.BLAST, [Move.ULT, Move.FUA], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
         for _ in range(6):
-            tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.SINGLE, [Move.ULT, "FUA"], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
+            tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.SINGLE, [Move.ULT, Move.FUA], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
         return bl, dbl, al, dl, tl
     
