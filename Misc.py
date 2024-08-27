@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 bonusDMG = {"AvenFUAExtras", "TYAllyBonus", "TYBeneBonus", "YunliCullBounce", "FeixiaoUlt", "RobinConcertoDMG", "H7UltEnhancedBSCExtras", "H7EnhancedBSCExtras", "MozeBonusDMG", "RuanMeiBreakBonus", "LingshaFuaExtra",
-            "RatioE2Bonus"}
+            "RatioE2Bonus", "JadeBonusDMG"}
 wbMultiplier = 3767.5533
 eleDct = {"PHY": 2.0, "FIR": 2.0, "WIN": 1.5, "ICE": 1.0, "LNG": 1.0, "QUA": 0.5, "IMG": 0.5}
 atkRatio = [0.55, 0.2, 0.25] # Single Target, Blast Attack, AOE Attack splits for enemy behaviour
@@ -70,6 +70,7 @@ class Role(Enum):
     ALL = auto()
     SELF = auto()
     TEAM = auto()
+    ENEMY = auto()
     NUMBY = auto()
     FUYUAN = auto()
     
@@ -106,10 +107,13 @@ class Move(Enum):
     DOT = auto()
     ALL = auto()
     TECH = auto()
+    SPECIAL = auto() # special attacks, only takes effect from "ALL"-type buffs
     # Special Buffs/Moves
     DUKEFUA = auto()
     DUKEULT = auto()
     TOPAZULT = auto()
     TOPAZFUA = auto()
+    UEBSC = auto()
+    EBSC = auto()
 
 penDct = {Element.PHYSICAL: Pwr.PHYPEN, Element.FIRE: Pwr.FIRPEN, Element.WIND: Pwr.WINPEN, Element.ICE: Pwr.ICEPEN, Element.QUANTUM: Pwr.QUAPEN, Element.LIGHTNING: Pwr.LNGPEN, Element.IMAGINARY: Pwr.IMGPEN}

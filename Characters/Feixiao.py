@@ -4,9 +4,8 @@ from Lightcones.Cruising import Cruising
 from Lightcones.Baptism import BaptismFeixiao
 from Lightcones.Swordplay import Swordplay
 from Relics.WindSoaring import WindSoaringYunli
-from Relics.Duke import DukeFeixiao
 from Planars.Duran import Duran
-from Planars.Izumo import Izumo
+from Planars.NoSet import NoSet
 from RelicStats import RelicStats
 from Buff import *
 from Result import *
@@ -48,14 +47,14 @@ class Feixiao(Character):
     # Default = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     # Bronya Tuning = RelicStats(3, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lcLevel: int = 1, lc = None, r1 = None, r2 = None, pl = None, subs = None):
+    def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None):
         super().__init__(pos, role, defaultTarget)
         self.lightcone = lc if lc else VentureForthFeixiao(role) 
         self.relic1 = r1 if r1 else WindSoaringYunli(role, 4) # same as yunli, ult also counts as FuA
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)
         self.eidolon = eidolon
-        self.relicStats = subs if subs else RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+        self.relicStats = subs if subs else RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT) # 0 spd default
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

@@ -4,6 +4,7 @@ from Result import *
 from Enemy import Enemy
 from Delay import *
 from Character import *
+from Summons import *
 import logging
 from Misc import *
 
@@ -246,6 +247,9 @@ def checkInTeam(name: str, team: list[Character]) -> bool:
             return True
     return False
 
+def hasWeakness(weakness: Element, enemyTeam: list[Enemy]) -> bool:
+    return weakness in enemyTeam[0].weakness
+
 def tickDebuffs(enemy: Enemy, debuffList: list[Debuff]) -> list[Debuff]:
     newList = []
     for debuff in debuffList:
@@ -259,12 +263,12 @@ def tickDebuffs(enemy: Enemy, debuffList: list[Debuff]) -> list[Debuff]:
             newList.append(debuff)
     return newList
 
-def tickBuffs(charRole: str, buffList: list[Buff], tdType: str) -> list[Buff]:
+def tickBuffs(char: Character, buffList: list[Buff], tdType: str) -> list[Buff]:
     newList = []
     cmp = TickDown.START if tdType == "START" else TickDown.END
     for buff in buffList:
         if buff.tdType == cmp: # must match tdType to tickdown
-            if buff.tickDown == charRole: # must match charRole to tickdown
+            if buff.tickDown == char.role: # must match char role to tickdown
                 if buff.turns <= 1:
                     logging.info(f"        Buff {buff.name} expired")
                     continue
@@ -274,7 +278,7 @@ def tickBuffs(charRole: str, buffList: list[Buff], tdType: str) -> list[Buff]:
 
 def takeDebuffDMG(enemy: Enemy, playerTeam: list[Character], buffList: list[Buff], debuffList: list[Debuff]) -> float:
     dmg = 0
-    dotList = [debuff for debuff in debuffList if ((debuff.target == enemy.enemyID) and (debuff.isDot or debuff.debuffType == "FREEZE" or debuff.debuffType == "ENTANGLE"))]
+    dotList = [debuff for debuff in debuffList if ((debuff.target == enemy.enemyID) and (debuff.isDot or debuff.debuffType == Pwr.FREEZE or debuff.debuffType == Pwr.ENTANGLE))]
     for dot in dotList:
         dotDmg = 0
         char = findCharRole(playerTeam, dot.charRole)
@@ -449,7 +453,7 @@ def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], player
         char.addEnergy(eb.getBuffVal() * charERR)
     return newList
 
-def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str) -> Special:
+def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str) -> Special:
     if typ == "START":
         
         if specStr == "updateRobinATK":
@@ -485,7 +489,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
                 res = "BronyaUltATK" in getBuffNames(buffList)
             else:
                 res = True
-            return Special(name=specStr, attr1=True, attr2=feixiaoTurn, attr3=numDebuffs)
+            return Special(name=specStr, attr1=res, attr2=feixiaoTurn, attr3=numDebuffs)
         
         elif specStr == "getAvenDEF":
             char = findCharName(playerTeam, "Aventurine")
@@ -494,20 +498,12 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
             bbList = [2 * aggroList[i] if i == char.pos else 1 * aggroList[i] for i in range(4)]
             return Special(name=specStr, attr1=avenDef, attr2=sum(bbList))
         
-        elif specStr == "checkAvenFUA":
-            return Special(name=specStr)
-        
         elif specStr == "TopazFireCheck":
-            char = findCharName(playerTeam, "Topaz")
-            targetID = char.defaultTarget
-            res = "FIR" in enemyTeam[targetID].weakness
+            res = hasWeakness(Element.FIRE, enemyTeam)
             return Special(name=specStr, attr1=res)
         
         elif specStr == "TopazUltCheck":
-            if not inTeam(playerTeam, "Robin"):
-                res = True
-            else:
-                res = "RobinFuaCD" in getBuffNames(buffList)
+            res = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else True
             return Special(name=specStr, attr1=res)
         
         elif specStr == "H7Special":
@@ -520,7 +516,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
             return Special(name=specStr, attr1=res)
         
         elif specStr == "MozeCheckRobin":
-            res = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else False
+            res = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else True
             return Special(name=specStr, attr1=res)
         
         elif specStr == "CheckRuanMeiBE":
@@ -533,8 +529,11 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
             ashenList = [db.stacks for db in debuffList if db.name == "AshenRoasted"]
             maxStacks = max(ashenList) if len(ashenList) > 0 else 0
             tickField = True if unit.name == "Jiaoqiu" else False
+            targetStatus = []
+            for enemy in enemyTeam:
+                targetStatus.append("SpringVULN" in getBuffNames([debuff for debuff in debuffList if debuff.target == enemy.enemyID]))
             ehr = getCharStat(Pwr.EHR_PERCENT, jq, enemyTeam[0], buffList, debuffList, Turn(jq.name, jq.role, -1, AtkTarget.NA, [Move.ALL], [jq.element], [0, 0], [0, 0], 0, jq.scaling, 0, "updateJQEHR"))
-            return Special(name=specStr, attr1=ehr, attr2=maxStacks, attr3=tickField)
+            return Special(name=specStr, attr1=ehr, attr2=maxStacks, attr3=tickField, attr4=targetStatus)
         
         elif specStr == "Bronya":
             bronya = findCharName(playerTeam, "Bronya")
@@ -546,15 +545,14 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], enemyTeam: list[
         elif specStr == "Ratio":
             ratioTarget = findCharName(playerTeam, "DrRatio").defaultTarget
             res = countDebuffs(ratioTarget, debuffList)
-            res2 = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else False
+            res2 = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else True
             return Special(name=specStr, attr1=res, attr2=res2)
         else:
             return Special(name=specStr)
         
     elif typ == "END":
         if specStr == "updateRobinATK":
-            currChar = sorted(playerTeam, key=lambda char: char.currAV)[0]
-            res = True if ((currChar.role == Role.DPS) and unit.isChar() and not unit.isSummon()) else False
+            res = unit.role == Role.DPS
             return Special(name=specStr, attr1=res)
         else:
             return Special(name=specStr)
@@ -629,6 +627,84 @@ def getScalingValues(char: Character, buffList: list[Buff], atkType: list[str]) 
         elif buff.buffType == flatChecker:
             flat += buff.getBuffVal()
     return base * (1 + mul) + flat
+
+def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG):
+    
+    while turnList:
+        turn = turnList[0]
+        if turn.spChange < 0:
+            spUsed = spUsed - turn.spChange
+        elif turn.spChange > 0:
+            spGain = spGain + turn.spChange
+        logging.warning(f"    TURN   - {turn}")
+        logging.debug("\n        ----------Char Buffs----------")
+        [logging.debug(f"        {buff}") for buff in teamBuffs if (buff.target == turn.charRole and checkValidList(turn.atkType, buff.atkType))]
+        logging.debug("        ----------End of Buff List----------")
+        logging.debug("\n        ----------Enemy Debuffs----------")
+        [logging.debug(f"        {debuff}") for debuff in enemyDebuffs if debuff.target == turn.targetID]
+        logging.debug("        ----------End of Debuff List----------")
+
+        res, newDebuffs, newDelays = handleTurn(turn, playerTeam, eTeam, teamBuffs, enemyDebuffs)
+        totalDMG += res.turnDmg + res.wbDmg
+        if res.errGain > 0:
+            char = findCharRole(playerTeam, res.charRole)
+            logging.warning(f"    RESULT - {res} | {char.name}Energy: {min(char.maxEnergy, char.currEnergy + res.errGain):.3f}")
+        else:
+            logging.warning(f"    RESULT - {res}")
+        teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, [], newDebuffs, [], newDelays)
+        for char in playerTeam:
+            if char.role == turn.charRole:
+                tempB, tempDB, tempA, tempD, newTurns = char.ownTurn(res)
+            else:
+                tempB, tempDB, tempA, tempD, newTurns = char.allyTurn(turn, res)
+            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, tempB, tempDB, tempA, tempD)
+            turnList.extend(newTurns)
+
+        turnList = turnList[1:]
+    
+    return teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG
+    
+def handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG ):
+    
+    turnList = []
+    # Check if any unit can ult
+    for char in playerTeam:
+        if char.canUseUlt():
+            logging.critical(f"ULT    > {char.name} used their ultimate")
+            bl, dbl, al, dl, tl = char.useUlt()
+            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
+            turnList.extend(tl)
+
+    # Handle any new attacks from unit ults  
+    teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
+    
+    # Handle any errGain from unit ults
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
+
+    return teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG
+
+def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, checkType, spGain, spUsed, totalDMG):
+    
+    turnList = []
+    # Apply any special effects
+    for char in playerTeam:
+        if char.hasSpecial:
+            spec = char.special()
+            specRes = handleSpec(spec, unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, checkType)
+            if checkType == "START":
+                bl, dbl, al, dl, tl = char.handleSpecialStart(specRes)
+            elif checkType == "END":
+                bl, dbl, al, dl, tl = char.handleSpecialEnd(specRes)
+            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
+            turnList.extend(tl)    
+
+    # Handle any attacks from special attacks  
+    teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)      
+    
+    # Add Energy if any was provided from special effects
+    teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
+
+    return teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG
 
 # Use this function to get the stat of the character, without any associated base multipliers:
 # e.g. 1 + dmg%, 1 + err% etc.

@@ -1,7 +1,9 @@
 # actionOrder = [1,1,2] means single attack, single attack, double attack
+from Misc import *
 
 class Enemy:
     broken = False
+    role = Role.ENEMY
     
     def __init__(self, enemyID: int, level: int, spd: float, toughness: int, actionOrder: list, weakness: list, adjacent: list):
         self.enemyID = enemyID

@@ -46,7 +46,7 @@ class Robin(Character):
         self.relic2 = r2 if r2 else Prisoner(role, 2)
         self.planar = pl if pl else Lushaka(role, Role.DPS)
         self.eidolon = eidolon
-        self.relicStats = subs if subs else RelicStats(14, 5, 6, 3, 7, 6, 6, 0, 0, 5, 0, 0, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
+        self.relicStats = subs if subs else RelicStats(14, 5, 6, 3, 7, 6, 6, 0, 0, 5, 0, 0, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT) # 14 spd default
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()

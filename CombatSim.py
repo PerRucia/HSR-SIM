@@ -14,10 +14,11 @@ from Characters.Pela import Pela
 from Characters.Gallagher import Gallagher
 # Extra Characters
 from Characters.Jiaoqiu import Jiaoqiu
-from Characters.Yunli import Yunli
+from Characters.Jade import Jade
 from Characters.DrRatio import DrRatio
 
-cycleLimit = 5
+cycleLimit = 50 # comment out this line if running the simulator from an external script
+log = False
 
 def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False) -> str:
     
@@ -33,13 +34,13 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
     # Character Settings
     slot1 = Feixiao(0, Role.DPS, 0, eidolon=0)
-    slot2 = Robin(1, Role.SUP1, 0)
+    slot2 = Robin(1, Role.SUP1, 0, eidolon=0)
     slot3 = Aventurine(2, Role.SUS, 0)
     slot4 = Topaz(3, Role.SUBDPS, 0)
 
-    # Simulation Settings
+    # Simulation Settings   
     totalEnemyAttacks = 0
-    logLevel = logging.CRITICAL
+    logLevel = logging.INFO
     # CRITICAL: Only prints the main action taken during each turn + ultimates
     # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
     # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
@@ -65,17 +66,16 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         logging.disable(logging.CRITICAL)  # Disable all logging messages
 
     avLimit = cycleLimit * 100 + 50
-    spGain = 0
-    spUsed = 0
-    totalDMG = 0
+    simAV, spGain, spUsed, totalDMG = 0, 0, 0, 0
+    
     # Summons
     summons = []
-    for char in playerTeam:
-        if char.hasSummon:
-            if char.name == "Topaz":
-                summons.append(Numby(char.role, char.numbyRole))
-            elif char.name == "Lingsha":
-                summons.append(Fuyuan(char.role, char.fuyuanRole))
+    for char in [p for p in playerTeam if p.hasSummon]:
+        if char.name == "Topaz":
+            summons.append(Numby(char.role, char.numbyRole))
+        elif char.name == "Lingsha":
+            summons.append(Fuyuan(char.role, char.fuyuanRole))
+    
     # Print Enemy Info
     eTeam = []
     for i in range(numEnemies):
@@ -90,7 +90,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     logging.critical("Enemy Team:")
     for enemy in eTeam:
         logging.critical(enemy)
-
+        
     # Print Char Info
     logging.critical("\nPlayer Team:")
     for char in playerTeam:
@@ -118,91 +118,6 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
     # Simulator Loop
     logging.critical("\n==========COMBAT SIMULATION STARTED==========")
-    simAV = 0
-    
-    def processTurnList(turnList: list[Turn], playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList):
-        
-        nonlocal spGain, spUsed, totalDMG
-        
-        while turnList:
-            turn = turnList[0]
-            if turn.spChange < 0:
-                spUsed = spUsed - turn.spChange
-            elif turn.spChange > 0:
-                spGain = spGain + turn.spChange
-            logging.warning(f"    TURN   - {turn}")
-            logging.debug("\n        ----------Char Buffs----------")
-            [logging.debug(f"        {buff}") for buff in teamBuffs if (buff.target == turn.charRole and checkValidList(turn.atkType, buff.atkType))]
-            logging.debug("        ----------End of Buff List----------")
-            logging.debug("\n        ----------Enemy Debuffs----------")
-            [logging.debug(f"        {debuff}") for debuff in enemyDebuffs if debuff.target == turn.targetID]
-            logging.debug("        ----------End of Debuff List----------")
-
-            res, newDebuffs, newDelays = handleTurn(turn, playerTeam, eTeam, teamBuffs, enemyDebuffs)
-            totalDMG += res.turnDmg + res.wbDmg
-            if res.errGain > 0:
-                char = findCharRole(playerTeam, res.charRole)
-                logging.warning(f"    RESULT - {res} | {char.name}Energy: {min(char.maxEnergy, char.currEnergy + res.errGain):.3f}")
-            else:
-                logging.warning(f"    RESULT - {res}")
-            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, [], newDebuffs, [], newDelays)
-            for char in playerTeam:
-                if char.role == turn.charRole:
-                    tempB, tempDB, tempA, tempD, newTurns = char.ownTurn(res)
-                else:
-                    tempB, tempDB, tempA, tempD, newTurns = char.allyTurn(turn, res)
-                teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, tempB, tempDB, tempA, tempD)
-                turnList.extend(newTurns)
-
-            turnList = turnList[1:]
-        
-        return teamBuffs, enemyDebuffs, advList, delayList, turnList
-    
-    def handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList):
-        
-        nonlocal spGain, spUsed
-        
-        turnList = []
-        # Check if any unit can ult
-        for char in playerTeam:
-            if char.canUseUlt():
-                logging.critical(f"ULT    > {char.name} used their ultimate")
-                bl, dbl, al, dl, tl = char.useUlt()
-                teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
-                turnList.extend(tl)
-
-        # Handle any new attacks from unit ults  
-        teamBuffs, enemyDebuffs, advList, delayList, turnList = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
-        
-        # Handle any errGain from unit ults
-        teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
-
-        return teamBuffs, enemyDebuffs, advList, delayList
-    
-    def handleSpecialEffects(unit, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, checkType):
-        
-        nonlocal spGain, spUsed
-        
-        turnList = []
-        # Apply any special effects
-        for char in playerTeam:
-            if char.hasSpecial:
-                spec = char.special()
-                specRes = handleSpec(spec, unit, playerTeam, eTeam, teamBuffs, enemyDebuffs, checkType)
-                if checkType == "START":
-                    bl, dbl, al, dl, tl = char.handleSpecialStart(specRes)
-                elif checkType == "END":
-                    bl, dbl, al, dl, tl = char.handleSpecialEnd(specRes)
-                teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
-                turnList.extend(tl)    
-
-        # Handle any attacks from special attacks  
-        teamBuffs, enemyDebuffs, advList, delayList, turnList = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)      
-        
-        # Add Energy if any was provided from special effects
-        teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
-
-        return teamBuffs, enemyDebuffs, advList, delayList
 
     while simAV < avLimit:
 
@@ -220,10 +135,10 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         logging.info("")
             
         # Apply any special effects
-        teamBuffs, enemyDebuffs, advList, delayList = handleSpecialEffects(unit, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, "START")
+        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, "START", spGain, spUsed, totalDMG)
         
         # Check if any unit can ult
-        teamBuffs, enemyDebuffs, advList, delayList = handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
         
         # Handle unit Turns
         if not unit.isChar(): # Enemy turn
@@ -241,7 +156,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         elif unit.isChar() and not unit.isSummon(): # Character Turn
             moveType = unit.takeTurn()
             logging.critical(f"ACTION > [CHAR] TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
-            teamBuffs = tickBuffs(unit.role, teamBuffs, "START")
+            teamBuffs = tickBuffs(unit, teamBuffs, "START")
             if moveType == "E":
                 bl, dbl, al, dl, tl = unit.useSkl()
             elif moveType == "A":
@@ -255,32 +170,33 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
             turnList.extend(tl)
             
         # Handle any pending attacks:
-        teamBuffs, enemyDebuffs, advList, delayList, turnList = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+        teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
         
         # Handle any errGain from unit turns
         teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
         
         # Check if any unit can ult
-        teamBuffs, enemyDebuffs, advList, delayList = handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
         
         if unit.isChar() and not unit.isSummon(): 
-            teamBuffs = tickBuffs(unit.role, teamBuffs, "END") # THIS MARKS THE END OF THE PLAYER TURN
+            teamBuffs = tickBuffs(unit, teamBuffs, "END") # THIS MARKS THE END OF THE PLAYER TURN
         elif not unit.isChar():
             enemyDebuffs = tickDebuffs(unit, enemyDebuffs) # THIS MARKS THE END OF THE ENEMY TURN
         
         # Apply any special effects
-        teamBuffs, enemyDebuffs, advList, delayList = handleSpecialEffects(unit, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, "END")
+        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, "END", spGain, spUsed, totalDMG)
         
         # Check if any unit can ult
-        teamBuffs, enemyDebuffs, advList, delayList = handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList)
+        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
         
         # Apply any speed adjustments
         spdAdjustment(playerTeam, teamBuffs)
         enemySPDAdjustment(eTeam, enemyDebuffs)
         
         # Reset the AV of the current unit by checking its current speed
-        resetUnitAV(unit, teamBuffs, enemyDebuffs)
-        logging.warning(f"AV     > {unit.name} AV reset to {unit.currAV:.3f} | {unit.currSPD:.3f} SPD")
+        if not unit.isChar() or not unit.isSummon():
+            resetUnitAV(unit, teamBuffs, enemyDebuffs)
+            logging.warning(f"AV     > {unit.name} AV reset to {unit.currAV:.3f} | {unit.currSPD:.3f} SPD")
         
         allUnits = sortUnits(allUnits)
         # Reset priorities
@@ -294,6 +210,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         
         if unit.isChar() and unit.isSummon():
             resetUnitAV(unit, [], []) # summons cannot be advanced during their own turn
+            logging.warning(f"AV     > {unit.name} AV reset to {unit.currAV:.3f} | {unit.currSPD:.3f} SPD")
             
         allUnits = sortUnits(allUnits)
         
@@ -305,8 +222,9 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
             char.hitMultiplier = char.ults / totalEnemyAttacks
 
     logging.critical("\n==========SIMULATION RESULTS==========")
-    debuffDMG = 0
-    charDMG = 0
+    
+    # Print damage info
+    debuffDMG, charDMG = 0, 0
     dmgList = []
     for enemy in eTeam:
         debuffDMG += enemy.debuffDMG
@@ -324,16 +242,18 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     res = ""
     i = 0
     for char in playerTeam:
-        res += f"{char.name} DPAV: {dpavList[i]:.3f}, {percentList[i]:.3f}% | "
+        res += f"\n{char.name} DPAV: {dpavList[i]:.3f}, {percentList[i]:.3f}%"
         i += 1
         
-    logging.critical(res)
+    logging.critical(f"{res}\n")
 
     for char in playerTeam:
         res, dmg = char.gettotalDMG()
-        logging.critical(f"\n{char.name} > Total DMG: {dmg:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV if char.currAV < 500 else char.charge:.3f} | Excess Energy: {char.currEnergy:.3f}")
+        logging.critical(f"{char.name} > Total DMG: {dmg:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV if char.currAV < 500 else char.charge:.3f} | Excess Energy: {char.currEnergy:.3f}")
         logging.critical(res)
     
-    return f"Sustained DPAV: {totalDMG / avLimit:.3f}"
+    return f"DPAV: {totalDMG / avLimit:.3f}"
 
-print(startSimulator(cycleLimit=cycleLimit, outputLog=True))
+if __name__ == "__main__":
+    # Start the simulator with logging output to a file
+    print(startSimulator(cycleLimit=cycleLimit, outputLog=log))

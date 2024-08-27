@@ -49,7 +49,7 @@ class Topaz(Character):
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)
         self.eidolon = eidolon
-        self.relicStats = subs if subs else RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+        self.relicStats = subs if subs else RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT) # 4 spd default
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
@@ -123,7 +123,7 @@ class Topaz(Character):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         if specialRes.specialName == "TopazFireCheck":
             if specialRes.attr1:
-                bl.append(Buff("TopazFireDMG", Pwr.DMG_PERCENT, 0.15, self.defaultTarget, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+                bl.append(Buff("TopazFireDMG", Pwr.DMG_PERCENT, 0.15, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
         else:
             self.canUlt = specialRes.attr1
         return bl, dbl, al, dl, tl

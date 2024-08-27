@@ -178,6 +178,13 @@ class Character:
             return self.defaultTarget
         return enemyID
     
+    def extendLists(self, bl: list, dbl: list, al: list, dl: list, tl: list, nbl: list, ndbl: list, nal: list, ndl: list, ntl: list):
+        bl.extend(nbl)
+        dbl.extend(ndbl)
+        al.extend(nal)
+        dl.extend(ndl)
+        tl.extend(ntl)
+        return bl, dbl, al, dl, tl
         
     
         

@@ -21,7 +21,7 @@ class Resolution(Lightcone):
     
 class ResolutionPela(Resolution):
 
-    def __init__(self, wearerRole, level):
+    def __init__(self, wearerRole, level=5):
         super().__init__(wearerRole, level)
     
     def useSkl(self, enemyID):
@@ -37,6 +37,6 @@ class ResolutionPela(Resolution):
         return bl, dbl, al, dl
     
 class ResolutionJQ(ResolutionPela):
-    def __init__(self, wearerRole, level):
+    def __init__(self, wearerRole, level=5):
         super().__init__(wearerRole, level)
     

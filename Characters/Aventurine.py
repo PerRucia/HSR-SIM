@@ -46,7 +46,7 @@ class Aventurine(Character):
         self.relic2 = r2 if r2 else Messenger(role, 2, False)
         self.planar = pl if pl else Keel(role)
         self.eidolon = eidolon
-        self.relicStats = subs if subs else RelicStats(6, 2, 1, 5, 4, 3, 3, 0, 4, 2, 13, 7, Pwr.DEF_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.DEF_PERCENT)
+        self.relicStats = subs if subs else RelicStats(6, 2, 1, 5, 4, 3, 3, 0, 4, 2, 13, 7, Pwr.DEF_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.DEF_PERCENT) # 6 spd default
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
@@ -72,6 +72,8 @@ class Aventurine(Character):
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.ULT], [self.element], [2.7, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
         self.currEnergy = self.currEnergy - self.ultCost
         self.blindBetStacks = min(self.blindBetStacks + 4, 10)
+        if self.blindBetStacks >= 7:
+            self.extendLists(bl, dbl, al, dl, tl, *self.useFua())
         dbl.append(Debuff("AvenUltCD", self.role, Pwr.CD_PERCENT, 0.15, 1, [Move.ALL], 3, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
@@ -86,6 +88,8 @@ class Aventurine(Character):
     def useHit(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useHit(enemyID)
         self.blindBetStacks = min(10, self.blindBetStacks + self.bbPerHit)
+        if self.blindBetStacks >= 7:
+            self.extendLists(bl, dbl, al, dl, tl, *self.useFua())
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Turn):
@@ -93,6 +97,8 @@ class Aventurine(Character):
         if (Move.FUA in turn.atkType) and (turn.moveName not in bonusDMG) and (self.fuaTrigger > 0):
             self.fuaTrigger = self.fuaTrigger - 1
             self.blindBetStacks = min(10, self.blindBetStacks + 1)
+            if self.blindBetStacks >= 7:
+                self.extendLists(bl, dbl, al, dl, tl, *self.useFua())
         return bl, dbl, al, dl, tl
     
     def takeTurn(self) -> str:
@@ -100,12 +106,11 @@ class Aventurine(Character):
         return super().takeTurn()
     
     def special(self):
-        return "getAvenDEF" if self.baseDefStat == 0 else "checkAvenFUA"
+        self.hasSpecial = False
+        return "getAvenDEF"
     
     def handleSpecialStart(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
-        if self.blindBetStacks >= 7 and specialRes.specialName == "checkAvenFUA":
-            bl, dbl, al, dl, tl = self.useFua()
         if specialRes.specialName == "getAvenDEF":
             self.baseDefStat = specialRes.attr1
             self.bbPerHit = specialRes.attr2
