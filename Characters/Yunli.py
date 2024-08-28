@@ -23,19 +23,19 @@ class Yunli(Character):
     ultCost = 120
     currAV = 0
     hasSpecial = True
-    rotation = ["E", "A"]
+    rotation = ["E"]
     dmgDct = {Move.BSC: 0, Move.FUA: 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0}
     
     # Unique Character Properties
     cullActive = False
-    aggroMultiplier = 0
-    hitMultiplier = 0
+    skipHit = 0
+    hits = 0
     
     # Relic Settings
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = lc if lc else Aeon(role, 5)
+        self.lightcone = lc if lc else Aeon(role)
         self.relic1 = r1 if r1 else WindSoaringYunli(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)
@@ -80,35 +80,19 @@ class Yunli(Character):
         return bl, dbl, al, dl, [Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, [Move.FUA], [self.element], [1.2, 0.6], [20, 10], 5, self.scaling, 0, "YunliFUA")]
     
     def useHit(self, enemyID=-1):
-        bl, dbl, al, dl, tl = self.useFua(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, [Move.ALL], [self.element], [0, 0], [0, 0], 15, self.scaling, 0, "YunliHitERR"))
-        return bl, dbl, al, dl, tl
-    
-    def ownTurn(self, result: Result):
-        return super().ownTurn(result)
-    
-    def allyTurn(self, turn: Result, result: Result):
-        return super().allyTurn(turn, result)
-    
-    def gettotalDMG(self) -> tuple[str, float]:
-        ttl = 0
-        res = ""
-        actMul = self.hitMultiplier + self.aggroMultiplier * (1 - self.hitMultiplier)
-        for key, val in self.dmgDct.items():
-            if key == Move.FUA or key == Move.ULT:
-                ttl += val * actMul
-            else:
-                ttl += val
-        for key, val in self.dmgDct.items():
-            res += f"-{key}: {val:.3f} | {val / ttl * 100:.3f}% | DPAV: {val / 5050:.3f}\n"
-        return res, ttl
+        self.hits = self.hits + 1
+        if self.hits / self.skipHit != 0:
+            bl, dbl, al, dl, tl = self.useFua(enemyID)
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, [Move.ALL], [self.element], [0, 0], [0, 0], 15, self.scaling, 0, "YunliHitERR"))
+            return bl, dbl, al, dl, tl
+        return super().useHit(enemyID)
     
     def special(self):
-        return "getYunliAggro"
+        return "Yunli"
     
     def handleSpecialStart(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
-        self.aggroMultiplier = specialRes.attr1
+        self.skipHit = round(1 / (1 - specialRes.attr1))
         self.hasSpecial = False
         tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.BLAST, [Move.ULT, Move.FUA], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
         for _ in range(6):

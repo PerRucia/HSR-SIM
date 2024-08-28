@@ -223,10 +223,11 @@ def addEnergy(playerTeam: list[Character], enemyTeam: list[Enemy], numAttacks: i
             if char.name == "Yanqing":
                 aggro -= Path.HUNT.value * 0.6
         aggroLst.append(aggro)
-    if numAttacks == 0:
-        actAttacks = 1
-    else:
-        actAttacks = numAttacks
+    if inTeam(playerTeam, "Yunli"):
+        yunli = findCharName(playerTeam, "Yunli")
+        aggroLst = [1 if char.role == yunli.role else 0 for char in playerTeam] if yunli.cullActive else aggroLst
+    actAttacks = 1 if numAttacks == 0 else numAttacks
+
     aggroSum = sum(aggroLst)
     chanceST = [a * actAttacks * 10 * attackTypeRatio[0] / aggroSum for a in aggroLst]
     chanceBlast = [aggroLst[i] + (aggroLst[i - 1] if i - 1 >= 0 else 0) + (aggroLst[i + 1] if i + 1 < len(aggroLst) else 0) if aggroLst[i] != 0 else 0 for i in range(len(aggroLst))]
@@ -267,6 +268,8 @@ def tickBuffs(char: Character, buffList: list[Buff], tdType: str) -> list[Buff]:
     newList = []
     cmp = TickDown.START if tdType == "START" else TickDown.END
     for buff in buffList:
+        if char.name == "Robin" and not char.canBeAdv and cmp == TickDown.END:
+            return buffList
         if buff.tdType == cmp: # must match tdType to tickdown
             if buff.tickDown == char.role: # must match char role to tickdown
                 if buff.turns <= 1:
@@ -472,7 +475,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Su
                     lst.append([charMaxEnergy * 0.2, char.role])
             return Special(name=specStr, attr1=lst[0], attr2=lst[1], attr3=lst[2])
         
-        elif specStr == "getYunliAggro":
+        elif specStr == "Yunli":
             yunliSlot = findCharName(playerTeam, "Yunli").pos
             lst = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
             return Special(name=specStr, attr1=lst[yunliSlot])
@@ -552,7 +555,9 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Su
         
     elif typ == "END":
         if specStr == "updateRobinATK":
-            res = unit.role == Role.DPS
+            slowestChar = sorted([char for char in playerTeam if char.name != "Robin"], key=lambda x: x.currSPD)[0]
+            print(slowestChar)
+            res = unit.role == slowestChar.role
             return Special(name=specStr, attr1=res)
         else:
             return Special(name=specStr)
