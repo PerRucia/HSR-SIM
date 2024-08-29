@@ -21,7 +21,7 @@ class Moze(Character):
     element = Element.LIGHTNING
     scaling = Scaling.ATK
     baseHP = 811.4
-    baseATK = 546.84
+    baseATK = 599.76
     baseDEF = 352.80
     baseSPD = 111
     maxEnergy = 120

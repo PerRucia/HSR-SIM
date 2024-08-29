@@ -27,7 +27,7 @@ class Robin(Character):
     currEnergy = 80
     currAV = 0
     rotation = ["E", "A", "A"]
-    dmgDct = {Move.BSC: 0, Move.ULT: 0, Move.BRK: 0}
+    dmgDct = {Move.BSC: 0, Move.SPECIAL: 0, Move.BRK: 0}
     hasSpecial = True
     
     # Unique Character Properties
@@ -88,9 +88,9 @@ class Robin(Character):
         e2ERR = 1 if self.eidolon >= 2 else 0
         if (turn.moveName not in bonusDMG) and (turn.moveType != AtkTarget.NA):
             if self.canBeAdv: # not in concerto state, only provide extra ERR
-                tl.append(Turn(self.name, self.role, turn.targetID, AtkTarget.NA, [Move.ULT], [self.element], [0, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinBonusERR"))
+                tl.append(Turn(self.name, self.role, turn.targetID, AtkTarget.NA, [Move.ALL], [self.element], [0, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinBonusERR"))
             else: # in concerto state, provide both additional dmg and extra ERR
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], AtkTarget.NA, [Move.ULT], [self.element], [1.2, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinConcertoDMG"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0], AtkTarget.SPECIAL, [Move.SPECIAL], [self.element], [1.2, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinConcertoDMG"))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):

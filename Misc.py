@@ -89,6 +89,7 @@ class AtkTarget(Enum):
     BLAST = "BLAST"
     AOE = "AOE"
     NA = "NA"
+    SPECIAL = "SPECIAL"
     STBREAK = "STBREAK"
     BLASTBREAK = "BLASTBREAK"
     AOEBREAK = "AOEBREAK"
@@ -104,6 +105,7 @@ class Move(Enum):
     ULT = auto()
     FUA = auto()
     BRK = auto()
+    SBK = auto()
     DOT = auto()
     ALL = auto()
     TECH = auto()

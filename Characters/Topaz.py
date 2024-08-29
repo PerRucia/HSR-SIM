@@ -89,12 +89,13 @@ class Topaz(Character):
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if (turn.moveName not in bonusDMG) and (self.windfallCount > 0) and (self.defaultTarget in result.enemiesHit):
-            al.append(Advance("AdvanceWindFallNumby", self.numbyRole, 0.5))
-        elif (Move.FUA in turn.atkType) and (turn.moveName not in bonusDMG) and (self.defaultTarget in result.enemiesHit):
-            if self.eidolon >= 1:
-                dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.defaultTarget, [Move.FUA], 1000, 2, False, [0, 0], False))
-            al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
+        if (turn.moveType != AtkTarget.NA) and (turn.moveName not in bonusDMG) and (self.defaultTarget in result.enemiesHit):
+            if self.windfallCount > 0:
+                al.append(Advance("AdvanceWindFallNumby", self.numbyRole, 0.5))
+            elif Move.FUA in turn.atkType:
+                if self.eidolon >= 1:
+                    dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.defaultTarget, [Move.FUA], 1000, 2, False, [0, 0], False))
+                al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):

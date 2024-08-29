@@ -9,7 +9,8 @@ from Misc import *
 
 class Turn:
     def __init__(self, charName: str, charRole: str, targetID: int, moveType: str, atkType: list, element: list, 
-                 dmgSplit: list, brkSplit: list, errGain: float, scaling: Scaling, spChange: int, moveName: str):
+                 dmgSplit: list, brkSplit: list, errGain: float, scaling: Scaling, spChange: int, moveName: str,
+                 omniBreak: bool = False, omniBreakMod: float = 1.0):
         self.charName = charName
         self.charRole = charRole
         self.targetID = targetID
@@ -22,6 +23,8 @@ class Turn:
         self.scaling = scaling
         self.spChange = spChange
         self.moveName = moveName
+        self.omniBreak = omniBreak
+        self.omniBreakMod = omniBreakMod
         
     def __str__(self) -> str:
         res = f"{self.moveName} | {self.charName} | {self.charRole.name} | "

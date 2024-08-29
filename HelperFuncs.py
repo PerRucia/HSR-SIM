@@ -344,7 +344,7 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
     char = findCharRole(playerTeam, turn.charRole)
     charERR = getMulERR(char, enemyTeam[0], buffList, debuffList, turn)
     baseValue = getBaseValue(char, buffList, turn)
-    anyBroken = False
+    anyBroken = 0
     turnDmg = 0
     wbDmg = 0
     newDebuff, newDelay = [], []
@@ -354,21 +354,22 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         
         charWBE = getMulWBE(char, enemy, buffList, debuffList, turn)
         charDMG = getMulDMG(char, enemy, buffList, debuffList, turn)
-        if charCR == 0:
-            charCR = getMulCR(char, enemy, buffList, debuffList, turn)
-        if charCD == 0:
-            charCD = getMulCD(char, enemy, buffList, debuffList, turn)
+        charCR = getMulCR(char, enemy, buffList, debuffList, turn) if charCR == 0 else charCR
+        charCD = getMulCD(char, enemy, buffList, debuffList, turn) if charCD == 0 else charCD   
         enemyMul = getMulENEMY(char, enemy, buffList, debuffList, turn)
         
         enemyBroken = False
         newDebuffs, newDelays = [], []
+        turnDmg += expectedDMG(baseValue * charDMG * percentMultiplier * enemyMul, charCR, charCD)
+        
         if checkValidList(turn.element, enemy.weakness):
             enemyBroken = enemy.redToughness(breakUnits * charWBE)
-        turnDmg += expectedDMG(baseValue * charDMG * percentMultiplier * enemyMul, charCR, charCD)
+        elif turn.omniBreak:
+            enemyBroken = enemy.redToughness(breakUnits * charWBE * turn.omniBreakMod)
         
         if enemyBroken:
             charBE = getMulBE(char, enemy, buffList, debuffList, turn)
-            anyBroken = True
+            anyBroken += 1
             ele = turn.element[0]
             enemyBreakMul = getMulENEMY(char, enemy, buffList, debuffList, Turn(char.name, char.role, enemy.enemyID, AtkTarget.NA, [Move.BRK], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "PlaceholderTurn"))
             wbDmg += eleDct[ele.value] * wbMultiplier * enemy.maxToughnessMul * charBE * enemyBreakMul
@@ -417,17 +418,14 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
             a, b = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0])
             newDebuff.extend(a)
             newDelay.extend(b)
-    elif turn.moveType == AtkTarget.NA:
+    elif turn.moveType == AtkTarget.SPECIAL:
         if turn.moveName == "RobinConcertoDMG":
             char = findCharName(playerTeam, "Robin")
-            enemy = findBestEnemy(char, enemyTeam, buffList, debuffList, turn)
+            enemy = enemyTeam[turn.targetID]
             enemiesHit.append(enemy.enemyID)
             _, _ = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0], 1.0, 2.5)
     else :
-        if turn.targetID == -1:
-            enemy = findBestEnemy(char, enemyTeam, buffList, debuffList, turn)
-        else:
-            enemy = enemyTeam[turn.targetID]  
+        enemy = findBestEnemy(char, enemyTeam, buffList, debuffList, turn) if turn.targetID == -1 else enemyTeam[turn.targetID]
         enemiesHit.append(enemy.enemyID)
         a, b = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0])
         newDebuff.extend(a)
@@ -556,7 +554,6 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Su
     elif typ == "END":
         if specStr == "updateRobinATK":
             slowestChar = sorted([char for char in playerTeam if char.name != "Robin"], key=lambda x: x.currSPD)[0]
-            print(slowestChar)
             res = unit.role == slowestChar.role
             return Special(name=specStr, attr1=res)
         else:
