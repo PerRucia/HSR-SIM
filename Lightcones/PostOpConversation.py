@@ -15,9 +15,9 @@ class PostOp(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         errBuff = self.level * 0.02 + 0.06
-        buffList.append(Buff("PostOpERR", Pwr.ERR_PERCENT, errBuff, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("PostOpERR", Pwr.ERR_PERCENT, errBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         oghBuff = self.level * 0.03 + 0.09
-        buffList.append(Buff("PostOpOGH", Pwr.OGH_PERCENT, oghBuff, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("PostOpOGH", Pwr.OGH_PERCENT, oghBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     

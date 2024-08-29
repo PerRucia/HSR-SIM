@@ -16,9 +16,9 @@ class Cruising(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         crBuff = (self.level * 0.02 + 0.06) + (self.level * 0.02 + 0.06) * self.uptime
-        buffList.append(Buff("CruisingCR", Pwr.CR_PERCENT, crBuff, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("CruisingCR", Pwr.CR_PERCENT, crBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         atkBuff = (self.level * 0.05 + 0.15) * self.uptime
-        buffList.append(Buff("CruisingATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("CruisingATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
 
     

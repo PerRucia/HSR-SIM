@@ -28,7 +28,7 @@ class Hunt7th(Character):
     ultCost = 110
     currAV = 0
     rotation = ["A"] # Adjust accordingly
-    dmgDct = {Move.BSC: 0, Move.FUA: 0, Move.EBSC: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
+    dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.EBSC: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     hasSpecial = True
@@ -50,54 +50,54 @@ class Hunt7th(Character):
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Rutilant(role)
         self.masterRole = masterRole
-        self.relicStats = subs if subs else RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 17, 7, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+        self.relicStats = subs if subs else RelicStats(6, 2, 0, 2, 4, 0, 4, 4, 4, 4, 10, 8, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
         al.append(Advance("H7StartAdv", self.role, 0.25))
-        bl.append(Buff("H7enhancedBasicCD", Pwr.CD_PERCENT, 0.5, self.role, [Move.UEBSC], 1, 1, Role.SELF, TickDown.END)) # e6 buff
-        bl.append(Buff("H7enhancedBasicDMG", Pwr.DMG_PERCENT, 0.88, self.role, [Move.EBSC], 1, 1, Role.SELF, TickDown.PERM)) # e6 buff
-        bl.append(Buff("H7TraceATK", Pwr.ATK_PERCENT, 0.28, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("H7TraceCD", Pwr.CD_PERCENT, 0.24, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("H7TraceDEF", Pwr.DEF_PERCENT, 0.125, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("H7enhancedBasicCD", Pwr.CD_PERCENT, 0.5, self.role, [AtkType.UEBSC], 1, 1, Role.SELF, TickDown.END)) # e6 buff
+        bl.append(Buff("H7enhancedBasicDMG", Pwr.DMG_PERCENT, 0.88, self.role, [AtkType.EBSC], 1, 1, Role.SELF, TickDown.PERM)) # e6 buff
+        bl.append(Buff("H7TraceATK", Pwr.ATK_PERCENT, 0.28, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("H7TraceCD", Pwr.CD_PERCENT, 0.24, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("H7TraceDEF", Pwr.DEF_PERCENT, 0.125, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         if self.charges >= 7:
             self.charges = self.charges - 7
-            bl.append(Buff("H7MasterBuffCD", Pwr.CD_PERCENT, 0.60, self.masterRole, [Move.ALL], 2, 1, self.masterRole, TickDown.END))
-            bl.append(Buff("H7MasterBuffBE", Pwr.BE_PERCENT, 0.36, self.masterRole, [Move.ALL], 2, 1, self.masterRole, TickDown.END))
+            bl.append(Buff("H7MasterBuffCD", Pwr.CD_PERCENT, 0.60, self.masterRole, [AtkType.ALL], 2, 1, self.masterRole, TickDown.END))
+            bl.append(Buff("H7MasterBuffBE", Pwr.BE_PERCENT, 0.36, self.masterRole, [AtkType.ALL], 2, 1, self.masterRole, TickDown.END))
             if self.ultEnhanced:
                 self.ultEnhanced = False
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.EBSC, Move.BSC, Move.UEBSC], [self.element, self.masterElement], [1.1, 0], [5, 0], 35, self.scaling, 0, "H7UltEnhancedBSC"))
+                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC, AtkType.UEBSC], [self.element, self.masterElement], [1.1, 0], [5, 0], 35, self.scaling, 0, "H7UltEnhancedBSC"))
                 for _ in range(4):
-                    tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.EBSC, Move.BSC, Move.UEBSC], [self.element, self.masterElement], [1.1, 0], [5, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.EBSC, Move.BSC, Move.UEBSC], [self.element, self.masterElement], [2.1472, 0], [9.76, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
+                    tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC, AtkType.UEBSC], [self.element, self.masterElement], [1.1, 0], [5, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
+                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC, AtkType.UEBSC], [self.element, self.masterElement], [2.1472, 0], [9.76, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
             else:
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.EBSC, Move.BSC], [self.element, self.masterElement], [1.1, 0], [5, 0], 35, self.scaling, 0, "H7EnhancedBSC"))
+                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC], [self.element, self.masterElement], [1.1, 0], [5, 0], 35, self.scaling, 0, "H7EnhancedBSC"))
                 for _ in range(2):
-                    tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.EBSC, Move.BSC], [self.element, self.masterElement], [1.1, 0], [5, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.EBSC, Move.BSC], [self.element, self.masterElement], [1.2936, 0], [5.88, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
+                    tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC], [self.element, self.masterElement], [1.1, 0], [5, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
+                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC], [self.element, self.masterElement], [1.2936, 0], [5.88, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
         else:
             self.charges = min(10, self.charges + 1)
             logger.warning(f"ALERT: H7 gained 1 charge from MarchBasic | Total: {self.charges}")
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.BSC], [self.element, self.masterElement], [1.1, 0], [10, 0], 25, self.scaling, 1, "H7Basic"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element, self.masterElement], [1.1, 0], [10, 0], 25, self.scaling, 1, "H7Basic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         extraErr = 30 if self.firstTurn else 0
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        bl.append(Buff("H7MasterSPD", Pwr.SPD_PERCENT, 0.108, self.masterRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM)) # e1 buff
-        bl.append(Buff("H7SelfSPD", Pwr.SPD_PERCENT, 0.10, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, [Move.ALL], [self.element, self.masterElement], [0, 0], [0, 0], 35 + extraErr, self.scaling, -1, "H7Skill")) # e4 energy buff 30 + 5
+        bl.append(Buff("H7MasterSPD", Pwr.SPD_PERCENT, 0.108, self.masterRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM)) # e1 buff
+        bl.append(Buff("H7SelfSPD", Pwr.SPD_PERCENT, 0.10, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.ALL], [self.element, self.masterElement], [0, 0], [0, 0], 35 + extraErr, self.scaling, -1, "H7Skill")) # e4 energy buff 30 + 5
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
         self.ultEnhanced = True
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.ULT], [self.element, self.masterElement], [2.592, 0], [30, 0], 5, self.scaling, 0, "H7Ult"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.ULT], [self.element, self.masterElement], [2.592, 0], [30, 0], 5, self.scaling, 0, "H7Ult"))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
@@ -109,15 +109,15 @@ class Hunt7th(Character):
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if (turn.charRole == self.masterRole) and (turn.moveName not in bonusDMG) and (turn.moveType != AtkTarget.NA) and (not self.firstTurn):
+        if (turn.charRole == self.masterRole) and (turn.moveName not in bonusDMG) and (turn.targeting != Targeting.NA) and (not self.firstTurn):
             self.charges = min(10, self.charges + 1)
             logger.warning(f"ALERT: H7 gained 1 charge from {turn.moveName} | Total: {self.charges}")
-            if self.fuaTrigger and (not Move.FUA in turn.atkType):
+            if self.fuaTrigger and (not AtkType.FUA in turn.atkType):
                 self.charges = min(10, self.charges + 1)
                 logger.warning(f"ALERT: H7 gained 1 charge from MarchFUA | Total: {self.charges}")
                 self.fuaTrigger = False
                 self.fuas = self.fuas + 1
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], AtkTarget.SINGLE, [Move.FUA], [self.element, self.masterElement], [0.6, 0], [1, 0], 5, self.scaling, 0, "MarchFUA"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0], Targeting.SINGLE, [AtkType.FUA], [self.element, self.masterElement], [0.6, 0], [1, 0], 5, self.scaling, 0, "MarchFUA"))
         if self.charges >= 7 and not self.advanced:
             self.advanced = True
             al.append(Advance("H7EnhancedADV", self.role, 1.0))
@@ -139,7 +139,7 @@ class Hunt7th(Character):
     def handleSpecialStart(self, specialRes: Special):
         self.masterElement = specialRes.attr1
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
-        bl.append(Buff("MarchBonusERR", Pwr.ERR_T, 30, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("MarchBonusERR", Pwr.ERR_T, 30, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     

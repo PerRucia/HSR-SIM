@@ -10,6 +10,6 @@ class Vonwacq(Planar):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("VonwacqERR", Pwr.ERR_PERCENT, 0.05, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("VonwacqERR", Pwr.ERR_PERCENT, 0.05, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         advList.append(Advance("VonwacqADV", self.wearerRole, 0.4))
         return buffList, debuffList, advList, delayList

@@ -16,7 +16,7 @@ class Sleep(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         cdBuff = self.level * 0.05 + 0.25
-        buffList.append(Buff("SleepCD", Pwr.DMG_PERCENT, cdBuff, self.wearerRole, [Move.BSC, Move.SKL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("SleepCD", Pwr.DMG_PERCENT, cdBuff, self.wearerRole, [AtkType.BSC, AtkType.SKL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     

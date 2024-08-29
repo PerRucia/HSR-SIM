@@ -11,7 +11,7 @@ from Characters.Aventurine import Aventurine
 # F2P Team
 from Characters.Hunt7th import Hunt7th
 from Characters.Pela import Pela
-from Characters.Gallagher import Gallagher
+from Characters.Firefly import Firefly
 # Extra Characters
 from Characters.Jiaoqiu import Jiaoqiu
 from Characters.Yunli import Yunli
@@ -33,14 +33,14 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
 
     # Character Settings
-    slot1 = Feixiao(0, Role.DPS, 0)
+    slot1 = Firefly(0, Role.DPS, 0)
     slot2 = Robin(1, Role.SUP1, 0, eidolon=0)
     slot3 = Aventurine(2, Role.SUS, 0)
     slot4 = Topaz(3, Role.SUBDPS, 0)
 
     # Simulation Settings   
     totalEnemyAttacks = 0
-    logLevel = logging.INFO
+    logLevel = logging.DEBUG
     # CRITICAL: Only prints the main action taken during each turn + ultimates
     # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
     # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
@@ -51,7 +51,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     if not s1:
         playerTeam = [slot1, slot2, slot3, slot4]
     else:
-        playerTeam = [s1, s2, s3, s4]
+        playerTeam = [s1]# [s1, s2, s3, s4]
     if outputLog:
         log_folder = "Output"
         teamInfo = "".join([char.name for char in playerTeam])
@@ -72,10 +72,11 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     summons = []
     for char in [p for p in playerTeam if p.hasSummon]:
         if char.name == "Topaz":
-            summons.append(Numby(char.role, char.numbyRole))
+            summons.append(Numby(char.role, Role.NUMBY))
         elif char.name == "Lingsha":
-            summons.append(Fuyuan(char.role, char.fuyuanRole))
-    
+            summons.append(Fuyuan(char.role, Role.FUYUAN))
+        elif char.name == "Firefly":
+            summons.append(deHenshin(char.role, Role.HENSHIN))
     # Print Enemy Info
     eTeam = []
     for i in range(numEnemies):
@@ -138,7 +139,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, "START", spGain, spUsed, totalDMG)
         
         # Check if any unit can ult
-        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
+        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
         
         # Handle unit Turns
         if not unit.isChar(): # Enemy turn
@@ -150,7 +151,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
                     bl, dbl, al, dl, tl = char.useHit(unit.enemyID)
                     teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
                     turnList.extend(tl)
-            energyList = addEnergy(playerTeam, eTeam, numAttacks, attackTypeRatio, teamBuffs)
+            energyList = addEnergy(playerTeam, eTeam, numAttacks, attackTypeRatio, teamBuffs) # might be useful someday lol
             logging.warning(f"    CharEnergy - {playerTeam[0].name}: {playerTeam[0].currEnergy:.3f} | {playerTeam[1].name}: {playerTeam[1].currEnergy:.3f} | {playerTeam[2].name}: {playerTeam[2].currEnergy:.3f} | {playerTeam[3].name}: {playerTeam[3].currEnergy:.3f}")
             totalDMG += takeDebuffDMG(unit, playerTeam, teamBuffs, enemyDebuffs)
         elif unit.isChar() and not unit.isSummon(): # Character Turn
@@ -161,6 +162,8 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
                 bl, dbl, al, dl, tl = unit.useSkl()
             elif moveType == "A":
                 bl, dbl, al, dl, tl = unit.useBsc()
+            else:
+                print("Invalid move type!")
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
         elif unit.isChar() and unit.isSummon():
@@ -170,13 +173,13 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
             turnList.extend(tl)
             
         # Handle any pending attacks:
-        teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
+        teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
         
         # Handle any errGain from unit turns
         teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
         
         # Check if any unit can ult
-        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
+        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
         
         if unit.isChar() and not unit.isSummon(): 
             teamBuffs = tickBuffs(unit, teamBuffs, "END") # THIS MARKS THE END OF THE PLAYER TURN
@@ -187,7 +190,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, "END", spGain, spUsed, totalDMG)
         
         # Check if any unit can ult
-        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleUlts(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
+        teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG = handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
         
         # Apply any speed adjustments
         spdAdjustment(playerTeam, teamBuffs)

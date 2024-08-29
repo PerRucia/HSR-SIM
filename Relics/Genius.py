@@ -15,10 +15,10 @@ class Genius(Relic):
     def equip(self):
         bl, debuffList, advList, delayList = super().equip()
         if self.wearerEle == Element.QUANTUM:
-            bl.append(Buff("GeniusDMG", Pwr.DMG_PERCENT, 0.10, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("GeniusDMG", Pwr.DMG_PERCENT, 0.10, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if self.setType == 4:
             shred = 0.1
             if self.quaWeak:
                 shred = 0.2
-            bl.append(Buff("GeniusSHRED", Pwr.SHRED, shred, self.wearerEle, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("GeniusSHRED", Pwr.SHRED, shred, self.wearerEle, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, debuffList, advList, delayList

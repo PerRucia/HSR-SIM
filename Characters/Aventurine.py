@@ -26,7 +26,7 @@ class Aventurine(Character):
     ultCost = 110
     currAV = 0
     rotation = ["A"] # Adjust accordingly
-    dmgDct = {Move.BSC: 0, Move.FUA: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
+    dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     hasSpecial = True
@@ -46,43 +46,43 @@ class Aventurine(Character):
         self.relic2 = r2 if r2 else Messenger(role, 2, False)
         self.planar = pl if pl else Keel(role)
         self.eidolon = eidolon
-        self.relicStats = subs if subs else RelicStats(6, 2, 1, 5, 4, 3, 3, 0, 4, 2, 13, 7, Pwr.DEF_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.DEF_PERCENT) # 6 spd default
+        self.relicStats = subs if subs else RelicStats(6, 2, 2, 0, 4, 4, 6, 4, 4, 4, 12, 0, Pwr.DEF_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.DEF_PERCENT) # 6 spd default
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("AvenTraceDEF", Pwr.DEF_PERCENT, 0.35, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("AvenTraceDMG", Pwr.DMG_PERCENT, 0.144, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("AvenTraceERS", Pwr.ERS_PERCENT, 0.10, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("AvenTraceDEF", Pwr.DEF_PERCENT, 0.35, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("AvenTraceDMG", Pwr.DMG_PERCENT, 0.144, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("AvenTraceERS", Pwr.ERS_PERCENT, 0.10, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon >= 1:
-            bl.append(Buff("AvenE1CD", Pwr.CD_PERCENT, 0.20, Role.ALL, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("AvenE1CD", Pwr.CD_PERCENT, 0.20, Role.ALL, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.BSC], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "AvenBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "AvenBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, [Move.SKL], [self.element], [0, 0], [0, 0], 30, self.scaling, -1, "AvenSkill"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 30, self.scaling, -1, "AvenSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.ULT], [self.element], [2.7, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.ULT], [self.element], [2.7, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
         self.currEnergy = self.currEnergy - self.ultCost
         self.blindBetStacks = min(self.blindBetStacks + 4, 10)
         if self.blindBetStacks >= 7:
             self.extendLists(bl, dbl, al, dl, tl, *self.useFua())
-        dbl.append(Debuff("AvenUltCD", self.role, Pwr.CD_PERCENT, 0.15, 1, [Move.ALL], 3, 1, False, [0, 0], False))
+        dbl.append(Debuff("AvenUltCD", self.role, Pwr.CD_PERCENT, 0.15, 1, [AtkType.ALL], 3, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useFua(enemyID)
         self.blindBetStacks = self.blindBetStacks - 7
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.FUA], [self.element], [0.25, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUA"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.FUA], [self.element], [0.25, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUA"))
         for _ in range(6):
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.FUA], [self.element], [0.25, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUAExtras"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.FUA], [self.element], [0.25, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUAExtras"))
         return bl, dbl, al, dl, tl
     
     def useHit(self, enemyID=-1):
@@ -94,7 +94,7 @@ class Aventurine(Character):
     
     def allyTurn(self, turn: Turn, result: Turn):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if (Move.FUA in turn.atkType) and (turn.moveName not in bonusDMG) and (self.fuaTrigger > 0):
+        if (AtkType.FUA in turn.atkType) and (turn.moveName not in bonusDMG) and (self.fuaTrigger > 0):
             self.fuaTrigger = self.fuaTrigger - 1
             self.blindBetStacks = min(10, self.blindBetStacks + 1)
             if self.blindBetStacks >= 7:
@@ -115,7 +115,7 @@ class Aventurine(Character):
             self.baseDefStat = specialRes.attr1
             self.bbPerHit = specialRes.attr2
             crBuff = min((self.baseDefStat - 1600) // 100, 24)
-            bl.append(Buff("AvenBonusCR", Pwr.CR_PERCENT, 0.02 * crBuff, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("AvenBonusCR", Pwr.CR_PERCENT, 0.02 * crBuff, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl, tl
     
     

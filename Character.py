@@ -25,7 +25,7 @@ class Character:
     currEnergy = maxEnergy / 2
     currAV = 100.0
     rotation = ["E", "A", "A"]
-    dmgDct = {Move.BSC: 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0}
+    dmgDct = {AtkType.BSC: 0, AtkType.SKL: 0, AtkType.ULT: 0, AtkType.BRK: 0}
     hasSpecial = False
     hasSummon = False
     specialEnergy = False
@@ -58,19 +58,19 @@ class Character:
     
     def useSkl(self, enemyID=-1):
         self.skills = self.skills + 1
-        return *self.parseEquipment(Move.BSC, enemyID=enemyID), []
+        return *self.parseEquipment(AtkType.BSC, enemyID=enemyID), []
     
     def useBsc(self, enemyID=-1):
         self.basics = self.basics + 1
-        return *self.parseEquipment(Move.SKL, enemyID=enemyID), []
+        return *self.parseEquipment(AtkType.SKL, enemyID=enemyID), []
     
     def useUlt(self, enemyID=-1):
         self.ults = self.ults + 1
-        return *self.parseEquipment(Move.ULT, enemyID=enemyID), []
+        return *self.parseEquipment(AtkType.ULT, enemyID=enemyID), []
         
     def useFua(self, enemyID=-1):
         self.fuas = self.fuas + 1
-        return *self.parseEquipment(Move.FUA, enemyID=enemyID), []
+        return *self.parseEquipment(AtkType.FUA, enemyID=enemyID), []
         
     def useHit(self, enemyID=-1):
         return *self.parseEquipment("HIT", enemyID=enemyID), []
@@ -78,7 +78,7 @@ class Character:
     def ownTurn(self, result: Result):
         if result.atkType[0] in self.dmgDct:
             self.dmgDct[result.atkType[0]] = self.dmgDct[result.atkType[0]] + result.turnDmg
-        self.dmgDct[Move.BRK] = self.dmgDct[Move.BRK] + result.wbDmg
+        self.dmgDct[AtkType.BRK] = self.dmgDct[AtkType.BRK] + result.wbDmg
         self.currEnergy = min(self.maxEnergy, self.currEnergy + result.errGain)
         return *self.parseEquipment("OWN", result=result), []
     
@@ -101,13 +101,13 @@ class Character:
             equipmentList.append(self.relic2)
             
         for equipment in equipmentList:
-            if actionType == Move.BSC:
+            if actionType == AtkType.BSC:
                 buffs, debuffs, advs, delays = equipment.useBsc(enemyID)
-            elif actionType == Move.SKL:
+            elif actionType == AtkType.SKL:
                 buffs, debuffs, advs, delays = equipment.useSkl(enemyID)
-            elif actionType == Move.ULT:
+            elif actionType == AtkType.ULT:
                 buffs, debuffs, advs, delays = equipment.useUlt(enemyID)
-            elif actionType == Move.FUA:
+            elif actionType == AtkType.FUA:
                 buffs, debuffs, advs, delays = equipment.useFua(enemyID)
             elif actionType == "EQUIP":
                 buffs, debuffs, advs, delays = equipment.equip()

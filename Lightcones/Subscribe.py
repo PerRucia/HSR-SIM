@@ -16,7 +16,7 @@ class Subscribe(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         dmgBUff = self.level * 0.06 + 0.18
-        buffList.append(Buff("SubscribeDMG", Pwr.DMG_PERCENT, dmgBUff, self.wearerRole, [Move.BSC, Move.SKL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("SubscribeDMG", Pwr.DMG_PERCENT, dmgBUff, self.wearerRole, [AtkType.BSC, AtkType.SKL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     

@@ -13,9 +13,9 @@ class Glamoth(Planar):
         
     def equip(self):
         bl, dbl, al, dl, = super().equip()
-        bl.append(Buff("GlamothATK", Pwr.ATK_PERCENT, 0.24, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("GlamothATK", Pwr.ATK_PERCENT, 0.24, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if self.wearerSPD >= 160:
-            bl.append(Buff("GlamothDMG", Pwr.DMG_PERCENT, 0.18, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("GlamothDMG", Pwr.DMG_PERCENT, 0.18, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         elif self.wearerSPD >= 135:
-            bl.append(Buff("GlamothDMG", Pwr.DMG_PERCENT, 0.12, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("GlamothDMG", Pwr.DMG_PERCENT, 0.12, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl

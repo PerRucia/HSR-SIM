@@ -42,3 +42,10 @@ class Equipment:
     
     def specialEnd(self, special: Special):
         return [], [], [], []
+    
+    def extendLists(self, bl: list, dbl: list, al: list, dl: list, nbl: list, ndbl: list, nal: list, ndl: list):
+        bl.extend(nbl)
+        dbl.extend(ndbl)
+        al.extend(nal)
+        dl.extend(ndl)
+        return bl, dbl, al, dl

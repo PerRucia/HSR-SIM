@@ -1,5 +1,5 @@
 class Result:
-    def __init__(self, charName: str, charRole: str, atkType: list, eleType: list, broken: bool, turnDmg: float, wbDmg: float, errGain: float, turnName: str, enemiesHit: list[int]):
+    def __init__(self, charName: str, charRole: str, atkType: list, eleType: list, broken: bool, turnDmg: float, wbDmg: float, errGain: float, turnName: str, enemiesHit: list[int], preHitStatus: list[bool]):
         self.charName = charName
         self.charRole = charRole
         self.atkType = atkType
@@ -10,6 +10,7 @@ class Result:
         self.errGain = errGain
         self.turnName = turnName
         self.enemiesHit = enemiesHit
+        self.preHitStatus = preHitStatus
         
     def __str__(self) -> str:
         return f"{self.turnName} | {self.charName} | {self.charRole.name} | DMG: {self.turnDmg:.3f} | Enemies Hit: {self.enemiesHit} | Enemies Broken: {self.brokenEnemy} | WB DMG: {self.wbDmg:.3f} | Energy: {self.errGain:.3f}"

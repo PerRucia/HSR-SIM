@@ -27,7 +27,7 @@ class Jade(Character):
     ultCost = 140
     currAV = 0
     rotation = ["E", "A", "A"] # Adjust accordingly
-    dmgDct = {Move.BSC: 0, Move.FUA: 0, Move.ULT: 0, Move.SPECIAL: 0, Move.BRK: 0} # Adjust accordingly
+    dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.ULT: 0, AtkType.SPECIAL: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     fuaStacks = 0
@@ -44,34 +44,34 @@ class Jade(Character):
         self.relic1 = r1 if r1 else Genius(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)
-        self.relicStats = subs if subs else RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+        self.relicStats = subs if subs else RelicStats(0, 2, 0, 2, 4, 0, 4, 4, 4, 4, 10, 14, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
         self.eidolon = eidolon
         self.debtCollector = debtCollector
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("JadeTraceDMG", Pwr.DMG_PERCENT, 0.224, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("JadeTraceATK", Pwr.ATK_PERCENT, 0.18, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("JadeTraceERS", Pwr.ERS_PERCENT, 0.10, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JadeTraceDMG", Pwr.DMG_PERCENT, 0.224, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JadeTraceATK", Pwr.ATK_PERCENT, 0.18, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JadeTraceERS", Pwr.ERS_PERCENT, 0.10, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         al.append(Advance("JadeStart", self.role, 0.5))
         if self.eidolon >= 1:
-            bl.append(Buff("JadeE1DMG", Pwr.DMG_PERCENT, 0.32, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("JadeE1DMG", Pwr.DMG_PERCENT, 0.32, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon >= 6:
-            bl.append(Buff("JadeE6PEN", Pwr.QUAPEN, 0.20, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("JadeE6PEN", Pwr.QUAPEN, 0.20, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         e5Bonus = 0.09 if self.eidolon >= 5 else 0
         e5Bonus2 = 0.03 if self.eidolon >= 5 else 0
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.BLAST, [Move.BSC], [self.element], [0.9 + e5Bonus, 0.3 + e5Bonus2], [10, 5], 20, self.scaling, 1, "JadeBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.BLAST, [AtkType.BSC], [self.element], [0.9 + e5Bonus, 0.3 + e5Bonus2], [10, 5], 20, self.scaling, 1, "JadeBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         if self.role != self.debtCollector:
-            bl.append(Buff("DebtCollectorSPD", Pwr.SPD, 30, self.debtCollector, [Move.ALL], 3, 1, self.role, TickDown.START))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, [Move.SKL], [self.element], [0, 0], [0, 0], 30, self.scaling, -1, "JadeSkill"))
+            bl.append(Buff("DebtCollectorSPD", Pwr.SPD, 30, self.debtCollector, [AtkType.ALL], 3, 1, self.role, TickDown.START))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 30, self.scaling, -1, "JadeSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -80,10 +80,10 @@ class Jade(Character):
         self.ultFuaBoost = 2
         e5Bonus = 0.24 if self.eidolon >= 5 else 0
         e5DMG = 0.08 if self.eidolon >= 5 else 0
-        bl.append(Buff("JadeUltFuaBoost", Pwr.DMG_PERCENT, 0.80 + e5DMG, self.role, [Move.FUA], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("JadeUltFuaBoost", Pwr.DMG_PERCENT, 0.80 + e5DMG, self.role, [AtkType.FUA], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon >= 4:
-            bl.append(Buff("JadeE4Shred", Pwr.SHRED, 0.12, self.role, [Move.ALL], 3, 1, Role.SELF, TickDown.END))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, [Move.ULT], [self.element], [2.4 + e5Bonus, 0], [20, 0],5, self.scaling, 0, "JadeUlt"))
+            bl.append(Buff("JadeE4Shred", Pwr.SHRED, 0.12, self.role, [AtkType.ALL], 3, 1, Role.SELF, TickDown.END))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.ULT], [self.element], [2.4 + e5Bonus, 0], [20, 0],5, self.scaling, 0, "JadeUlt"))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):
@@ -93,13 +93,13 @@ class Jade(Character):
         self.fuaStacks = self.fuaStacks - 8
         self.ultFuaBoost = self.ultFuaBoost - 1
         self.pawnAsset = min(50, self.pawnAsset + 5)
-        bl.append(Buff("PawnedAssetCD", Pwr.CD_PERCENT, self.pawnAsset * (0.024 + e3CD), self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("PawnedAssetATK", Pwr.ATK_PERCENT, self.pawnAsset * 0.005, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("PawnedAssetCD", Pwr.CD_PERCENT, self.pawnAsset * (0.024 + e3CD), self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("PawnedAssetATK", Pwr.ATK_PERCENT, self.pawnAsset * 0.005, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon >= 2 and self.pawnAsset >= 15:
-            bl.append(Buff("PawnedAssetE2CR", Pwr.CR_PERCENT, 0.18, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("PawnedAssetE2CR", Pwr.CR_PERCENT, 0.18, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if self.ultFuaBoost < 0:
-            bl.append(Buff("JadeUltFuaBoost", Pwr.DMG_PERCENT, 0.00, self.role, [Move.FUA], 1, 1, Role.SELF, TickDown.PERM))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, [Move.FUA], [self.element], [1.2 + e3bonus, 0], [10, 0], 10, self.scaling, 0, "JadeFua"))
+            bl.append(Buff("JadeUltFuaBoost", Pwr.DMG_PERCENT, 0.00, self.role, [AtkType.FUA], 1, 1, Role.SELF, TickDown.PERM))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.FUA], [self.element], [1.2 + e3bonus, 0], [10, 0], 10, self.scaling, 0, "JadeFua"))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
@@ -115,7 +115,7 @@ class Jade(Character):
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if turn.charRole == self.debtCollector and turn.moveName not in bonusDMG and turn.moveType != AtkTarget.NA:
+        if turn.charRole == self.debtCollector and turn.moveName not in bonusDMG and turn.targeting != Targeting.NA:
             if "Basic" in turn.moveName or "Skill" in turn.moveName:
                 self.pawnAsset = min(50, self.pawnAsset + 3)
             e3CD = 0.0024 if self.eidolon >= 3 else 0
@@ -124,12 +124,12 @@ class Jade(Character):
             if self.fuaStacks >= 8:
                 bl, dbl, al, dl, tl = self.useFua(self.defaultTarget)
             if self.eidolon >= 2 and self.pawnAsset >= 15:
-                bl.append(Buff("PawnedAssetE2CR", Pwr.CR_PERCENT, 0.18, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-            bl.append(Buff("PawnedAssetCD", Pwr.CD_PERCENT, self.pawnAsset * (0.024 + e3CD), self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-            bl.append(Buff("PawnedAssetATK", Pwr.ATK_PERCENT, self.pawnAsset * 0.005, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+                bl.append(Buff("PawnedAssetE2CR", Pwr.CR_PERCENT, 0.18, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("PawnedAssetCD", Pwr.CD_PERCENT, self.pawnAsset * (0.024 + e3CD), self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("PawnedAssetATK", Pwr.ATK_PERCENT, self.pawnAsset * 0.005, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
             e3Bonus = 0.02 if self.eidolon >= 3 else 0
             for i in result.enemiesHit:
-                tl.append(Turn(self.name, self.role, i, AtkTarget.SINGLE, [Move.SPECIAL], [self.element], [0.25 + e3Bonus, 0], [0, 0], 0, self.scaling, 0, "JadeBonusDMG"))
+                tl.append(Turn(self.name, self.role, i, Targeting.SINGLE, [AtkType.SPECIAL], [self.element], [0.25 + e3Bonus, 0], [0, 0], 0, self.scaling, 0, "JadeBonusDMG"))
         return bl, dbl, al, dl, tl
     
     

@@ -28,11 +28,10 @@ class Lingsha(Character):
     ultCost = 110
     currAV = 0
     rotation = ["E", "A", "A"] # Adjust accordingly
-    dmgDct = {Move.BSC: 0, Move.FUA: 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
+    dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.SKL: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     hasSummon = True
-    fuyuanRole = Role.FUYUAN
     count = 2
     
     # Relic Settings
@@ -42,36 +41,37 @@ class Lingsha(Character):
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
         super().__init__(pos, role, defaultTarget)
         self.lightcone = lc if lc else PostOp(role, 5)
-        self.relic1 = r1 if r1 else Messenger(role, 2, False)
-        self.relic2 = r2 if r2 else Thief(role, 2)
+        self.relic1 = r1 if r1 else Thief(role, 4)
+        self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Keel(role)
-        self.relicStats = subs if subs else RelicStats(10, 2, 2, 2, 2, 2, 2, 15, 3, 8, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.BE_PERCENT)
+        rope = Pwr.BE_PERCENT if self.lightcone.name == "Post-Op Conversation" else Pwr.ERR_PERCENT
+        self.relicStats = subs if subs else RelicStats(12, 4, 0, 4, 4, 0, 4, 12, 4, 4, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, rope)
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("LingshaTraceBE", Pwr.BE_PERCENT, 0.373, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("LingshaTraceATK", Pwr.ATK_PERCENT, 0.1, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("LingshaTraceHP", Pwr.HP_PERCENT, 0.18, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("LingshaBEtoATK", Pwr.ATK_PERCENT, 0.5, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaTraceBE", Pwr.BE_PERCENT, 0.373, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaTraceATK", Pwr.ATK_PERCENT, 0.1, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaTraceHP", Pwr.HP_PERCENT, 0.18, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("LingshaBEtoATK", Pwr.ATK_PERCENT, 0.5, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.BSC], [self.element], [1.0, 0], [10, 0], 30, self.scaling, 1, "LingshaBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [1.0, 0], [10, 0], 30, self.scaling, 1, "LingshaBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, [Move.SKL], [self.element], [0.8, 0], [10, 0], 30, self.scaling, -1, "LingshaSkill"))
-        al.append(Advance("LingshaADV", self.fuyuanRole, 0.2))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.SKL], [self.element], [0.8, 0], [10, 0], 30, self.scaling, -1, "LingshaSkill"))
+        al.append(Advance("LingshaADV", Role.FUYUAN, 0.2))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, [Move.ULT], [self.element], [1.5, 0], [20, 0], 5, self.scaling, 0, "LingshaUlt"))
-        al.append(Advance("LingshaADV", self.fuyuanRole, 1.0))
-        dbl.append(Debuff("LingshaBefog", self.role, Pwr.VULN, 0.25, Role.ALL, [Move.BRK], 2, 1, False, [0, 0], False))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.ULT], [self.element], [1.5, 0], [20, 0], 5, self.scaling, 0, "LingshaUlt"))
+        al.append(Advance("LingshaADV", Role.FUYUAN, 1.0))
+        dbl.append(Debuff("LingshaBefog", self.role, Pwr.VULN, 0.25, Role.ALL, [AtkType.BRK], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
@@ -79,7 +79,7 @@ class Lingsha(Character):
         if self.count == 0 and result.turnName != "FuyuanGoGo" and result.turnName != "LingshaAutoheal":
             self.count = 3
             self.fuas = self.fuas + 1
-            tl.append(Turn(self.name, self.role, self.getTargetID(-1), AtkTarget.AOE, [Move.FUA], [self.element], [0.9, 0], [10, 0], 0, self.scaling, 0, "LingshaAutoheal"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(-1), Targeting.AOE, [AtkType.FUA], [self.element], [0.9, 0], [10, 0], 0, self.scaling, 0, "LingshaAutoheal"))
         elif result.turnName == "FuyuanGoGo":
             return self.useFua(-1)
         return bl, dbl, al, dl, tl
@@ -91,8 +91,8 @@ class Lingsha(Character):
          
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useFua(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.AOE, [Move.FUA], [self.element], [0.75, 0], [10, 0], 0, self.scaling, 0, "LingshaFua"))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.FUA], [self.element], [0.75, 0], [10, 0], 0, self.scaling, 0, "LingshaFuaExtra"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.FUA], [self.element], [0.75, 0], [10, 0], 0, self.scaling, 0, "LingshaFua"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.FUA], [self.element], [0.75, 0], [10, 0], 0, self.scaling, 0, "LingshaFuaExtra"))
         return bl, dbl, al, dl, tl
     
     def takeTurn(self) -> str:

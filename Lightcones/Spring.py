@@ -19,20 +19,20 @@ class Spring(Lightcone):
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
         ehrBuff = self.level * 0.10 + 0.5
-        buffList.append(Buff("SpringEHR", Pwr.EHR_PERCENT, ehrBuff, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("SpringEHR", Pwr.EHR_PERCENT, ehrBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
     def useUlt(self, enemyID):
         bl, dbl, al, dl = super().useUlt(enemyID)
         for i in range(len(self.targetStatus)):
             if not self.targetStatus[i]:
-                dbl.append(Debuff("SpringVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemyID, [Move.ALL], 2, 1, False, [0, 0], False))
+                dbl.append(Debuff("SpringVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemyID, [AtkType.ALL], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
     def useSkl(self, enemyID):
         bl, dbl, al, dl = super().useSkl(enemyID)
         if not self.targetStatus[enemyID]:
-            dbl.append(Debuff("SpringVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemyID, [Move.ALL], 2, 1, False, [0, 0], False))
+            dbl.append(Debuff("SpringVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemyID, [AtkType.ALL], 2, 1, False, [0, 0], False))
         adjTargets = []
         if enemyID - 1 >= 0:
             adjTargets.append(enemyID - 1)
@@ -40,13 +40,13 @@ class Spring(Lightcone):
             adjTargets.append(enemyID + 1)
         for adj in adjTargets:
             if not self.targetStatus[adj]:
-                dbl.append(Debuff("SpringVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, adj, [Move.ALL], 2, 1, False, [0, 0], False))
+                dbl.append(Debuff("SpringVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, adj, [AtkType.ALL], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID):
         bl, dbl, al, dl = super().useBsc(enemyID)
         if not self.targetStatus[enemyID]:
-            dbl.append(Debuff("SpringVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemyID, [Move.ALL], 2, 1, False, [0, 0], False))
+            dbl.append(Debuff("SpringVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemyID, [AtkType.ALL], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
     def specialStart(self, special: Special):

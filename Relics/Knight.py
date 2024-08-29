@@ -10,6 +10,6 @@ class Knight(Relic):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("KnightRelicDEF", Pwr.DEF_PERCENT, 0.15, self.wearerRole, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("KnightRelicDEF", Pwr.DEF_PERCENT, 0.15, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     

@@ -27,13 +27,12 @@ class Topaz(Character):
     ultCost = 130
     currAV = 0
     rotation = ["E", "A", "A"] # Adjust accordingly
-    dmgDct = {Move.BSC: 0, Move.FUA: 0, Move.SKL: 0, Move.ULT: 0, Move.BRK: 0} # Adjust accordingly
+    dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.SKL: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
     hasSummon = True
     hasSpecial = True
     foundFire = False
-    numbyRole = Role.NUMBY
     windfallCount = 0
     firstNumby = True
     canUlt = False
@@ -53,49 +52,49 @@ class Topaz(Character):
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("TopazTraceDMG", Pwr.DMG_PERCENT, 0.224, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("TopazTraceCR", Pwr.CR_PERCENT, 0.12, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("TopazTraceHP", Pwr.HP_PERCENT, 0.10, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("WindfallCD", Pwr.CD_PERCENT, 0.25, self.role, [Move.TOPAZULT], 1, 1, Role.SELF, TickDown.PERM))
-        dbl.append(Debuff("ProofOfDebt", self.role, Pwr.VULN, 0.5, self.defaultTarget, [Move.FUA], 1000, 1, False, [0, 0], False))
+        bl.append(Buff("TopazTraceDMG", Pwr.DMG_PERCENT, 0.224, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("TopazTraceCR", Pwr.CR_PERCENT, 0.12, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("TopazTraceHP", Pwr.HP_PERCENT, 0.10, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("WindfallCD", Pwr.CD_PERCENT, 0.25, self.role, [AtkType.TOPAZULT], 1, 1, Role.SELF, TickDown.PERM))
+        dbl.append(Debuff("ProofOfDebt", self.role, Pwr.VULN, 0.5, self.defaultTarget, [AtkType.FUA], 1000, 1, False, [0, 0], False))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.BSC, Move.FUA], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "TopazBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC, AtkType.FUA], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "TopazBasic"))
         if self.eidolon >= 1:
-            dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.getTargetID(enemyID), [Move.FUA], 1000, 2, False, [0, 0], False))
-        al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
+            dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.getTargetID(enemyID), [AtkType.FUA], 1000, 2, False, [0, 0], False))
+        al.append(Advance("AdvanceNumby", Role.NUMBY, 0.5))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
+        al.append(Advance("AdvanceNumby", Role.NUMBY, 0.5))
         if self.eidolon >= 1:
-            dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.getTargetID(enemyID), [Move.FUA], 1000, 2, False, [0, 0], False))
+            dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.getTargetID(enemyID), [AtkType.FUA], 1000, 2, False, [0, 0], False))
         if self.windfallCount > 0:
             self.windfallCount = self.windfallCount - 1
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.SKL, Move.FUA, Move.TOPAZULT], [self.element], [3.0, 0], [20, 0], 40, self.scaling, -1, "TopazEnhancedSkill"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.SKL, AtkType.FUA, AtkType.TOPAZULT], [self.element], [3.0, 0], [20, 0], 40, self.scaling, -1, "TopazEnhancedSkill"))
         else:
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.SINGLE, [Move.SKL, Move.FUA, Move.TOPAZFUA], [self.element], [1.5, 0], [20, 0], 30, self.scaling, -1, "TopazSkill"))
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.SKL, AtkType.FUA, AtkType.TOPAZFUA], [self.element], [1.5, 0], [20, 0], 30, self.scaling, -1, "TopazSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
         self.windfallCount = 2
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), AtkTarget.NA, [Move.ALL], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TopazULT"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TopazULT"))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if (turn.moveType != AtkTarget.NA) and (turn.moveName not in bonusDMG) and (self.defaultTarget in result.enemiesHit):
+        if (turn.targeting != Targeting.NA) and (turn.moveName not in bonusDMG) and (self.defaultTarget in result.enemiesHit):
             if self.windfallCount > 0:
-                al.append(Advance("AdvanceWindFallNumby", self.numbyRole, 0.5))
-            elif Move.FUA in turn.atkType:
+                al.append(Advance("AdvanceWindFallNumby", Role.NUMBY, 0.5))
+            elif AtkType.FUA in turn.atkType:
                 if self.eidolon >= 1:
-                    dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.defaultTarget, [Move.FUA], 1000, 2, False, [0, 0], False))
-                al.append(Advance("AdvanceNumby", self.numbyRole, 0.5))
+                    dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.defaultTarget, [AtkType.FUA], 1000, 2, False, [0, 0], False))
+                al.append(Advance("AdvanceNumby", Role.NUMBY, 0.5))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, result: Result):
@@ -105,12 +104,12 @@ class Topaz(Character):
             self.firstNumby = False
             self.fuas = self.fuas + 1
             if self.eidolon >= 1:
-                dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.defaultTarget, [Move.FUA], 1000, 2, False, [0, 0], False))
+                dbl.append(Debuff("DebtorCD", self.role, Pwr.CD_PERCENT, 0.25, self.defaultTarget, [AtkType.FUA], 1000, 2, False, [0, 0], False))
             if self.windfallCount > 0:
                 self.windfallCount = self.windfallCount - 1
-                tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.SINGLE, [Move.FUA, Move.TOPAZULT], [self.element], [3.0, 0], [20, 0], errGain + 10, self.scaling, 0, "TopazEnhancedFUA"))
+                tl.append(Turn(self.name, self.role, self.defaultTarget, Targeting.SINGLE, [AtkType.FUA, AtkType.TOPAZULT], [self.element], [3.0, 0], [20, 0], errGain + 10, self.scaling, 0, "TopazEnhancedFUA"))
             else:
-                tl.append(Turn(self.name, self.role, self.defaultTarget, AtkTarget.SINGLE, [Move.FUA, Move.TOPAZFUA], [self.element], [1.5, 0], [20, 0], errGain, self.scaling, 0, "TopazFUA"))
+                tl.append(Turn(self.name, self.role, self.defaultTarget, Targeting.SINGLE, [AtkType.FUA, AtkType.TOPAZFUA], [self.element], [1.5, 0], [20, 0], errGain, self.scaling, 0, "TopazFUA"))
         return bl, dbl, al, dl, tl    
     
     def special(self):
@@ -124,7 +123,7 @@ class Topaz(Character):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         if specialRes.specialName == "TopazFireCheck":
             if specialRes.attr1:
-                bl.append(Buff("TopazFireDMG", Pwr.DMG_PERCENT, 0.15, self.role, [Move.ALL], 1, 1, Role.SELF, TickDown.PERM))
+                bl.append(Buff("TopazFireDMG", Pwr.DMG_PERCENT, 0.15, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         else:
             self.canUlt = specialRes.attr1
         return bl, dbl, al, dl, tl
