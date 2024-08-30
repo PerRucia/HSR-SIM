@@ -1,7 +1,8 @@
 from enum import Enum, auto
 
 bonusDMG = {"AvenFUAExtras", "TYAllyBonus", "TYBeneBonus", "YunliCullBounce", "FeixiaoUlt", "RobinConcertoDMG", "H7UltEnhancedBSCExtras", "H7EnhancedBSCExtras", "MozeBonusDMG", "RuanMeiBreakBonus", "LingshaFuaExtra",
-            "RatioE2Bonus", "JadeBonusDMG", "SamSkillSB", "SamSkill", "SamBasicSB", "SamBasic", "FireflySkillP1"}
+            "RatioE2Bonus", "JadeBonusDMG", "SamSkillSB", "SamSkill", "SamBasicSB", "SamBasic", "FireflySkillP1", "GallagherBasicP1", "GallagherEBSCExtras", "RuanUltBreak", "RuanAllyBreak", "HMCSkillExtras", "HMCSuperBreak",
+            "HMCAllySuperBreak", "LingshaAutohealExtra", "LingshaE6Extras"}
 wbMultiplier = 3767.5533
 eleDct = {"PHY": 2.0, "FIR": 2.0, "WIN": 1.5, "ICE": 1.0, "LNG": 1.0, "QUA": 0.5, "IMG": 0.5}
 atkRatio = [0.55, 0.2, 0.25] # Single Target, Blast Attack, AOE Attack splits for enemy behaviour
@@ -45,6 +46,8 @@ class Pwr(Enum):
     BURN = "BURN"
     BLEED = "BLEED"
     
+    GENERIC = "GENERIC" # generic debuff that weakens the enemy, does not buff the character's damage
+    
 class Element(Enum):
     WIND = "WIN"
     FIRE = "FIR"
@@ -71,7 +74,7 @@ class Role(Enum):
     SUS = auto()
     ALL = auto()
     SELF = auto()
-    TEAM = auto()
+    TEAM = auto() # everyone except the source of the buff
     ENEMY = auto()
     # Summon roles
     NUMBY = auto()
@@ -122,5 +125,6 @@ class AtkType(Enum):
     UEBSC = auto() # sword7th
     EBSC = auto() # sword7th
     ESKILL = auto() # firefly
+    HMCSBK = auto() # bonus superbreak dmg from hmc
 
 penDct = {Element.PHYSICAL: Pwr.PHYPEN, Element.FIRE: Pwr.FIRPEN, Element.WIND: Pwr.WINPEN, Element.ICE: Pwr.ICEPEN, Element.QUANTUM: Pwr.QUAPEN, Element.LIGHTNING: Pwr.LNGPEN, Element.IMAGINARY: Pwr.IMGPEN}

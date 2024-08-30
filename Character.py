@@ -75,12 +75,12 @@ class Character:
     def useHit(self, enemyID=-1):
         return *self.parseEquipment("HIT", enemyID=enemyID), []
     
-    def ownTurn(self, result: Result):
+    def ownTurn(self, turn: Turn, result: Result):
         if result.atkType[0] in self.dmgDct:
             self.dmgDct[result.atkType[0]] = self.dmgDct[result.atkType[0]] + result.turnDmg
         self.dmgDct[AtkType.BRK] = self.dmgDct[AtkType.BRK] + result.wbDmg
         self.currEnergy = min(self.maxEnergy, self.currEnergy + result.errGain)
-        return *self.parseEquipment("OWN", result=result), []
+        return *self.parseEquipment("OWN", turn=turn, result=result), []
     
     def special(self):
         return ""
@@ -118,7 +118,7 @@ class Character:
             elif actionType == "SPECIALE":
                 buffs, debuffs, advs, delays = equipment.specialEnd(special)
             elif actionType == "OWN":
-                buffs, debuffs, advs, delays = equipment.ownTurn(result)    
+                buffs, debuffs, advs, delays = equipment.ownTurn(turn, result)    
             elif actionType == "ALLY":
                 buffs, debuffs, advs, delays = equipment.allyTurn(turn, result)
                 

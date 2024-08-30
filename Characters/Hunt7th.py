@@ -55,7 +55,7 @@ class Hunt7th(Character):
     def equip(self):
         bl, dbl, al, dl = super().equip()
         al.append(Advance("H7StartAdv", self.role, 0.25))
-        bl.append(Buff("H7enhancedBasicCD", Pwr.CD_PERCENT, 0.5, self.role, [AtkType.UEBSC], 1, 1, Role.SELF, TickDown.END)) # e6 buff
+        bl.append(Buff("H7enhancedBasicCD", Pwr.CD_PERCENT, 0.5, self.role, [AtkType.UEBSC], 1, 1, Role.SELF, TickDown.PERM)) # e6 buff
         bl.append(Buff("H7enhancedBasicDMG", Pwr.DMG_PERCENT, 0.88, self.role, [AtkType.EBSC], 1, 1, Role.SELF, TickDown.PERM)) # e6 buff
         bl.append(Buff("H7TraceATK", Pwr.ATK_PERCENT, 0.28, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         bl.append(Buff("H7TraceCD", Pwr.CD_PERCENT, 0.24, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
@@ -100,8 +100,8 @@ class Hunt7th(Character):
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.ULT], [self.element, self.masterElement], [2.592, 0], [30, 0], 5, self.scaling, 0, "H7Ult"))
         return bl, dbl, al, dl, tl
     
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl, tl = super().ownTurn(result)
+    def ownTurn(self, turn: Turn, result: Result):
+        bl, dbl, al, dl, tl = super().ownTurn(turn, result)
         if self.charges >= 7 and not self.advanced:
             self.advanced = True
             al.append(Advance("H7EnhancedADV", self.role, 1.0))
@@ -139,7 +139,7 @@ class Hunt7th(Character):
     def handleSpecialStart(self, specialRes: Special):
         self.masterElement = specialRes.attr1
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
-        bl.append(Buff("MarchBonusERR", Pwr.ERR_T, 30, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("MarchBonusERR", Pwr.ERR_T, 30, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl, tl
     
     

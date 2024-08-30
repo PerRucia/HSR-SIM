@@ -26,7 +26,6 @@ class Robin(Character):
     ultCost = 160
     currEnergy = 80
     currAV = 0
-    rotation = ["E", "A", "A"]
     dmgDct = {AtkType.BSC: 0, AtkType.SPECIAL: 0, AtkType.BRK: 0}
     hasSpecial = True
     
@@ -39,14 +38,15 @@ class Robin(Character):
     
     # Relic Settings
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon=0, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon=0, lc = None, r1 = None, r2 = None, pl = None, subs = None, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget)
         self.lightcone = lc if lc else Journey(role)
         self.relic1 = r1 if r1 else Musketeer(role, 2)
         self.relic2 = r2 if r2 else Prisoner(role, 2)
         self.planar = pl if pl else Lushaka(role, Role.DPS)
         self.eidolon = eidolon
-        self.relicStats = subs if subs else RelicStats(9, 4, 0, 4, 6, 9, 4, 4, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT) # 14 spd default
+        self.relicStats = subs if subs else RelicStats(9, 4, 0, 4, 6, 9, 4, 4, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
+        self.rotation = rotation if rotation else ["E", "A", "A"]
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
@@ -91,10 +91,6 @@ class Robin(Character):
                 tl.append(Turn(self.name, self.role, turn.targetID, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinBonusERR"))
             else: # in concerto state, provide both additional dmg and extra ERR
                 tl.append(Turn(self.name, self.role, result.enemiesHit[0], Targeting.SPECIAL, [AtkType.SPECIAL], [self.element], [1.2, 0], [0, 0], 2 + e2ERR, self.scaling, 0, "RobinConcertoDMG"))
-        return bl, dbl, al, dl, tl
-    
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl, tl = super().ownTurn(result)
         return bl, dbl, al, dl, tl
     
     def reduceAV(self, reduceValue: float):

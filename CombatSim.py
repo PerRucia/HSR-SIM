@@ -3,24 +3,17 @@ from Enemy import Enemy
 from Summons import *
 from HelperFuncs import *
 from Misc import *
+
 from Characters.Feixiao import Feixiao
-# BiS Team
+from Characters.Aventurine import Aventurine
+from Characters.Lingsha import Lingsha
 from Characters.Robin import Robin
 from Characters.Topaz import Topaz
-from Characters.Aventurine import Aventurine
-# F2P Team
-from Characters.Hunt7th import Hunt7th
-from Characters.Pela import Pela
-from Characters.Firefly import Firefly
-# Extra Characters
-from Characters.Jiaoqiu import Jiaoqiu
-from Characters.Yunli import Yunli
-from Characters.DrRatio import DrRatio
 
-cycleLimit = 5 # comment out this line if running the simulator from an external script
+cycleLimit = 50 # comment out this line if running the simulator from an external script
 log = True
 
-def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False) -> str:
+def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, weak = None) -> str:
     
     # =============== SETTINGS ===============
     # Enemy Settings
@@ -29,18 +22,18 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     attackTypeRatio = atkRatio # from Misc.py
     toughness = 100
     numEnemies = 2
-    weaknesses = [Element.WIND, Element.IMAGINARY, Element.FIRE, Element.LIGHTNING]
+    weaknesses = weak if weak else [Element.WIND]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
 
     # Character Settings
-    slot1 = Firefly(0, Role.DPS, 0)
-    slot2 = Robin(1, Role.SUP1, 0, eidolon=0)
+    slot1 = Feixiao(0, Role.DPS, 0)
+    slot2 = Robin(1, Role.SUP1, 0, rotation=["E", "E", "A"])
     slot3 = Aventurine(2, Role.SUS, 0)
     slot4 = Topaz(3, Role.SUBDPS, 0)
 
     # Simulation Settings   
     totalEnemyAttacks = 0
-    logLevel = logging.DEBUG
+    logLevel = logging.CRITICAL
     # CRITICAL: Only prints the main action taken during each turn + ultimates
     # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
     # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
@@ -51,7 +44,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     if not s1:
         playerTeam = [slot1, slot2, slot3, slot4]
     else:
-        playerTeam = [s1]# [s1, s2, s3, s4]
+        playerTeam = [s1, s2, s3, s4]
     if outputLog:
         log_folder = "Output"
         teamInfo = "".join([char.name for char in playerTeam])
@@ -61,7 +54,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
             level=logLevel,
             format="%(message)s",
             filemode="w"
-        )
+        )   
     else:
         logging.disable(logging.CRITICAL)  # Disable all logging messages
 
@@ -132,7 +125,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         # Reduce AV of all chars
         for u in allUnits:
             u.standardAVred(av)
-            logging.info(f"{u.name} AV: {u.currAV:.3f}")
+            logging.info(f"-    {u.name} AV: {u.currAV:.3f}")
         logging.info("")
             
         # Apply any special effects
@@ -207,6 +200,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         
         # Apply any enemy delays
         delayList = delayAdjustment(eTeam, delayList, enemyDebuffs)
+        
         # Apply any character/summon AV adjustments
         avAdjustment(playerTeam + summons, advList)
         advList = []

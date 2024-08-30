@@ -49,7 +49,7 @@ class Firefly(Character):
         self.relic1 = r1 if r1 else CavalryFirefly(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else KalpagniFirefly(role)
-        self.relicStats = subs if subs else RelicStats(7, 4, 0, 4, 4, 0, 4, 17, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.BE_PERCENT)
+        self.relicStats = subs if subs else RelicStats(7, 4, 0, 4, 4, 0, 4, 27, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.BE_PERCENT)
         self.eidolon = eidolon
         
     def equip(self):
@@ -57,41 +57,41 @@ class Firefly(Character):
         bl.append(Buff("FireflyTraceBE", Pwr.BE_PERCENT, 0.373, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         bl.append(Buff("FireflyTraceERS", Pwr.ERS_PERCENT, 0.18, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         bl.append(Buff("FireflyTraceSPD", Pwr.SPD, 5, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        if self.eidolon >= 1:
-            bl.append(Buff("FireflyE1Shred", Pwr.SHRED, 0.15, self.role, [AtkType.ESKILL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         if self.enhancedState:
-            superBrkScale = 0.55 if self.beStat >= 3.6 else (0.35 if self.beStat >= 2.0 else 0)
+            superBrkScale = 0.50 if self.beStat >= 3.6 else (0.35 if self.beStat >= 2.0 else 0)
             e3Scg = 2.2 if self.eidolon >= 3 else 2.0
             for _ in range(4):
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.STSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, 0], [15 * 0.15, 0], 0, self.scaling, 0, "SamBasicSB"))
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Scg * 0.15, 0], [15 * 0.15, 0], 0, self.scaling, 0, "SamBasic", True, 0.55))
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.STSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, 0], [15 * 0.4, 0], 0, self.scaling, 0, "SamBasicSB"))
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Scg * 0.4, 0], [15 * 0.4, 0], 0, self.scaling, 1, "SamBasicFinal", True, 0.55))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.STSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, 0], [15 * 0.15, 0], 0, self.scaling, 0, "SamBasicSB"))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Scg * 0.15, 0], [15 * 0.15, 0], 0, self.scaling, 0, "SamBasic", True, 0.55))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.STSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, 0], [15 * 0.4, 0], 0, self.scaling, 0, "SamBasicSB"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Scg * 0.4, 0], [15 * 0.4, 0], 0, self.scaling, 1, "SamBasicFinal", True, 0.55))
         else:
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "FireflyBasic"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.BSC], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "FireflyBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
+        if self.eidolon >= 1:
+            bl.append(Buff("FireflyE1Shred", Pwr.SHRED, 0.15, self.role, tdType=TickDown.END))
         if self.enhancedState:
             spUsed = 0 if self.eidolon >= 1 else 1
             scgMain = self.beStat * 0.2 + (2.2 if self.eidolon >= 3 else 2.0)
             scgAdj = self.beStat * 0.1 + (1.1 if self.eidolon >= 3 else 1.0)
-            superBrkScale = 0.55 if self.beStat >= 3.6 else (0.35 if self.beStat >= 2.0 else 0)
+            superBrkScale = 0.50 if self.beStat >= 3.6 else (0.35 if self.beStat >= 2.0 else 0)
             for _ in range(4):
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, superBrkScale], [30 * 0.15, 10 * 0.15], 0, self.scaling, 0, "SamSkillSB"))
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.BLAST, [AtkType.SKL], [self.element], [scgMain * 0.15, scgAdj * 0.15], [30 * 0.15, 10 * 0.15], 0, self.scaling, 0, "SamSkill", True, 0.55))
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, superBrkScale], [30 * 0.15, 10 * 0.4], 0, self.scaling, 0, "SamSkillSB"))
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.BLAST, [AtkType.SKL], [self.element], [scgMain * 0.4, scgAdj * 0.4], [30 * 0.4, 10 * 0.4], 0, self.scaling, -spUsed, "SamSkillFinal", True, 0.55))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, superBrkScale], [30 * 0.15, 10 * 0.15], 0, self.scaling, 0, "SamSkillSB"))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.BLAST, [AtkType.SKL], [self.element], [scgMain * 0.15, scgAdj * 0.15], [30 * 0.15, 10 * 0.15], 0, self.scaling, 0, "SamSkill", True, 0.55))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, superBrkScale], [30 * 0.4, 10 * 0.4], 0, self.scaling, 0, "SamSkillSB"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.BLAST, [AtkType.SKL], [self.element], [scgMain * 0.4, scgAdj * 0.4], [30 * 0.4, 10 * 0.4], 0, self.scaling, -spUsed, "SamSkillFinal", True, 0.55))
         else:
             e3Err = 0.62 if self.eidolon >= 3 else 0.6
             e3Scg = 2.2 if self.eidolon >= 3 else 2.0
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.SKL], [self.element], [e3Scg * 0.4, 0], [20 * 0.4, 0], 0, self.scaling, 0, "FireflySkillP1"))
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.SKL], [self.element], [e3Scg * 0.6, 0], [20 * 0.6, 0], 30, self.scaling, -1, "FireflySkillP2"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.SKL], [self.element], [e3Scg * 0.4, 0], [20 * 0.4, 0], 0, self.scaling, 0, "FireflySkillP1"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.SKL], [self.element], [e3Scg * 0.6, 0], [20 * 0.6, 0], 30, self.scaling, -1, "FireflySkillP2"))
             bl.append(Buff("FireSkillERR", Pwr.ERR_F, self.ultCost * e3Err, self.role, [AtkType.SPECIAL], 1, 1, Role.SELF, TickDown.PERM))
             al.append(Advance("FireflySkill", self.role, 0.25))
         return bl, dbl, al, dl, tl
@@ -103,7 +103,7 @@ class Firefly(Character):
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "FireflyUlt"))
         brkBoost = 0.22 if self.eidolon >= 5 else 0.2
         spdBoost = 66 if self.eidolon >= 5 else 60
-        wbeBoost = 1.0 if self.eidolon == 6 else 0
+        wbeBoost = 1.0 if self.eidolon == 6 else 0.5
         bl.append(Buff("SamBrkDmgBoost", Pwr.BRK_DMG, brkBoost, self.role, [AtkType.BRK], 1, 1, Role.SELF, TickDown.PERM))
         bl.append(Buff("SamSPDBoost", Pwr.SPD, spdBoost, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         bl.append(Buff("SamWBEBoost", Pwr.WB_EFF, wbeBoost, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
@@ -113,8 +113,8 @@ class Firefly(Character):
         return bl, dbl, al, dl, tl
 
     
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl, tl = super().ownTurn(result)
+    def ownTurn(self, turn: Turn, result: Result):
+        bl, dbl, al, dl, tl = super().ownTurn(turn, result)
         if result.turnName == "de-Henshin!":
             self.enhancedState = False
             bl.append(Buff("SamBrkDmgBoost", Pwr.BRK_DMG, 0, self.role, [AtkType.BRK], 1, 1, Role.SELF, TickDown.PERM)) # disable all ult buffs
@@ -141,9 +141,15 @@ class Firefly(Character):
     def handleSpecialStart(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         self.atkStat = specialRes.attr1
-        bonusBE = min(0, self.atkStat - 1800 // 10) * 0.008
-        self.beStat = min(3.6, specialRes.attr2)
+        bonusBE = max(0, (self.atkStat - 1800) // 10) * 0.008
+        self.beStat = specialRes.attr2
         bl.append(Buff("FireflyBEConversion", Pwr.BE_PERCENT, bonusBE, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        self.enemyStatus = specialRes.attr3
         return bl, dbl, al, dl, tl
+    
+    def bestEnemy(self) -> int:
+        if all(x == self.enemyStatus[0] for x in self.enemyStatus): # all enemies have the same toughness, choose default target
+            return self.defaultTarget
+        return self.enemyStatus.index(min(self.enemyStatus))
     
     

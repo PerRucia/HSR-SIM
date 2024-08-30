@@ -102,8 +102,8 @@ class Jade(Character):
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.FUA], [self.element], [1.2 + e3bonus, 0], [10, 0], 10, self.scaling, 0, "JadeFua"))
         return bl, dbl, al, dl, tl
     
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl, tl = super().ownTurn(result)
+    def ownTurn(self, turn: Turn, result: Result):
+        bl, dbl, al, dl, tl = super().ownTurn(turn, result)
         if result.turnName == "JadeUlt" or result.turnName == "JadeBasic":
             self.fuaStacks = self.fuaStacks + len(result.enemiesHit)
             if self.eidolon == 6:

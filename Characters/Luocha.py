@@ -67,8 +67,8 @@ class Luocha(Character):
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.ULT], [self.element], [2.0, 0], [20, 0], 5, self.scaling, 0, "LuochaUlt"))
         return bl, dbl, al, dl, tl
     
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl, tl = super().ownTurn(result)
+    def ownTurn(self, turn: Turn, result: Result):
+        bl, dbl, al, dl, tl = super().ownTurn(turn, result)
         if result.turnName != "LuochaAutohealERR":
             tl.append(Turn(self.name, self.role, self.getTargetID(-1), Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 10, self.scaling, 0, "LuochaAutohealERR"))
         return bl, dbl, al, dl, tl

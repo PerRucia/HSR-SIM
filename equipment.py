@@ -34,7 +34,7 @@ class Equipment:
     def allyTurn(self, turn: Turn, result: Result):
         return [], [], [], []
     
-    def ownTurn(self, result: Result):
+    def ownTurn(self, turn: Turn, result: Result):
         return [], [], [], []
     
     def specialStart(self, special: Special):

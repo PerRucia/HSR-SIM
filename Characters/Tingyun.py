@@ -57,7 +57,7 @@ class Tingyun(Character):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "TingyunSkill"))
         bl.append(Buff("Benediction", Pwr.ATK_PERCENT, 0.55, self.beneTarget, [AtkType.ALL], 3, 1, self.beneTarget, TickDown.END))
-        bl.append(Buff("TingyunSkillSPD", Pwr.SPD_PERCENT, 0.2, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("TingyunSkillSPD", Pwr.SPD_PERCENT, 0.2, self.role, [AtkType.ALL], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):

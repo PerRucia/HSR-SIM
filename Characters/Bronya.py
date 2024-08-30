@@ -77,7 +77,7 @@ class Bronya(Character):
         self.currEnergy = self.currEnergy - self.ultCost
         tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ULT], [self.element], [0.0, 0], [0, 0], 5, self.scaling, 0, "BronyaUlt"))
         bl.append(Buff("BronyaUltATK", Pwr.ATK_PERCENT, 0.55, Role.ALL, [AtkType.ALL], 2, 1, Role.SELF, TickDown.END))
-        bl.append(Buff("BronyaUltCD", Pwr.CD_PERCENT, 0.16 * self.cdStat + 0.20, AtkType.ALL, [AtkType.ALL], 2, 1, Role.SELF, TickDown.END))
+        bl.append(Buff("BronyaUltCD", Pwr.CD_PERCENT, 0.16 * self.cdStat + 0.20, Role.ALL, [AtkType.ALL], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def special(self):

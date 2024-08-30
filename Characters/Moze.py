@@ -110,10 +110,10 @@ class Moze(Character):
                 dbl.append(Debuff("MozePrey", self.role, Pwr.CD_PERCENT, 0.00, self.getTargetID(result.enemiesHit[0]), [AtkType.ALL], 1000, 1, False, [0, 0], False)) # remove 40% CD when not in departed state
         return bl, dbl, al, dl, tl
     
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl, tl = super().ownTurn(result)
+    def ownTurn(self, turn: Turn, result: Result):
+        bl, dbl, al, dl, tl = super().ownTurn(turn, result)
         if result.turnName == "MozeULT":
-            bl.append(Buff("MozeUltBuff", Pwr.DMG_PERCENT, 0.30, self.role, [AtkType.ALL], 2, 1, Role.SELF, TickDown.END))
+            bl.append(Buff("MozeUltBuff", Pwr.DMG_PERCENT, 0.30, self.role, [AtkType.ALL], 3, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
     def reduceAV(self, reduceValue: float):

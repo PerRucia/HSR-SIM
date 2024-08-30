@@ -3,6 +3,7 @@ from Buff import *
 from Delay import *
 from Misc import *
 from Result import Result
+from Turn import Turn
 
 class Whereabouts(Lightcone):
     name = "Whereabouts Shoud Dreams Rest"
@@ -25,8 +26,8 @@ class WhereaboutsFF(Whereabouts):
         super().__init__(wearerRole, level)
         self.vulnBuff = level * 0.04 + 0.2
     
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl = super().ownTurn(result)
+    def ownTurn(self, turn: Turn, result: Result):
+        bl, dbl, al, dl = super().ownTurn(turn, result)
         for enemyID in result.brokenEnemy:
             dbl.append(Debuff("RoutedVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemyID, [AtkType.BRK], 2, 1, False, [0, 0], False))
             dbl.append(Debuff("RoutedSPD", self.wearerRole, Pwr.SPD, -0.2, enemyID, [AtkType.ALL], 2, 1, False, [0, 0], False))

@@ -2,6 +2,7 @@ from Lightcone import Lightcone
 from Buff import *
 from Result import Result
 from Misc import *
+from Turn import *
 
 class Blissful(Lightcone):
     name = "Worrisome, Blissful"
@@ -45,8 +46,8 @@ class BlissfulTopaz(Blissful):
         dbl.append(Debuff(f"BlissfulTame{self.wearerRole.name}", self.wearerRole, Pwr.CD_PERCENT, cdBuff, self.defaultTarget, [AtkType.ALL], 1000, 2, False, [0, 0], False))
         return bl, dbl, al, dl
     
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl = super().ownTurn(result)
+    def ownTurn(self, turn: Turn, result: Result):
+        bl, dbl, al, dl = super().ownTurn(turn, result)
         if result.turnName == "NumbyGoGo":
             cdBuff = self.level * 0.02 + 0.10
             dbl.append(Debuff(f"BlissfulTame{self.wearerRole.name}", self.wearerRole, Pwr.CD_PERCENT, cdBuff, self.defaultTarget, [AtkType.ALL], 1000, 2, False, [0, 0], False))

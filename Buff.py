@@ -1,7 +1,7 @@
 from Misc import *
 
 class Buff:
-    def __init__(self, name: str, buffType: str, val: float, target: Role, atkType: list, turns: int, stackLimit: int, tickDown: Role, tdType: TickDown):
+    def __init__(self, name: str, buffType: str, val: float, target: Role, atkType: list = [AtkType.ALL], turns: int = 1, stackLimit: int = 1, tickDown: Role = Role.SELF, tdType: TickDown = TickDown.PERM, reqBroken: bool = False):
         self.name = name
         self.buffType = buffType
         self.val = val
@@ -13,6 +13,7 @@ class Buff:
         self.stacks = 1
         self.tickDown = tickDown
         self.tdType = tdType
+        self.reqBroken = reqBroken
         
     def __str__(self) -> str:
         res = f"{self.name} | {self.buffType.value} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "
@@ -42,7 +43,7 @@ class Buff:
         self.val = val
         
 class Debuff:
-    def __init__(self, name: str, charRole: Role, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int, isDot: bool, dotSplit, isBlast: bool):
+    def __init__(self, name: str, charRole: Role, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int = 1, isDot: bool = False, dotSplit: list[float] = [0, 0], isBlast: bool = False):
         self.name = name
         self.charRole = charRole
         self.debuffType = debuffType

@@ -26,7 +26,6 @@ class Topaz(Character):
     currEnergy = 65
     ultCost = 130
     currAV = 0
-    rotation = ["E", "A", "A"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.SKL: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -41,7 +40,7 @@ class Topaz(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon: int = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon: int = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget)
         self.lightcone = lc if lc else Swordplay(role)
         self.relic1 = r1 if r1 else DukeTopaz(role, 4)
@@ -49,6 +48,7 @@ class Topaz(Character):
         self.planar = pl if pl else Duran(role)
         self.eidolon = eidolon
         self.relicStats = subs if subs else RelicStats(4, 0, 2, 2, 2, 2, 3, 3, 3, 3, 13, 11, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT) # 4 spd default
+        self.rotation = rotation if rotation else ["E", "A", "A"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
@@ -97,8 +97,8 @@ class Topaz(Character):
                 al.append(Advance("AdvanceNumby", Role.NUMBY, 0.5))
         return bl, dbl, al, dl, tl
     
-    def ownTurn(self, result: Result):
-        bl, dbl, al, dl, tl = super().ownTurn(result)
+    def ownTurn(self, turn: Turn, result: Result):
+        bl, dbl, al, dl, tl = super().ownTurn(turn, result)
         if result.turnName == "NumbyGoGo":
             errGain = 60 if self.firstNumby else 0
             self.firstNumby = False

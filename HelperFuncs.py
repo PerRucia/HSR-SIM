@@ -19,10 +19,18 @@ def parseBuffs(lst: list[Buff], playerTeam: list[Character]) -> list:
         if buff.target == Role.ALL: #teamwide buff, need to add 4 instances
             for char in playerTeam:
                 target = char.role if (buff.tickDown == Role.SELF) else buff.tickDown
-                buffList.append(Buff(buff.name, buff.buffType, buff.val, char.role, buff.atkType, buff.turns, buff.stackLimit, target, buff.tdType))
+                buffList.append(Buff(buff.name, buff.buffType, buff.val, char.role, buff.atkType, buff.turns, buff.stackLimit, target, buff.tdType, buff.reqBroken))
+        elif buff.target == Role.TEAM:
+            if buff.name == "HMCE4BuffBE":
+                excludeRole = findCharName(playerTeam, "HarmonyMC").role
+            for char in playerTeam:
+                if char.role == excludeRole:
+                    continue
+                target = char.role if (buff.tickDown == Role.SELF) else buff.tickDown
+                buffList.append(Buff(buff.name, buff.buffType, buff.val, char.role, buff.atkType, buff.turns, buff.stackLimit, target, buff.tdType, buff.reqBroken))
         else: #single target buff, only add one instance
             target = buff.target if (buff.tickDown == Role.SELF) else buff.tickDown
-            buffList.append(Buff(buff.name, buff.buffType, buff.val, buff.target, buff.atkType, buff.turns, buff.stackLimit, target, buff.tdType))
+            buffList.append(Buff(buff.name, buff.buffType, buff.val, buff.target, buff.atkType, buff.turns, buff.stackLimit, target, buff.tdType, buff.reqBroken))
     return buffList
 
 def parseDebuffs(lst: list[Debuff], enemyTeam: list[Enemy]) -> list[Debuff]:
@@ -194,7 +202,7 @@ def delayAdjustment(enemyTeam: list[Enemy], delayList: list[Delay], debuffList: 
         if not delay.reqBroken or (delay.reqBroken and enemy.broken):
             avRed = enemyAV * delay.delayPercent * -1
             enemy.reduceAV(avRed)
-            logger.info(f"DELAY  > {enemy.name} delayed by {delay.delayPercent} | NewAV: {enemy.currAV}")
+            logger.info(f"DELAY  > {enemy.name} delayed by {delay.delayPercent * 100:.1f}% from {delay.name} | NewAV: {enemy.currAV:.3f}")
         else:
             res.append(delay) # keep the delay in delayList until it can be applied
     return res
@@ -391,7 +399,9 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         elif breakType == "SUPER": # superbreak logic
             sbrkMul = getMulSuperBrkDMG(char, enemy, buffList, debuffList, turn) # should only be affected by HMC A2 trace for now
             charWBE = getMulWBE(char, enemy, buffList, debuffList, turn)
-            turnDmg += wbMultiplier * percentMultiplier * (breakUnits / 10 * charWBE) * brkMul * sbrkMul * charBE * enemyMul
+            tempDmg = wbMultiplier * percentMultiplier * (breakUnits / 10 * charWBE) * brkMul * sbrkMul * charBE * enemyMul
+            turnDmg += tempDmg
+            # print(f"{turn.moveName} | WBMUL: {wbMultiplier:.3f} | SBScg: {percentMultiplier} | ToughnessRed: {breakUnits / 10 * charWBE:.3f} | BrkMul: {brkMul:.3f} | SBrkMul: {sbrkMul:.3f} | CharBE: {charBE:.3f} | EnemyMul: {enemyMul:.3f} | DMG: {tempDmg:.3f}" )
         return
     
     enemiesHit = []
@@ -530,18 +540,23 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Su
             master = findCharRole(playerTeam, masterRole)
             return Special(name=specStr, attr1=master.element)
         
-        elif specStr == "CheckGallyUlt":
+        elif specStr == "Gallagher":
+            gally = findCharName(playerTeam, "Gallagher")
+            phTurn = Turn(gally.name, gally.role, gally.defaultTarget, Targeting.NA, [AtkType.ALL], [gally.element], [0, 0], [0, 0], 0, gally.scaling, 0, "updateGalBE")
+            beStat = getCharStat(Pwr.BE_PERCENT, gally, enemyTeam[gally.defaultTarget], buffList, debuffList, phTurn)
             res = False if unit.name == "Gallagher" else True
-            return Special(name=specStr, attr1=res)
+            enemyGauge = [e.gauge for e in enemyTeam]
+            return Special(name=specStr, attr1=beStat, attr2=res, attr3=enemyGauge)
         
         elif specStr == "MozeCheckRobin":
             res = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else True
             return Special(name=specStr, attr1=res)
         
-        elif specStr == "CheckRuanMeiBE":
-            rm = findCharName(playerTeam, "Ruan Mei")
-            be = getCharStat(Pwr.BE_PERCENT, rm, enemyTeam[0], buffList, debuffList, Turn(rm.name, rm.role, -1, Targeting.NA, [AtkType.ALL], [rm.element], [0, 0], [0, 0], 0, rm.scaling, 0, "updateRMBE"))
-            return Special(name=specStr, attr1=be)
+        elif specStr == "RuanMei":
+            rm = findCharName(playerTeam, "RuanMei")
+            be = getCharStat(Pwr.BE_PERCENT, rm, enemyTeam[0], buffList, debuffList, Turn(rm.name, rm.role, rm.defaultTarget, Targeting.NA, [AtkType.ALL], [rm.element], [0, 0], [0, 0], 0, rm.scaling, 0, "updateRMBE"))
+            enemyGauge = [e.gauge for e in enemyTeam]
+            return Special(name=specStr, attr1=be, attr2=enemyGauge)
         
         elif specStr == "Jiaoqiu":
             jq = findCharName(playerTeam, "Jiaoqiu")
@@ -572,15 +587,35 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Su
             res1 = getScalingValues(firefly, buffList, [AtkType.ALL])
             phTurn = Turn(firefly.name, firefly.role, firefly.defaultTarget, Targeting.NA, [AtkType.ALL], [firefly.element], [0, 0], [0, 0], 0, firefly.scaling, 0, "updateFFBE")
             res2 = getCharStat(Pwr.BE_PERCENT, firefly, enemyTeam[firefly.defaultTarget], buffList, debuffList, phTurn)
-            return Special(name=specStr, attr1=res1, attr2=res2)
+            enemyGauge = [e.gauge for e in enemyTeam]
+            return Special(name=specStr, attr1=res1, attr2=res2, attr3=enemyGauge)
+        
+        elif specStr == "HMC":
+            hmc = findCharName(playerTeam, "HarmonyMC")
+            phTurn = Turn(hmc.name, hmc.role, hmc.defaultTarget, Targeting.NA, [AtkType.ALL], [hmc.element], [0, 0], [0, 0], 0, hmc.scaling, 0, "updateHMCBE")
+            hmcBE = getCharStat(Pwr.BE_PERCENT, hmc, enemyTeam[hmc.defaultTarget], buffList, debuffList, phTurn)
+            enemyGauge = [e.gauge for e in enemyTeam]
+            return Special(name=specStr, attr1=len(enemyTeam), attr2=hmcBE, attr3=enemyGauge)
+        
+        elif specStr == "Lingsha":
+            fuyuan = findCharName(summons, "Fuyuan")
+            res = True if fuyuan.currAV > max([char.currAV for char in playerTeam]) else False
+            res2 = [e.gauge for e in enemyTeam]
+            ling = findCharName(playerTeam, "Lingsha")
+            phTurn = Turn(ling.name, ling.role, ling.defaultTarget, Targeting.NA, [AtkType.ALL], [ling.element], [0, 0], [0, 0], 0, ling.scaling, 0, "updateFFBE")
+            charBE = getCharStat(Pwr.BE_PERCENT, ling, enemyTeam[ling.defaultTarget], buffList, debuffList, phTurn)
+            return Special(name=specStr, attr1=res, attr2=res2, attr3=charBE)
+        
         else:
             return Special(name=specStr)
         
     elif typ == "END":
         if specStr == "updateRobinATK":
             slowestChar = sorted([char for char in playerTeam if char.name != "Robin"], key=lambda x: x.currSPD)[0]
-            res = unit.role == slowestChar.role
+            res = True if slowestChar.name == "Yunli" else unit.role == slowestChar.role
             return Special(name=specStr, attr1=res)
+
+        
         else:
             return Special(name=specStr)
         
@@ -681,7 +716,7 @@ def processTurnList(turnList: list[Turn], playerTeam, summons, eTeam, teamBuffs,
         teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, [], newDebuffs, [], newDelays)
         for char in playerTeam + summons:
             if char.role == turn.charRole:
-                tempB, tempDB, tempA, tempD, newTurns = char.ownTurn(res)
+                tempB, tempDB, tempA, tempD, newTurns = char.ownTurn(turn, res)
             else:
                 tempB, tempDB, tempA, tempD, newTurns = char.allyTurn(turn, res)
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, tempB, tempDB, tempA, tempD)
@@ -739,9 +774,9 @@ def getCharStat(query: str, char: Character, enemy: Enemy, buffList: list[Buff],
     res = 0
     pwrList = [query, penDct[char.element]] if query == Pwr.PEN else [query]
     
-    res += sum([buff.getBuffVal() for buff in buffList if ((buff.target == char.role) and checkValidList(turn.atkType, buff.atkType) and buff.buffType in pwrList)])
+    res += sum([buff.getBuffVal() for buff in buffList if ((buff.target == char.role) and checkValidList(turn.atkType, buff.atkType) and buff.buffType in pwrList and (not buff.reqBroken or enemy.broken))])
     res += sum([debuff.getDebuffVal() for debuff in debuffList if ((debuff.target == enemy.enemyID) and checkValidList(turn.atkType, debuff.atkType) and debuff.debuffType in pwrList)])
-            
+    
     match query:    
         case Pwr.BE_PERCENT:
             return res + char.relicStats.getBE() # base multiplier of 1 not added

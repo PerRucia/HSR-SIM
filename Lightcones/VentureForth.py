@@ -37,7 +37,7 @@ class VentureForthFeixiao(VentureForth):
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl = super().useSkl(enemyID)
         shredBuff = self.level * 0.03 + 0.24
-        bl.append(Buff("VentureSHRED", Pwr.SHRED, shredBuff, self.wearerRole, [AtkType.ALL], 2, 2, Role.SELF, TickDown.END))
+        bl.append(Buff("VentureSHRED", Pwr.SHRED, shredBuff, self.wearerRole, [AtkType.ALL], 3, 2, Role.SELF, TickDown.END))
         return bl, dbl, al, dl
     
     def useUlt(self, enemyID):
