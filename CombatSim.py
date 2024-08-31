@@ -6,11 +6,12 @@ from Misc import *
 
 from Characters.Feixiao import Feixiao
 from Characters.Aventurine import Aventurine
-from Characters.Lingsha import Lingsha
+from Characters.Hunt7th import Hunt7th
 from Characters.Robin import Robin
 from Characters.Topaz import Topaz
+from Characters.Moze import Moze
 
-cycleLimit = 50 # comment out this line if running the simulator from an external script
+cycleLimit = 5 # comment out this line if running the simulator from an external script
 log = True
 
 def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, weak = None) -> str:
@@ -22,18 +23,18 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     attackTypeRatio = atkRatio # from Misc.py
     toughness = 100
     numEnemies = 2
-    weaknesses = weak if weak else [Element.WIND]
+    weaknesses = weak if weak else [Element.WIND, Element.IMAGINARY, Element.PHYSICAL]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
 
     # Character Settings
-    slot1 = Feixiao(0, Role.DPS, 0)
-    slot2 = Robin(1, Role.SUP1, 0, rotation=["E", "E", "A"])
-    slot3 = Aventurine(2, Role.SUS, 0)
-    slot4 = Topaz(3, Role.SUBDPS, 0)
+    slot1 = Feixiao(0, Role.DPS, 0, eidolon=0)
+    slot2 = Robin(1, Role.SUP1, 0, rotation=["E"], eidolon=0)
+    slot3 = Aventurine(2, Role.SUS, 0, eidolon=0)
+    slot4 = Topaz(3, Role.SUBDPS, 0, eidolon=0)
 
     # Simulation Settings   
     totalEnemyAttacks = 0
-    logLevel = logging.CRITICAL
+    logLevel = logging.INFO
     # CRITICAL: Only prints the main action taken during each turn + ultimates
     # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
     # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn

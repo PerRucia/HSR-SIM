@@ -44,13 +44,12 @@ class Firefly(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0) -> None:
-        super().__init__(pos, role, defaultTarget)
+        super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else WhereaboutsFF(role)
         self.relic1 = r1 if r1 else CavalryFirefly(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else KalpagniFirefly(role)
         self.relicStats = subs if subs else RelicStats(7, 4, 0, 4, 4, 0, 4, 27, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.BE_PERCENT)
-        self.eidolon = eidolon
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
@@ -111,7 +110,6 @@ class Firefly(Character):
         if self.eidolon == 6:
             bl.append(Buff("SamE6Pen", Pwr.FIRPEN, 0.2, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl, tl
-
     
     def ownTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().ownTurn(turn, result)

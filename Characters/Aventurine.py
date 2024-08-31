@@ -40,13 +40,13 @@ class Aventurine(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
-        super().__init__(pos, role, defaultTarget)
-        self.lightcone = lc if lc else ConcertForTwo(role) 
+        super().__init__(pos, role, defaultTarget, eidolon)
+        self.lightcone = lc if lc else UnjustDestinyAven(role) 
         self.relic1 = r1 if r1 else Knight(role, 2)
         self.relic2 = r2 if r2 else Messenger(role, 2, False)
         self.planar = pl if pl else Keel(role)
-        self.eidolon = eidolon
-        self.relicStats = subs if subs else RelicStats(6, 2, 2, 0, 4, 4, 6, 4, 4, 4, 12, 0, Pwr.DEF_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.DEF_PERCENT) # 6 spd default
+        body = Pwr.CD_PERCENT if self.lightcone.name == "Inherently Unjust Destiny" else Pwr.DEF_PERCENT
+        self.relicStats = subs if subs else RelicStats(6, 2, 2, 0, 4, 4, 6, 4, 4, 4, 12, 0, body, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.DEF_PERCENT) # 6 spd default
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
@@ -55,11 +55,17 @@ class Aventurine(Character):
         bl.append(Buff("AvenTraceERS", Pwr.ERS_PERCENT, 0.10, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon >= 1:
             bl.append(Buff("AvenE1CD", Pwr.CD_PERCENT, 0.20, Role.ALL, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("AvenTeamERS", Pwr.ERS_PERCENT, 0.55 if self.eidolon >= 5 else 0.5, Role.ALL))
+        if self.eidolon == 6:
+            bl.append(Buff("AvenE6DMG", Pwr.DMG_PERCENT, 1.5, self.role))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [1.0, 0], [10, 0], 20, self.scaling, 1, "AvenBasic"))
+        e3Mul = 1.1 if self.eidolon >= 3 else 1.0
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Mul, 0], [10, 0], 20, self.scaling, 1, "AvenBasic"))
+        if self.eidolon >= 2:
+            dbl.append(Debuff("AvenE2PEN", self.role, Pwr.PEN, 0.12, self.getTargetID(enemyID), [AtkType.ALL], 3))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -69,20 +75,26 @@ class Aventurine(Character):
     
     def useUlt(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.ULT], [self.element], [2.7, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
+        e3Mul = 2.916 if self.eidolon >= 3 else 2.7
+        e3Debuff = 0.162 if self.eidolon >= 3 else 0.15
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.ULT], [self.element], [e3Mul, 0], [30, 0], 5, self.scaling, 0, "AvenUlt"))
         self.currEnergy = self.currEnergy - self.ultCost
         self.blindBetStacks = min(self.blindBetStacks + 4, 10)
         if self.blindBetStacks >= 7:
             self.extendLists(bl, dbl, al, dl, tl, *self.useFua())
-        dbl.append(Debuff("AvenUltCD", self.role, Pwr.CD_PERCENT, 0.15, 1, [AtkType.ALL], 3, 1, False, [0, 0], False))
+        dbl.append(Debuff("AvenUltCD", self.role, Pwr.CD_PERCENT, e3Debuff, self.getTargetID(enemyID), [AtkType.ALL], 3, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useFua(enemyID)
         self.blindBetStacks = self.blindBetStacks - 7
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.FUA], [self.element], [0.25, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUA"))
-        for _ in range(6):
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.FUA], [self.element], [0.25, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUAExtras"))
+        numHits = 9 if self.eidolon >= 4 else 6
+        e5Mul = 0.275 if self.eidolon >= 5 else 0.25
+        if self.eidolon >= 4:
+            bl.append(Buff("AvenE4DEF", Pwr.DEF_PERCENT, 0.4, self.role, turns=2, tdType=TickDown.END))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.FUA], [self.element], [e5Mul, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUA"))
+        for _ in range(numHits):
+            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.FUA], [self.element], [e5Mul, 0], [10/3, 0], 1, self.scaling, 0, "AvenFUAExtras"))
         return bl, dbl, al, dl, tl
     
     def useHit(self, enemyID=-1):

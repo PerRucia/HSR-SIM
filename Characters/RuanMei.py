@@ -40,13 +40,12 @@ class RuanMei(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, breakTeam = False) -> None:
-        super().__init__(pos, role, defaultTarget)
+        super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else MOTP(role)
         self.relic1 = r1 if r1 else Thief(role, 2)
         self.relic2 = r2 if r2 else Messenger(role, 2)
         self.planar = pl if pl else Lushaka(role)
         self.relicStats = subs if subs else RelicStats(10, 4, 0, 4, 4, 0, 4, 14, 4, 4, 0, 0, Pwr.HP_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.ERR_PERCENT)
-        self.eidolon = eidolon
         self.breakTeam = breakTeam
         
     def equip(self):

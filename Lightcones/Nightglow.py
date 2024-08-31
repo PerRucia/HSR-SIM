@@ -23,6 +23,7 @@ class Nightglow(Lightcone):
         atk = self.level * 0.12 + 0.36
         dmg = self.level * 0.04 + 0.20
         buffList.append(Buff("NightglowATK", Pwr.ATK_PERCENT, atk, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.END))
-        buffList.append(Buff("NightglowDMG", Pwr.DMG_PERCENT, dmg, Role.ALL, [AtkType.ALL], 1, 1, Role.SELF, TickDown.END))
-        return buffList, debuffList, advList, delayList    
+        buffList.append(Buff("NightglowDMG", Pwr.DMG_PERCENT, dmg, Role.ALL, [AtkType.ALL], 1, 1, self.wearerRole, TickDown.END))
+        return buffList, debuffList, advList, delayList
+    
     

@@ -39,13 +39,12 @@ class Jade(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, debtCollector = Role.DPS, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0) -> None:
-        super().__init__(pos, role, defaultTarget)
+        super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Breakfast(role)
         self.relic1 = r1 if r1 else Genius(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)
         self.relicStats = subs if subs else RelicStats(0, 2, 0, 2, 4, 0, 4, 4, 4, 4, 10, 14, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
-        self.eidolon = eidolon
         self.debtCollector = debtCollector
         
     def equip(self):
@@ -56,7 +55,9 @@ class Jade(Character):
         al.append(Advance("JadeStart", self.role, 0.5))
         if self.eidolon >= 1:
             bl.append(Buff("JadeE1DMG", Pwr.DMG_PERCENT, 0.32, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        if self.eidolon >= 6:
+        if self.eidolon >= 2:
+            bl.append(Buff("JadeE2CR", Pwr.CR_PERCENT, 0.18, self.role))
+        if self.eidolon == 6:
             bl.append(Buff("JadeE6PEN", Pwr.QUAPEN, 0.20, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
@@ -123,8 +124,6 @@ class Jade(Character):
             self.fuaStacks = self.fuaStacks + len(result.enemiesHit) + e1Bonus
             if self.fuaStacks >= 8:
                 bl, dbl, al, dl, tl = self.useFua(self.defaultTarget)
-            if self.eidolon >= 2 and self.pawnAsset >= 15:
-                bl.append(Buff("PawnedAssetE2CR", Pwr.CR_PERCENT, 0.18, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
             bl.append(Buff("PawnedAssetCD", Pwr.CD_PERCENT, self.pawnAsset * (0.024 + e3CD), self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
             bl.append(Buff("PawnedAssetATK", Pwr.ATK_PERCENT, self.pawnAsset * 0.005, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
             e3Bonus = 0.02 if self.eidolon >= 3 else 0

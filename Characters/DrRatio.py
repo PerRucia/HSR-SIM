@@ -1,5 +1,6 @@
 from Character import Character
 from Lightcones.Baptism import BaptismRatio
+from Lightcones.Cruising import Cruising
 from Relics.Pioneer import PioneerRatio
 from Planars.Duran import Duran
 from RelicStats import RelicStats
@@ -42,7 +43,7 @@ class DrRatio(Character):
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0) -> None:
         super().__init__(pos, role, defaultTarget)
-        self.lightcone = lc if lc else BaptismRatio(role, 1)
+        self.lightcone = lc if lc else Cruising(role)
         self.relic1 = r1 if r1 else PioneerRatio(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)

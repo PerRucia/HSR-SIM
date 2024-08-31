@@ -39,13 +39,12 @@ class HatBlazer(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget)
+        super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else MOTP(role)
         self.relic1 = r1 if r1 else WatchmakerHMC(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else KalpagniFirefly(role)
         self.relicStats = subs if subs else RelicStats(12, 4, 0, 4, 4, 0, 4, 12, 4, 4, 0, 0, Pwr.HP_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.BE_PERCENT)
-        self.eidolon = eidolon
         self.rotation = rotation if rotation else ["E", "E", "A"]
         
     def equip(self):

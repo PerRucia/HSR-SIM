@@ -330,7 +330,7 @@ def findBuffName(lst: list, name: str): # works for both buffs and debuffs
             return entry
         
 def countDebuffs(enemyID: int, debuffList: list[Debuff]) -> int:
-    return len([debuff for debuff in debuffList if (debuff.target == enemyID and debuff.getDebuffVal() != 0)])
+    return len([debuff for debuff in debuffList if (debuff.target == enemyID and debuff.val != 0)])
         
 def inTeam(playerTeam: list[Character], charName) -> bool:
     for char in playerTeam:
@@ -368,6 +368,8 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         
         enemyBroken = False
         newDebuffs, newDelays = [], []
+        # if turn.moveName == "H7UltEnhancedBSC":
+        #     print(f"ATK: {baseValue:.3f} | DMG%: {charDMG:.3f} | CR: {charCR:.3f} | CD: {charCD:.3f} | EnemyMul: {enemyMul:.3f}")
         turnDmg += expectedDMG(baseValue * charDMG * percentMultiplier * enemyMul, charCR, charCD)
         
         if checkValidList(turn.element, enemy.weakness):
@@ -450,6 +452,8 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         enemiesHit.append(enemy.enemyID)
         if turn.moveName == "RobinConcertoDMG":
             _, _ = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0], 1.0, 2.5)
+        elif turn.moveName == "RobinMoonlessMidnight":
+            _, _ = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0], 1.0, 2.5 + 4.5)
         else:
             _, _ = processEnemy(turn, enemy, turn.brkSplit[0], turn.dmgSplit[0])
     else :
@@ -475,11 +479,14 @@ def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], player
             errBuffs.append(buff)
         else:
             newList.append(buff)
+    errToAdd = 0
     for eb in errBuffs:
         char = findCharRole(playerTeam, eb.target)
         placeholderTurn = Turn(char.name, char.role, 0, Targeting.NA, [AtkType.SPECIAL], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "PlaceHolderTurn: ERR")
         charERR = getMulERR(char, enemyTeam[0], buffList, debuffList, placeholderTurn) if ((eb.buffType == Pwr.ERR_T) and not char.specialEnergy) else 1
-        char.addEnergy(eb.getBuffVal() * charERR)
+        errToAdd += eb.getBuffVal() * charERR
+    char.addEnergy(errToAdd)
+    logger.info(f"ERR    > {errToAdd:.3f} energy added to {char.name} | {char.name} Energy: {char.currEnergy:.3f}")
     return newList
 
 def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str) -> Special:
@@ -493,12 +500,12 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Su
                 res -= robinUltBuff.getBuffVal()
             return Special(name=specStr, attr1=res)
         
-        elif specStr == "HuoHuoUlt":
+        elif specStr == "HuoHuo":
             lst = []
             for char in playerTeam:
                 if char.name != "HuoHuo":
                     charMaxEnergy = 0 if char.specialEnergy else char.maxEnergy
-                    lst.append([charMaxEnergy * 0.2, char.role])
+                    lst.append([charMaxEnergy, char.role])
             return Special(name=specStr, attr1=lst[0], attr2=lst[1], attr3=lst[2])
         
         elif specStr == "Yunli":
@@ -605,6 +612,10 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Su
             phTurn = Turn(ling.name, ling.role, ling.defaultTarget, Targeting.NA, [AtkType.ALL], [ling.element], [0, 0], [0, 0], 0, ling.scaling, 0, "updateFFBE")
             charBE = getCharStat(Pwr.BE_PERCENT, ling, enemyTeam[ling.defaultTarget], buffList, debuffList, phTurn)
             return Special(name=specStr, attr1=res, attr2=res2, attr3=charBE)
+        
+        elif specStr == "Fuxuan":
+            lst = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
+            return Special(name=specStr, attr1=lst)
         
         else:
             return Special(name=specStr)

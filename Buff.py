@@ -78,7 +78,7 @@ class Debuff:
         
     def getDebuffVal(self) -> float:
         if self.name == "AshenRoasted":
-            return self.val + (self.stacks) * 0.05
+            return self.val + (self.stacks) * (self.val / 2)
         return self.val * self.stacks
 
     def atMaxStacks(self) -> bool:
