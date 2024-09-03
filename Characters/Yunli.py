@@ -35,7 +35,7 @@ class Yunli(Character):
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
-        self.lightcone = lc if lc else Sunset(role)
+        self.lightcone = lc if lc else Sunset(role, 5)
         self.relic1 = r1 if r1 else WindSoaringYunli(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)

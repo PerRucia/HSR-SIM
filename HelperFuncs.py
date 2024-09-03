@@ -479,14 +479,13 @@ def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], player
             errBuffs.append(buff)
         else:
             newList.append(buff)
-    errToAdd = 0
     for eb in errBuffs:
         char = findCharRole(playerTeam, eb.target)
         placeholderTurn = Turn(char.name, char.role, 0, Targeting.NA, [AtkType.SPECIAL], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "PlaceHolderTurn: ERR")
         charERR = getMulERR(char, enemyTeam[0], buffList, debuffList, placeholderTurn) if ((eb.buffType == Pwr.ERR_T) and not char.specialEnergy) else 1
-        errToAdd += eb.getBuffVal() * charERR
-    char.addEnergy(errToAdd)
-    logger.info(f"ERR    > {errToAdd:.3f} energy added to {char.name} | {char.name} Energy: {char.currEnergy:.3f}")
+        errToAdd = eb.getBuffVal() * charERR
+        char.addEnergy(errToAdd)
+        logger.info(f"ERR    > {errToAdd:.3f} energy added to {char.name} from {eb.name} | {char.name} Energy: {char.currEnergy:.3f}")
     return newList
 
 def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str) -> Special:
@@ -496,16 +495,21 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Su
             char = findCharName(playerTeam, "Robin")
             res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, Targeting.NA, ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
             if "RobinUltBuff" in getBuffNames(buffList):
-                robinUltBuff = findBuffName(buffList, "RobinUltBuff")
-                res -= robinUltBuff.getBuffVal()
+                res -= findBuffName(buffList, "RobinUltBuff").getBuffVal()
             return Special(name=specStr, attr1=res)
         
+        elif specStr == "Sparkle":
+            sparkle = findCharName(playerTeam, "Sparkle")
+            phTurn = Turn(sparkle.name, sparkle.role, sparkle.defaultTarget, Targeting.NA, [AtkType.SPECIAL], [sparkle.element], [0, 0], [0, 0], 0, sparkle.scaling, 0, "updateSparkleCD")
+            cdStat = getCharStat(Pwr.CD_PERCENT, sparkle, enemyTeam[sparkle.defaultTarget], buffList, [], phTurn)
+            if "EarthlyTeamCD" in getBuffNames(buffList):
+                cdStat -= findBuffName(buffList, "EarthlyTeamCD").getBuffVal()
+            return Special(name=specStr, attr1=cdStat)
+            
         elif specStr == "HuoHuo":
             lst = []
-            for char in playerTeam:
-                if char.name != "HuoHuo":
-                    charMaxEnergy = 0 if char.specialEnergy else char.maxEnergy
-                    lst.append([charMaxEnergy, char.role])
+            for char in [char for char in playerTeam if char.name != "HuoHuo"]:
+                lst.append([0 if char.specialEnergy else char.maxEnergy, char.role])
             return Special(name=specStr, attr1=lst[0], attr2=lst[1], attr3=lst[2])
         
         elif specStr == "Yunli":
@@ -578,7 +582,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Su
         
         elif specStr == "Bronya":
             bronya = findCharName(playerTeam, "Bronya")
-            cd = getCharStat(Pwr.CD_PERCENT, bronya, enemyTeam[0], buffList, debuffList, Turn(bronya.name, bronya.role, -1, Targeting.NA, [AtkType.ALL], [bronya.element], [0, 0], [0, 0], 0, bronya.scaling, 0, "updateBronyaCD"))
+            cd = getCharStat(Pwr.CD_PERCENT, bronya, enemyTeam[0], buffList, [], Turn(bronya.name, bronya.role, -1, Targeting.NA, [AtkType.ALL], [bronya.element], [0, 0], [0, 0], 0, bronya.scaling, 0, "updateBronyaCD"))
             if "BronyaUltATK" in getBuffNames(buffList):
                 cd -= findBuffName(buffList, "BronyaUltCD").getBuffVal()
             return Special(name=specStr, attr1=cd)

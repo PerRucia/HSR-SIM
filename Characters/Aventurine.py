@@ -41,7 +41,7 @@ class Aventurine(Character):
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
-        self.lightcone = lc if lc else UnjustDestinyAven(role) 
+        self.lightcone = lc if lc else ConcertForTwo(role) 
         self.relic1 = r1 if r1 else Knight(role, 2)
         self.relic2 = r2 if r2 else Messenger(role, 2, False)
         self.planar = pl if pl else Keel(role)

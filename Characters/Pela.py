@@ -27,7 +27,6 @@ class Pela(Character):
     currEnergy = 55
     ultCost = 110
     currAV = 0
-    rotation = ["E"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.SKL: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -36,13 +35,14 @@ class Pela(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else ResolutionPela(role, 5)
         self.relic1 = r1 if r1 else Longevous(role, 2)
         self.relic2 = r2 if r2 else Messenger(role, 2, False)
         self.planar =  pl if pl else Keel(role)
         self.relicStats = subs if subs else RelicStats(14, 2, 0, 2, 4, 0, 4, 4, 10, 8, 0, 0, Pwr.HP_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.ERR_PERCENT)
+        self.rotation = rotation if rotation else ["E", "A"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

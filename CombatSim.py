@@ -5,11 +5,10 @@ from HelperFuncs import *
 from Misc import *
 
 from Characters.Feixiao import Feixiao
-from Characters.Aventurine import Aventurine
-from Characters.Hunt7th import Hunt7th
+from Characters.DrRatio import DrRatio
 from Characters.Robin import Robin
+from Characters.Aventurine import Aventurine
 from Characters.Topaz import Topaz
-from Characters.Moze import Moze
 
 cycleLimit = 5 # comment out this line if running the simulator from an external script
 log = True
@@ -23,14 +22,14 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     attackTypeRatio = atkRatio # from Misc.py
     toughness = 100
     numEnemies = 2
-    weaknesses = weak if weak else [Element.WIND, Element.IMAGINARY, Element.PHYSICAL]
+    weaknesses = weak if weak else [Element.WIND, Element.IMAGINARY]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
 
     # Character Settings
-    slot1 = Feixiao(0, Role.DPS, 0, eidolon=0)
-    slot2 = Robin(1, Role.SUP1, 0, rotation=["E"], eidolon=0)
-    slot3 = Aventurine(2, Role.SUS, 0, eidolon=0)
-    slot4 = Topaz(3, Role.SUBDPS, 0, eidolon=0)
+    slot1 = DrRatio(0, Role.SUP1, 0, eidolon=0)
+    slot2 = Robin(1, Role.DPS, 0, eidolon=1)
+    slot3 = Aventurine(2, Role.SUP2, 0, eidolon=0)
+    slot4 = Topaz(3, Role.SUS, 0, eidolon=0)
 
     # Simulation Settings   
     totalEnemyAttacks = 0

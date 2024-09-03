@@ -45,13 +45,12 @@ class Moze(Character):
     
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6) -> None:
-        super().__init__(pos, role, defaultTarget)
+        super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Swordplay(role)
         self.relic1 = r1 if r1 else DukeMoze(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)
         self.relicStats = subs if subs else RelicStats(4, 2, 0, 2, 4, 0, 4, 4, 4, 4, 15, 5, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
-        self.eidolon = eidolon
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

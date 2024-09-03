@@ -42,7 +42,7 @@ class Robin(Character):
     
     def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon=0, lc = None, r1 = None, r2 = None, pl = None, subs = None, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
-        self.lightcone = lc if lc else Nightglow(role)
+        self.lightcone = lc if lc else Journey(role)
         self.relic1 = r1 if r1 else Musketeer(role, 2)
         self.relic2 = r2 if r2 else Prisoner(role, 2)
         self.planar = pl if pl else Lushaka(role, Role.DPS)
