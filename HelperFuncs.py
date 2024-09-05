@@ -488,6 +488,16 @@ def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], player
         logger.info(f"ERR    > {errToAdd:.3f} energy added to {char.name} from {eb.name} | {char.name} Energy: {char.currEnergy:.3f}")
     return newList
 
+def handleSPFromBuffs(buffList: list[Buff], spGain: int, spUsed: int) -> tuple[list[Buff], int, int]:
+    newList = []
+    for buff in buffList:
+        if buff.buffType == Pwr.SKLPT:
+            spGain = buff.getBuffVal() + spGain if buff.getBuffVal() > 0 else spGain
+            spUsed = -buff.getBuffVal() + spUsed if buff.getBuffVal() < 0 else spUsed
+        else:
+            newList.append(buff)
+    return newList, spGain, spUsed
+
 def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str) -> Special:
     if typ == "START":
         
@@ -757,6 +767,9 @@ def handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, del
     
     # Handle any errGain from unit ults
     teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
+    
+    # Add/Minus any SP changes from special effects
+    teamBuffs, spGain, spUsed = handleSPFromBuffs(teamBuffs, spGain, spUsed)
 
     return teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG
 
@@ -780,6 +793,9 @@ def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuf
     
     # Add Energy if any was provided from special effects
     teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
+    
+    # Add/Minus any SP changes from special effects
+    teamBuffs, spGain, spUsed = handleSPFromBuffs(teamBuffs, spGain, spUsed)
 
     return teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG
 

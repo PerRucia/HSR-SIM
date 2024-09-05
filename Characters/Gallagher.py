@@ -29,7 +29,6 @@ class Gallagher(Character):
     currEnergy = 55
     ultCost = 110
     currAV = 0
-    rotation = ["A"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.ULT: 0, AtkType.BRK: 0, AtkType.SBK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -42,7 +41,7 @@ class Gallagher(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, breakTeam = False) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, breakTeam = False, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Multi(role)
         self.relic1 = r1 if r1 else Thief(role, 2)
@@ -50,6 +49,7 @@ class Gallagher(Character):
         self.planar = pl if pl else KalpagniGallagher(role)
         self.relicStats = subs if subs else RelicStats(11, 4, 0, 4, 4, 0, 4, 13, 4, 4, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.HP_PERCENT, Pwr.ERR_PERCENT)
         self.breakTeam = breakTeam
+        self.rotation = rotation if rotation else ["A"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

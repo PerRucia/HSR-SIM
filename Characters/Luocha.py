@@ -27,7 +27,6 @@ class Luocha(Character):
     currEnergy = 50
     ultCost = 100
     currAV = 0
-    rotation = ["A"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -37,13 +36,14 @@ class Luocha(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Multi(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Keel(role)
         self.relicStats = subs if subs else RelicStats(13, 2, 3, 2, 4, 8, 4, 4, 4, 4, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
+        self.rotation = rotation if rotation else ["A"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

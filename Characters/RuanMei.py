@@ -1,6 +1,7 @@
 from Character import Character
 from RelicStats import RelicStats
 from Lightcones.MemoriesOfThePast import MOTP
+from Lightcones.Mirror import Mirror
 from Relics.Thief import Thief
 from Relics.Messenger import Messenger
 from Planars.Lushaka import Lushaka
@@ -28,7 +29,6 @@ class RuanMei(Character):
     currEnergy = 65
     ultCost = 130
     currAV = 0
-    rotation = ["A", "A", "E"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.BRK: 0,  AtkType.SBK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -39,7 +39,7 @@ class RuanMei(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, breakTeam = False) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, breakTeam = False, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else MOTP(role)
         self.relic1 = r1 if r1 else Thief(role, 2)
@@ -47,6 +47,7 @@ class RuanMei(Character):
         self.planar = pl if pl else Lushaka(role)
         self.relicStats = subs if subs else RelicStats(10, 4, 0, 4, 4, 0, 4, 14, 4, 4, 0, 0, Pwr.HP_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.ERR_PERCENT)
         self.breakTeam = breakTeam
+        self.rotation = rotation if rotation else ["A", "A", "E"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

@@ -28,7 +28,6 @@ class DrRatio(Character):
     currEnergy = 70
     ultCost = 140
     currAV = 0
-    rotation = ["E"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.SKL: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -41,13 +40,14 @@ class DrRatio(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Cruising(role)
         self.relic1 = r1 if r1 else PioneerRatio(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)
         self.relicStats = subs if subs else RelicStats(4, 2, 0, 2, 4, 0, 4, 4, 4, 4, 8, 12, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+        self.rotation = rotation if rotation else ["E"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

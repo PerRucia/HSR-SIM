@@ -32,6 +32,8 @@ class Pwr(Enum):
     PEN = "PEN"
     ERR_T = "ERR_T"
     ERR_F = "ERR_F"
+    SKLPT = "SKILLPOINT"
+    
     ICEPEN = "ICEPEN"
     FIRPEN = "FIRPEN"
     LNGPEN = "LNGPEN"

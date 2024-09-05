@@ -25,7 +25,6 @@ class Aventurine(Character):
     currEnergy = 55
     ultCost = 110
     currAV = 0
-    rotation = ["A"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -39,7 +38,7 @@ class Aventurine(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, eidolon = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else ConcertForTwo(role) 
         self.relic1 = r1 if r1 else Knight(role, 2)
@@ -47,6 +46,7 @@ class Aventurine(Character):
         self.planar = pl if pl else Keel(role)
         body = Pwr.CD_PERCENT if self.lightcone.name == "Inherently Unjust Destiny" else Pwr.DEF_PERCENT
         self.relicStats = subs if subs else RelicStats(6, 2, 2, 0, 4, 4, 6, 4, 4, 4, 12, 0, body, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.DEF_PERCENT) # 6 spd default
+        self.rotation = rotation if rotation else ["A"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

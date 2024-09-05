@@ -4,17 +4,14 @@ from Summons import *
 from HelperFuncs import *
 from Misc import *
 
-from Characters.Feixiao import Feixiao
-from Characters.Robin import Robin
-from Characters.Jiaoqiu import Jiaoqiu
-from Characters.Aventurine import Aventurine
-from Characters.Moze import Moze
-from Characters.Bronya import Bronya
-from Characters.Hunt7th import Hunt7th
-from Characters.Topaz import Topaz
+from Characters.Firefly import Firefly
+from Characters.Lingsha import Lingsha
+from Characters.Gallagher import Gallagher
+from Characters.RuanMei import RuanMei
+from Characters.HatBlazer import HatBlazer
 
-cycleLimit = 5 # comment out this line if running the simulator from an external script
-log = True
+cycleLimit = 50 # comment out this line if running the simulator from an external script
+log = False
 
 def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, weak = None) -> str:
     
@@ -25,19 +22,19 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     attackTypeRatio = atkRatio # from Misc.py
     toughness = 100
     numEnemies = 2
-    weaknesses = weak if weak else [Element.WIND, Element.FIRE, Element.IMAGINARY, Element.LIGHTNING]
+    weaknesses = weak if weak else [Element.FIRE]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
 
     # Character Settings
     if all([a == None for a in [s1, s2, s3, s4]]):
-        slot1 = Feixiao(0, Role.DPS, 0, eidolon=2, rotation=["E"])
-        slot2 = Aventurine(1, Role.SUS, 0, eidolon=0)
-        slot3 = Robin(2, Role.SUP2, 0, eidolon=0)
-        slot4 = Moze(3, Role.SUBDPS, 0, eidolon=6)
+        slot1 = Firefly(0, Role.DPS, 0, eidolon=2)
+        slot2 = RuanMei(1, Role.SUP1, 0, eidolon=0, breakTeam=True)
+        slot3 = HatBlazer(2, Role.SUP2, 0, eidolon=6, rotation=["E"])
+        slot4 = Gallagher(3, Role.SUS, 0, eidolon=6, breakTeam=True)
         
     # Simulation Settings   
     totalEnemyAttacks = 0
-    logLevel = logging.CRITICAL
+    logLevel = logging.DEBUG
     # CRITICAL: Only prints the main action taken during each turn + ultimates
     # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
     # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
@@ -253,7 +250,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         logging.critical(f"{char.name} > Total DMG: {dmg:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV if char.currAV < 500 else char.charge:.3f} | Excess Energy: {char.currEnergy:.3f}")
         logging.critical(res)
     
-    return f"DPAV: {totalDMG / avLimit:.3f} | SP Used: {spUsed}, SP Gain: {spGain}"
+    return f"DPAV: {totalDMG / avLimit:.3f}"
 
 if __name__ == "__main__":
     # Start the simulator with logging output to a file

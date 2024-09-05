@@ -10,7 +10,7 @@ class Earthly(Lightcone):
     baseATK = 529.20
     baseDEF = 463.05
 
-    def __init__(self, wearerRole, level = 5):
+    def __init__(self, wearerRole, level = 1):
         super().__init__(wearerRole, level)
     
     def equip(self, enemyID=-1):

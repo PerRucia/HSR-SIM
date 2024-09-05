@@ -29,7 +29,6 @@ class Lingsha(Character):
     currEnergy = 55
     ultCost = 110
     currAV = 0
-    rotation = ["E", "A", "A"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.SKL: 0, AtkType.ULT: 0, AtkType.BRK: 0, AtkType.SBK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -43,15 +42,16 @@ class Lingsha(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, breakTeam = False) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, breakTeam = False, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
-        self.lightcone = lc if lc else PostOp(role)
+        self.lightcone = lc if lc else ScentLingsha(role)
         self.relic1 = r1 if r1 else Thief(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else KalpagniLingsha(role)
         rope = Pwr.BE_PERCENT if self.lightcone.name == "Post-Op Conversation" else Pwr.ERR_PERCENT
         self.relicStats = subs if subs else RelicStats(12, 4, 0, 4, 4, 0, 4, 12, 4, 4, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, rope)
         self.breakTeam = breakTeam
+        self.rotation = rotation if rotation else ["E", "A", "A"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

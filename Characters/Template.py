@@ -23,7 +23,6 @@ class Template(Character):
     currEnergy = 0
     ultCost = 0
     currAV = 0
-    rotation = ["E"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.SKL: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -32,7 +31,7 @@ class Template(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget)
         self.lightcone = lc if lc else None
         self.relic1 = r1 if r1 else None
@@ -40,6 +39,7 @@ class Template(Character):
         self.planar = pl if pl else None
         self.relicStats = subs if subs else RelicStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT)
         self.eidolon = eidolon
+        self.rotation = rotation if rotation else ["E"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

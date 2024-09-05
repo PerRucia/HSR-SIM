@@ -30,7 +30,6 @@ class Feixiao(Character):
     currEnergy = 3
     ultCost = 6
     currAV = 0
-    rotation = ["E"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.SKL: 0, AtkType.ULT: 0, AtkType.BRK: 0, AtkType.TECH: 0} # Adjust accordingly
     specialEnergy = True
     hasSpecial = True
@@ -47,13 +46,14 @@ class Feixiao(Character):
     # Default = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     # Bronya Tuning = RelicStats(3, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None):
+    def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None, rotation = None):
         super().__init__(pos, role, defaultTarget, eidolon)
-        self.lightcone = lc if lc else BlissfulFeixiao(role) 
+        self.lightcone = lc if lc else VentureForthFeixiao(role) 
         self.relic1 = r1 if r1 else WindSoaringYunli(role, 4) # same as yunli, ult also counts as FuA
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)
-        self.relicStats = subs if subs else RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT) # 0 spd default
+        self.relicStats = subs if subs else RelicStats(1, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT) # 0 spd default
+        self.rotation = rotation if rotation else ["E"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

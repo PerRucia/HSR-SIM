@@ -28,7 +28,6 @@ class Fuxuan(Character):
     currEnergy = 135 /2
     ultCost = 135
     currAV = 0
-    rotation = ["E", "A", "A"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -38,7 +37,7 @@ class Fuxuan(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 1) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 1, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Texture(role, 5)
         self.relic1 = r1 if r1 else Messenger(role, 2, False)
@@ -46,6 +45,7 @@ class Fuxuan(Character):
         self.planar = pl if pl else Keel(role)
         rope = Pwr.HP_PERCENT if eidolon >= 4 else Pwr.ERR_PERCENT
         self.relicStats = subs if subs else RelicStats(8, 0, 4, 4, 12, 4, 4, 4, 4, 4, 0, 0, Pwr.HP_PERCENT, Pwr.SPD, Pwr.HP_PERCENT, rope)
+        self.rotation = rotation if rotation else ["E", "A", "A"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

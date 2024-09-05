@@ -42,13 +42,14 @@ class Jiaoqiu(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
-        self.lightcone = lc if lc else ResolutionJQ(role)
+        self.lightcone = lc if lc else Spring(role)
         self.relic1 = r1 if r1 else Longevous(role, 2)
         self.relic2 = r2 if r2 else Messenger(role, 2, False)
         self.planar = pl if pl else Vonwacq(role)
         self.relicStats = subs if subs else RelicStats(6, 4, 0, 4, 4, 0, 4, 4, 18, 4, 0, 0, Pwr.EHR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ERR_PERCENT)
+        self.rotation = rotation if rotation else ["E", "A", "A"]
         self.ashenRoastMul = 3.0 if self.eidolon >= 2 else 0
         
     def equip(self):

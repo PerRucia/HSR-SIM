@@ -27,7 +27,6 @@ class Hunt7th(Character):
     currEnergy = 55
     ultCost = 110
     currAV = 0
-    rotation = ["A"] # Adjust accordingly
     dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.EBSC: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
@@ -45,7 +44,7 @@ class Hunt7th(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, masterRole = Role.DPS, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6) -> None:
+    def __init__(self, pos: int, role: str, defaultTarget: int = -1, masterRole = Role.DPS, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Swordplay(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)
@@ -53,6 +52,7 @@ class Hunt7th(Character):
         self.planar = pl if pl else Rutilant(role)
         self.masterRole = masterRole
         self.relicStats = subs if subs else RelicStats(10, 2, 0, 2, 4, 0, 4, 4, 4, 4, 10, 4, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+        self.rotation = rotation if rotation else ["A"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
