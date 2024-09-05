@@ -97,10 +97,10 @@ class Lingsha(Character):
             self.fuas = self.fuas + 1
             e3Bonus = 0.825 if self.eidolon >= 3 else 0.75
             tl.append(Turn(self.name, self.role, self.getTargetID(-1), Targeting.AOE, [AtkType.FUA], [self.element], [e3Bonus, 0], [10, 0], 0, self.scaling, 0, "LingshaAutoheal"))
-            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.FUA], [self.element], [e3Bonus, 0], [10, 0], 0, self.scaling, 0, "LingshaAutohealExtra"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(-1), Targeting.SINGLE, [AtkType.FUA], [self.element], [e3Bonus, 0], [10, 0], 0, self.scaling, 0, "LingshaAutohealExtra"))
             if self.eidolon == 6:
                 for _ in range(4):
-                    tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.FUA], [self.element], [0.5, 0], [5, 0], 0, self.scaling, 0, "LingshaE6Extras"))
+                    tl.append(Turn(self.name, self.role, self.bestEnemy(-1), Targeting.SINGLE, [AtkType.FUA], [self.element], [0.5, 0], [5, 0], 0, self.scaling, 0, "LingshaE6Extras"))
         elif result.turnName == "FuyuanGoGo":
             return self.useFua(-1)
         return bl, dbl, al, dl, tl
@@ -114,10 +114,10 @@ class Lingsha(Character):
         bl, dbl, al, dl, tl = super().useFua(enemyID)
         e3Bonus = 0.825 if self.eidolon >= 3 else 0.75
         tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.FUA], [self.element], [e3Bonus, 0], [10, 0], 0, self.scaling, 0, "LingshaFua"))
-        tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.FUA], [self.element], [e3Bonus, 0], [10, 0], 0, self.scaling, 0, "LingshaFuaExtra"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.FUA], [self.element], [e3Bonus, 0], [10, 0], 0, self.scaling, 0, "LingshaFuaExtra"))
         if self.eidolon == 6:
             for _ in range(4):
-                tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.FUA], [self.element], [0.5, 0], [5, 0], 0, self.scaling, 0, "LingshaE6Extras"))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.FUA], [self.element], [0.5, 0], [5, 0], 0, self.scaling, 0, "LingshaE6Extras"))
         return bl, dbl, al, dl, tl
     
     def takeTurn(self) -> str:
@@ -140,10 +140,10 @@ class Lingsha(Character):
     def canUseUlt(self) -> bool:
         return super().canUseUlt() if self.canUlt else False
     
-    def bestEnemy(self) -> int:
+    def bestEnemy(self, enemyID) -> int:
         if all(x == self.enemyStatus[0] for x in self.enemyStatus) or not self.breakTeam: # all enemies have the same toughness, choose default target
-            return self.defaultTarget
-        return self.enemyStatus.index(max(self.enemyStatus))
+            return self.defaultTarget if enemyID == -1 else enemyID
+        return self.enemyStatus.index(max(self.enemyStatus)) if enemyID == -1 else enemyID
     
     
     

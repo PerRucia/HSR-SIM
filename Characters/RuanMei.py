@@ -67,7 +67,7 @@ class RuanMei(Character):
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         e5Bonus = 1.1 if self.eidolon >= 5 else 1.0
-        tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Bonus, 0], [10, 0], 25, self.scaling, 1, "RuanBasic"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Bonus, 0], [10, 0], 25, self.scaling, 1, "RuanBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -120,10 +120,10 @@ class RuanMei(Character):
         self.enemyStatus = specialRes.attr2
         return bl, dbl, al, dl, tl
     
-    def bestEnemy(self) -> int:
+    def bestEnemy(self, enemyID) -> int:
         if all(x == self.enemyStatus[0] for x in self.enemyStatus) or not self.breakTeam: # all enemies have the same toughness, choose default target
-            return self.defaultTarget
-        return self.enemyStatus.index(min(self.enemyStatus))
+            return self.defaultTarget if enemyID == -1 else enemyID
+        return self.enemyStatus.index(min(self.enemyStatus)) if enemyID == -1 else enemyID
 
     
     

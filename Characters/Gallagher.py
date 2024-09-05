@@ -71,13 +71,13 @@ class Gallagher(Character):
         e3Debuff = 0.16 if self.eidolon >= 3 else 0.15
         if self.nectarBlitz:
             self.nectarBlitz = False
-            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Enhanced * 0.25, 0], [30 * 0.25, 0], 0, self.scaling, 0, "GallagherEBSCExtras"))
-            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Enhanced * 0.15, 0], [30 * 0.15, 0], 0, self.scaling, 0, "GallagherEBSCExtras"))
-            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Enhanced * 0.60, 0], [30 * 0.6, 0], 20, self.scaling, 1, "GallagherEBSC"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Enhanced * 0.25, 0], [30 * 0.25, 0], 0, self.scaling, 0, "GallagherEBSCExtras"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Enhanced * 0.15, 0], [30 * 0.15, 0], 0, self.scaling, 0, "GallagherEBSCExtras"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Enhanced * 0.60, 0], [30 * 0.6, 0], 20, self.scaling, 1, "GallagherEBSC"))
             dbl.append(Debuff("GalNectarBlitz", self.role, Pwr.GENERIC, e3Debuff, self.getTargetID(enemyID), [AtkType.ALL], 2))
         else:
-            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Normal * 0.5, 0], [5, 0], 0, self.scaling, 0, "GallagherBasicP1"))
-            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Normal * 0.5, 0], [5, 0], 20, self.scaling, 1, "GallagherBasicP2"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Normal * 0.5, 0], [5, 0], 0, self.scaling, 0, "GallagherBasicP1"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Normal * 0.5, 0], [5, 0], 20, self.scaling, 1, "GallagherBasicP2"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -107,10 +107,10 @@ class Gallagher(Character):
         self.enemyStatus = specialRes.attr3
         return bl, dbl, al, dl, tl
     
-    def bestEnemy(self) -> int:
+    def bestEnemy(self, enemyID) -> int:
         if all(x == self.enemyStatus[0] for x in self.enemyStatus) or not self.breakTeam: # all enemies have the same toughness, choose default target
-            return self.defaultTarget
-        return self.enemyStatus.index(max(self.enemyStatus))
+            return self.defaultTarget if enemyID == -1 else enemyID
+        return self.enemyStatus.index(max(self.enemyStatus)) if enemyID == -1 else enemyID
         
     
     

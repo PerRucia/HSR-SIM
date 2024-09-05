@@ -337,6 +337,17 @@ def inTeam(playerTeam: list[Character], charName) -> bool:
         if char.name == charName:
             return True
     return False
+
+def addSummons(playerTeam: list[Character]) -> list:
+    summons = []
+    for char in playerTeam:
+        if char.name == "Topaz":
+            summons.append(Numby(char.role, Role.NUMBY))
+        elif char.name == "Lingsha":
+            summons.append(Fuyuan(char.role, Role.FUYUAN))
+        elif char.name == "Firefly":
+            summons.append(deHenshin(char.role, Role.HENSHIN))
+    return summons
         
 def handleAdditions(playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], advList: list[Advance], delayList: list[Delay], 
                     buffToAdd: list[Buff], DebuffToAdd: list[Debuff], advToAdd: list[Advance], delayToAdd: list[Delay]) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay]]:
@@ -348,7 +359,7 @@ def handleAdditions(playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buf
     
     return buffList, debuffList, advList, delayList
 
-def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff]) -> tuple[Result, list[Debuff], list[Delay]]:
+def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], manualMode = False) -> tuple[Result, list[Debuff], list[Delay]]:
     char = findCharRole(playerTeam, turn.charRole)
     charERR = getMulERR(char, enemyTeam[0], buffList, debuffList, turn)
     baseValue = getBaseValue(char, buffList, turn)
@@ -372,10 +383,15 @@ def handleTurn(turn: Turn, playerTeam: list[Character], enemyTeam: list[Enemy], 
         #     print(f"ATK: {baseValue:.3f} | DMG%: {charDMG:.3f} | CR: {charCR:.3f} | CD: {charCD:.3f} | EnemyMul: {enemyMul:.3f}")
         turnDmg += expectedDMG(baseValue * charDMG * percentMultiplier * enemyMul, charCR, charCD)
         
+        gauge = 0
         if checkValidList(turn.element, enemy.weakness):
-            enemyBroken = enemy.redToughness(breakUnits * charWBE)
+            gauge = breakUnits * charWBE
+            enemyBroken = enemy.redToughness(gauge)
         elif turn.omniBreak:
-            enemyBroken = enemy.redToughness(breakUnits * charWBE * turn.omniBreakMod)
+            gauge = breakUnits * charWBE * turn.omniBreakMod
+            enemyBroken = enemy.redToughness(gauge)
+        if manualMode and gauge > 0:
+            print(f"GAUGE  - Enemy {enemy.enemyID} toughness reduced by {gauge:.3f}")
         
         if enemyBroken:
             charBE = getMulBE(char, enemy, buffList, debuffList, turn)
@@ -498,7 +514,7 @@ def handleSPFromBuffs(buffList: list[Buff], spGain: int, spUsed: int) -> tuple[l
             newList.append(buff)
     return newList, spGain, spUsed
 
-def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str) -> Special:
+def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str, manualMode = False) -> Special:
     if typ == "START":
         
         if specStr == "updateRobinATK":
@@ -525,7 +541,7 @@ def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Su
         elif specStr == "Yunli":
             yunliSlot = findCharName(playerTeam, "Yunli").pos
             lst = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
-            return Special(name=specStr, attr1=lst[yunliSlot])
+            return Special(name=specStr, attr1=lst[yunliSlot], attr2=len(enemyTeam))
         
         elif specStr == "FeixiaoTech" or specStr == "Feixiao":
             feixiao = findCharName(playerTeam, "Feixiao")
@@ -715,7 +731,7 @@ def getScalingValues(char: Character, buffList: list[Buff], atkType: list[str]) 
             flat += buff.getBuffVal()
     return base * (1 + mul) + flat
 
-def processTurnList(turnList: list[Turn], playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG):
+def processTurnList(turnList: list[Turn], playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG, manualMode=False, simAV=0):
     
     while turnList:
         turn = turnList[0]
@@ -731,13 +747,13 @@ def processTurnList(turnList: list[Turn], playerTeam, summons, eTeam, teamBuffs,
         [logging.debug(f"        {debuff}") for debuff in enemyDebuffs if debuff.target == turn.targetID]
         logging.debug("        ----------End of Debuff List----------")
 
-        res, newDebuffs, newDelays = handleTurn(turn, playerTeam, eTeam, teamBuffs, enemyDebuffs)
+        res, newDebuffs, newDelays = handleTurn(turn, playerTeam, eTeam, teamBuffs, enemyDebuffs, manualMode=manualMode)
         totalDMG += res.turnDmg + res.wbDmg
-        if res.errGain > 0:
-            char = findCharRole(playerTeam, res.charRole)
-            logging.warning(f"    RESULT - {res} | {char.name}Energy: {min(char.maxEnergy, char.currEnergy + res.errGain):.3f}")
-        else:
-            logging.warning(f"    RESULT - {res}")
+        char = findCharRole(playerTeam, res.charRole)
+        result = f"RESULT - {res} | {char.name} Energy: {min(char.maxEnergy, char.currEnergy + res.errGain):.0f}/{char.maxEnergy}"
+        logging.warning(f"    {result}")
+        if manualMode:
+            print(result)
         teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, [], newDebuffs, [], newDelays)
         for char in playerTeam + summons:
             if char.role == turn.charRole:
@@ -751,36 +767,43 @@ def processTurnList(turnList: list[Turn], playerTeam, summons, eTeam, teamBuffs,
     
     return teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG
     
-def handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG ):
+def handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG, manualMode = False, simAV = 0):
     
     turnList = []
     # Check if any unit can ult
     for char in playerTeam:
         if char.canUseUlt():
-            logging.critical(f"ULT    > {char.name} used their ultimate")
-            bl, dbl, al, dl, tl = char.useUlt()
-            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
-            turnList.extend(tl)
+            action, target = "Y", -1
+            if manualMode:
+                action, target = manualModule(spGain, spUsed, playerTeam, summons, eTeam, simAV, char, "ULT")
+            if action == "Y":
+                ult = f"ULT    > {char.name} used their ultimate"
+                logging.critical(ult)
+                if manualMode:
+                    print(ult)
+                bl, dbl, al, dl, tl = char.useUlt(target)
+                teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
+                turnList.extend(tl)
 
-    # Handle any new attacks from unit ults  
-    teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)
-    
-    # Handle any errGain from unit ults
-    teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
-    
-    # Add/Minus any SP changes from special effects
-    teamBuffs, spGain, spUsed = handleSPFromBuffs(teamBuffs, spGain, spUsed)
+        # Handle any new attacks from unit ults  
+        teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG, manualMode=manualMode, simAV=simAV)
+        
+        # Handle any errGain from unit ults
+        teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
+        
+        # Add/Minus any SP changes from special effects
+        teamBuffs, spGain, spUsed = handleSPFromBuffs(teamBuffs, spGain, spUsed)
 
     return teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG
 
-def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, checkType, spGain, spUsed, totalDMG):
+def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, checkType, spGain, spUsed, totalDMG, manualMode = False):
     
     turnList = []
     # Apply any special effects
     for char in playerTeam:
         if char.hasSpecial:
             spec = char.special()
-            specRes = handleSpec(spec, unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, checkType)
+            specRes = handleSpec(spec, unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, checkType, manualMode=manualMode)
             if checkType == "START":
                 bl, dbl, al, dl, tl = char.handleSpecialStart(specRes)
             elif checkType == "END":
@@ -789,7 +812,7 @@ def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuf
             turnList.extend(tl)    
 
     # Handle any attacks from special attacks  
-    teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG)      
+    teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG, manualMode)      
     
     # Add Energy if any was provided from special effects
     teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
@@ -798,6 +821,53 @@ def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuf
     teamBuffs, spGain, spUsed = handleSPFromBuffs(teamBuffs, spGain, spUsed)
 
     return teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG
+
+def manualModule(spGain: int, spUsed: int, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], simAV: float, unit, actionType) -> tuple[str, int]:
+    print("===============================================================================================================================================================")
+    print(f"INFO   > CURRENT AV: {simAV:.3f} | SP: {3 + spGain - spUsed}\n")
+    res1 = "TEAMAV > "
+    res2 = "ENERGY > "
+    for char in [p for p in (playerTeam + summons)]:
+        res1 += f"{char.name}: {char.currAV:.3f} | "
+        res2 += f"{char.name}: {char.currEnergy:.0f}/{char.maxEnergy} | "
+    print(res1)
+    print(res2 + "\n")
+    res = "ENEMY  > "
+    for enemy in enemyTeam:
+        res += f"Enemy {enemy.enemyID} AV: {enemy.currAV:.3f} Toughness: {enemy.gauge:.2f}/{enemy.toughness:.2f} | "
+    print(res + "\n")
+    output = ""
+    userAction = ""
+    if actionType == "TURN":
+        while userAction.upper() not in {"E", "A"}:
+            userAction = input(f"INPUT  > {unit.name} | Energy: {unit.currEnergy:.0f}/{unit.maxEnergy} | Move (E/A): ")
+            if userAction.upper() not in {"E", "A"}:
+                print("Invalid Input!")
+                continue
+            string = "SKILL" if userAction.upper() == "E" else "BASIC"
+            output = f"    {unit.name} used {string} against Enemy "
+    elif actionType == "ULT":
+        while userAction.upper() not in {"Y", "N"}:
+            userAction = input(f"INPUT  > {unit.name} Energy: {unit.currEnergy:.0f}/{unit.maxEnergy} | Use Ultimate? (Y/N): ")
+            if userAction.upper() not in {"Y", "N"}:
+                print("Invalid Input!")
+                continue
+            if userAction.upper() == "Y":
+                output = f"    {unit.name} used their ultimate against Enemy "
+            else:
+                output = f"    {unit.name} holds their ultimate"
+    target = -1
+    while target not in range(len(enemyTeam)) and userAction.upper() != "N":
+        target = int(input(f"TARGET > Select Enemy Target {[enemy.enemyID for enemy in enemyTeam]}: "))
+        if target not in range(len(enemyTeam)):
+            print("Invalid Input!")
+    if actionType == "ULT" and userAction == "N":
+        pass
+    else:
+        output += str(target)
+    print(f"<<< {output}     >>>")
+    print("===============================================================================================================================================================")
+    return userAction.upper(), target
 
 # Use this function to get the stat of the character, without any associated base multipliers:
 # e.g. 1 + dmg%, 1 + err% etc.

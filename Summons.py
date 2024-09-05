@@ -13,6 +13,8 @@ class Summon:
     element = None
     currSPD = 100
     currAV = 10000 / currSPD
+    currEnergy = 0
+    maxEnergy = 0
     
     def __init__(self, ownerRole: str, role: str) -> None:
         self.ownerRole = ownerRole

@@ -103,14 +103,15 @@ class Yunli(Character):
         return super().useHit(enemyID)
     
     def special(self):
+        self.hasSpecial = False
         return "Yunli"
     
     def handleSpecialStart(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         self.skipHit = round(1 / (1 - specialRes.attr1))
-        self.hasSpecial = False
+        self.numEnemies = specialRes.attr2
         tl.append(Turn(self.name, self.role, self.defaultTarget, Targeting.BLAST, [AtkType.ULT, AtkType.FUA], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
-        for _ in range(6):
-            tl.append(Turn(self.name, self.role, self.defaultTarget, Targeting.SINGLE, [AtkType.ULT, AtkType.FUA], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
+        for i in range(6):
+            tl.append(Turn(self.name, self.role, i % self.numEnemies, Targeting.SINGLE, [AtkType.ULT, AtkType.FUA], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
         return bl, dbl, al, dl, tl
     

@@ -60,7 +60,7 @@ class HatBlazer(Character):
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         e5Bonus = 1.1 if self.eidolon >= 5 else 1.0
-        tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Bonus, 0], [10, 0], 20, self.scaling, 1, "HMCBasic"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Bonus, 0], [10, 0], 20, self.scaling, 1, "HMCBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -69,10 +69,10 @@ class HatBlazer(Character):
         sp = 0 if (self.firstSkill and self.eidolon >= 1) else -1
         if self.firstSkill:
             self.firstSkill = False
-        tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.SKL], [self.element], [e3Bonus, 0], [20, 0], 30, self.scaling, sp, "HMCSkill"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.SKL], [self.element], [e3Bonus, 0], [20, 0], 30, self.scaling, sp, "HMCSkill"))
         numHits = 6 if self.eidolon == 6 else 4
-        for _ in range(numHits):
-            tl.append(Turn(self.name, self.role, self.bestEnemy(), Targeting.SINGLE, [AtkType.SKL], [self.element], [e3Bonus, 0], [5, 0], 0, self.scaling, 0, "HMCSkillExtras"))
+        for i in range(numHits):
+            tl.append(Turn(self.name, self.role, i % self.numEnemies, Targeting.SINGLE, [AtkType.SKL], [self.element], [e3Bonus, 0], [5, 0], 0, self.scaling, 0, "HMCSkillExtras"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -136,8 +136,8 @@ class HatBlazer(Character):
             bl.append(Buff("HMCE4BuffBE", Pwr.BE_PERCENT, self.beStat * 0.15, Role.TEAM))
         return bl, dbl, al, dl, tl
     
-    def bestEnemy(self) -> int:
+    def bestEnemy(self, enemyID) -> int:
         if all(x == self.enemyStatus[0] for x in self.enemyStatus): # all enemies have the same toughness, choose default target
-            return self.defaultTarget
-        return self.enemyStatus.index(min(self.enemyStatus))
+            return self.defaultTarget if enemyID == -1 else enemyID
+        return self.enemyStatus.index(min(self.enemyStatus)) if enemyID == -1 else enemyID
     

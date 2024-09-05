@@ -21,10 +21,10 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     # =============== SETTINGS ===============
     # Enemy Settings
     enemyLevel = 95
-    enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies"
-    attackTypeRatio = atkRatio # from Misc.py
-    toughness = 100
     numEnemies = 2
+    enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies"
+    toughness = [100, 100] # make sure that the number of entries in this list is the same as "numEnemies"
+    attackTypeRatio = atkRatio # from Misc.py
     weaknesses = weak if weak else [Element.WIND, Element.FIRE, Element.IMAGINARY, Element.LIGHTNING]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
 
@@ -49,6 +49,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         playerTeam = [slot1, slot2, slot3, slot4]
     else:
         playerTeam = [s1, s2, s3, s4]
+        
     if outputLog:
         log_folder = "Output"
         teamInfo = "".join([char.name for char in playerTeam])
@@ -66,14 +67,8 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     simAV, spGain, spUsed, totalDMG = 0, 0, 0, 0
     
     # Summons
-    summons = []
-    for char in [p for p in playerTeam if p.hasSummon]:
-        if char.name == "Topaz":
-            summons.append(Numby(char.role, Role.NUMBY))
-        elif char.name == "Lingsha":
-            summons.append(Fuyuan(char.role, Role.FUYUAN))
-        elif char.name == "Firefly":
-            summons.append(deHenshin(char.role, Role.HENSHIN))
+    summons = addSummons([p for p in playerTeam if p.hasSummon])
+
     # Print Enemy Info
     eTeam = []
     for i in range(numEnemies):
@@ -83,7 +78,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         if (i + 1) < numEnemies:
             adjList.append(i + 1)
 
-        eTeam.append(Enemy(i, enemyLevel, enemySPD[i], toughness, actionOrder, weaknesses, adjList))
+        eTeam.append(Enemy(i, enemyLevel, enemySPD[i], toughness[i], actionOrder, weaknesses, adjList))
         
     logging.critical("Enemy Team:")
     for enemy in eTeam:
