@@ -9,12 +9,12 @@ from Characters.Robin import Robin
 from Characters.Jiaoqiu import Jiaoqiu
 from Characters.Aventurine import Aventurine
 from Characters.Moze import Moze
-from Characters.Bronya import Bronya
+from Characters.Sparkle import Sparkle
 from Characters.Hunt7th import Hunt7th
-from Characters.Topaz import Topaz
+from Characters.RuanMei import RuanMei
 
 cycleLimit = 5 # comment out this line if running the simulator from an external script
-log = True
+log = False
 
 def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, weak = None) -> str:
     
@@ -30,9 +30,9 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
     # Character Settings
     if all([a == None for a in [s1, s2, s3, s4]]):
-        slot1 = Feixiao(0, Role.DPS, 0, eidolon=2, rotation=["E"])
+        slot1 = Feixiao(0, Role.DPS, 0, eidolon=0, rotation=["E"])
         slot2 = Aventurine(1, Role.SUS, 0, eidolon=0)
-        slot3 = Robin(2, Role.SUP2, 0, eidolon=0)
+        slot3 = RuanMei(2, Role.SUP1, 0, eidolon=1)
         slot4 = Moze(3, Role.SUBDPS, 0, eidolon=6)
         
     # Simulation Settings   

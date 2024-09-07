@@ -27,11 +27,12 @@ class Firefly(Character):
     currEnergy = 120
     ultCost = 240
     currAV = 0
-    dmgDct = {AtkType.BSC: 0, AtkType.SKL: 0, AtkType.SBK: 0, AtkType.BRK: 0} # Adjust accordingly
+    dmgDct = {AtkType.BSC: 0, AtkType.SKL: 0, AtkType.SBK: 0, AtkType.BRK: 0, AtkType.TECH: 0} # Adjust accordingly
     
     # Unique Character Properties
     hasSpecial = True
     hasSummon = True
+    tech = True
     
     atkStat = 0
     beStat = 0
@@ -142,6 +143,9 @@ class Firefly(Character):
         bonusBE = max(0, (self.atkStat - 1800) // 10) * 0.008
         self.beStat = specialRes.attr2
         bl.append(Buff("FireflyBEConversion", Pwr.BE_PERCENT, bonusBE, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        if self.tech:
+            self.tech = False
+            tl.append(Turn(self.name, self.role, 0, Targeting.AOE, [AtkType.TECH], [self.element], [2.0, 0], [20 * 2/3, 0], 0, self.scaling, 0, "FireflyTech"))
         self.enemyStatus = specialRes.attr3
         return bl, dbl, al, dl, tl
     

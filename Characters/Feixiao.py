@@ -49,10 +49,10 @@ class Feixiao(Character):
     def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None, rotation = None):
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else VentureForthFeixiao(role) 
-        self.relic1 = r1 if r1 else WindSoaringYunli(role, 4) # same as yunli, ult also counts as FuA
+        self.relic1 = r1 if r1 else WindSoaringYunli(role, setType=4) # same as yunli, ult also counts as FuA
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else Duran(role)
-        self.relicStats = subs if subs else RelicStats(1, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT) # 0 spd default
+        self.relicStats = subs if subs else RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT) # 0 spd default
         self.rotation = rotation if rotation else ["E"]
         
     def equip(self):
