@@ -23,7 +23,6 @@ class SpTracker:
         self.spUsed -= num
         self.diSP = max(0, self.diSP + num)
         
-    
 class DmgTracker:
     def __init__(self) -> None:
         self.actionDMG = 0
