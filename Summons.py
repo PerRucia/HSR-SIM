@@ -16,25 +16,25 @@ class Summon:
     currEnergy = 0
     maxEnergy = 0
     
-    def __init__(self, ownerRole: str, role: str) -> None:
+    def __init__(self, ownerRole: Role, role: Role) -> None:
         self.ownerRole = ownerRole
         self.role = role
         self.priority = 0
         
     def isChar(self) -> bool:
         return True
-    
+
     def isSummon(self) -> bool:
         return True
-    
+
     def takeTurn(self) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay], list[Turn]]:
         return [], [], [], [], []
     
     def standardAVred(self, av: float):
-        self.currAV = max(0, self.currAV - av)
+        self.currAV = max(0.0, self.currAV - av)
         
     def reduceAV(self, reduceValue: float):
-        self.currAV = max(0, self.currAV - reduceValue)
+        self.currAV = max(0.0, self.currAV - reduceValue)
         
     def allyTurn(self, turn: Turn, result: Result)-> tuple[list[Buff], list[Debuff], list[Advance], list[Delay], list[Turn]]:
         return [], [], [], [], []
@@ -46,7 +46,7 @@ class Numby(Summon):
     currSPD = 80
     currAV = 10000 / currSPD
     
-    def __init__(self, ownerRole: str, role: str) -> None:
+    def __init__(self, ownerRole: Role, role: Role) -> None:
         super().__init__(ownerRole, role)
     
     def takeTurn(self) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay], list[Turn]]:
@@ -61,7 +61,7 @@ class Fuyuan(Summon):
     currSPD = 90
     currAV = 10000 / currSPD
     
-    def __init__(self, ownerRole: str, role: str) -> None:
+    def __init__(self, ownerRole: Role, role: Role) -> None:
         super().__init__(ownerRole, role)
     
     def takeTurn(self) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay], list[Turn]]:
@@ -69,14 +69,14 @@ class Fuyuan(Summon):
         tl.append(Turn(self.name, self.ownerRole, -1, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 0, self.scaling, 0, "FuyuanGoGo"))
         return bl, dbl, al, dl, tl
     
-class deHenshin(Summon):
+class DeHenshin(Summon):
     name = "de-Henshin!"
     element = Element.FIRE
     scaling = Scaling.ATK
     currSPD = 1
     currAV = 10000
     
-    def __init__(self, ownerRole: str, role: str) -> None:
+    def __init__(self, ownerRole: Role, role: Role) -> None:
         super().__init__(ownerRole, role)
         
     def takeTurn(self) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay], list[Turn]]:

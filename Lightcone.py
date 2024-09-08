@@ -1,4 +1,5 @@
 from equipment import Equipment
+from Misc import *
 
 class Lightcone(Equipment):
     name = "Lightcone"
@@ -7,7 +8,7 @@ class Lightcone(Equipment):
     baseATK = 0
     baseDEf = 0
     
-    def __init__(self, wearerRole: str, level: int):
+    def __init__(self, wearerRole: Role, level: int):
         super().__init__(wearerRole)
         self.level = level
         

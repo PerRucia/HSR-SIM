@@ -15,7 +15,7 @@ class Whereabouts(Lightcone):
     def __init__(self, wearerRole, level=1):
         super().__init__(wearerRole, level)
     
-    def equip(self, enemyID=-1):
+    def equip(self):
         bl, dbl, al, dl = super().equip(enemyID)
         beBuff = self.level * 0.1 + 0.5
         bl.append(Buff("WhereaboutsBE", Pwr.BE_PERCENT, beBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))

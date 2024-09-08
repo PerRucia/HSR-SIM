@@ -10,10 +10,10 @@ from Result import *
 from Misc import *
 
 class Equipment:
-    def __init__(self, wearerRole: Scaling):
+    def __init__(self, wearerRole: Role):
         self.wearerRole = wearerRole
     
-    def equip(self, enemyID=-1): # init function to add base buffs to wearer
+    def equip(self): # init function to add base buffs to wearer
         return [], [], [], []
     
     def useSkl(self, enemyID=-1):

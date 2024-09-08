@@ -13,7 +13,7 @@ class Mirror(Lightcone):
     def __init__(self, wearerRole, level = 1):
         super().__init__(wearerRole, level)
     
-    def equip(self, enemyID=-1):
+    def equip(self):
         bl, dbl, al, dl = super().equip(enemyID)
         be = self.level * 0.1 + 0.5
         bl.append(Buff("MirrorBE", Pwr.BE_PERCENT, be, self.wearerRole))

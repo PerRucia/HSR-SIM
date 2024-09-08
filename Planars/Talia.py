@@ -10,7 +10,7 @@ class Talia(Planar):
         super().__init__(wearerRole)
         self.userSPD = userSPD
         
-    def equip(self, enemyID=-1):
+    def equip(self):
         bl, dbl, al, dl = super().equip(enemyID)
         bl.append(Buff("TaliaBE", Pwr.BE_PERCENT, 0.16, self.wearerRole))
         if self.userSPD >= 145:

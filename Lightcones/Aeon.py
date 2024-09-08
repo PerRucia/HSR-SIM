@@ -19,19 +19,19 @@ class Aeon(Lightcone):
         buffList.append(Buff("AeonDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
-    def useUlt(self, enemyID):
+    def useUlt(self, enemyID=-1):
         bl, dbl, al, dl = super().useUlt(enemyID)
         atkBuff = self.level * 0.02 + 0.06
         bl.append(Buff("AeonATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, [AtkType.ALL], 1, 4, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
-    def useSkl(self, enemyID):
+    def useSkl(self, enemyID=-1):
         bl, dbl, al, dl = super().useSkl(enemyID)
         atkBuff = self.level * 0.02 + 0.06
         bl.append(Buff("AeonATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, [AtkType.ALL], 1, 4, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
-    def useBsc(self, enemyID):
+    def useBsc(self, enemyID=-1):
         bl, dbl, al, dl = super().useBsc(enemyID)
         atkBuff = self.level * 0.02 + 0.06
         bl.append(Buff("AeonATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, [AtkType.ALL], 1, 4, Role.SELF, TickDown.PERM))

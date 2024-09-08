@@ -33,7 +33,7 @@ class Baptism(Lightcone):
         bl.append(Buff("BaptismDebuffCD", Pwr.CD_PERCENT, cdBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl
     
-    def useUlt(self, enemyID):
+    def useUlt(self, enemyID=-1):
         bl, dbl, al, dl = super().useUlt(enemyID)
         cdBuff = (self.level * 0.01 + 0.07) * self.targetDebuffs
         bl.append(Buff("BaptismDebuffCD", Pwr.CD_PERCENT, cdBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))

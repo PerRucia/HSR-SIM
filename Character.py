@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 class Character:
     # Standard Character Properties
     name = "Character"
-    path = "PATH"
-    element = "ELE"
+    path = Path.HUNT
+    element = Element.LIGHTNING
     scaling = "ATK"
     baseHP = 0
     baseATK = 0
@@ -34,12 +34,16 @@ class Character:
     ults = 0
     fuas = 0
     turn = 0
-    
+    lightcone = None
+    relic1 = None
+    relic2 = None
+    planar = None
+
     # Unique Character Properties
     
     # Relic Settings
     
-    def __init__(self, pos: int, role: str, defaultTarget: int, eidolon: int) -> None:
+    def __init__(self, pos: int, role: Role, defaultTarget: int, eidolon: int) -> None:
         self.pos = pos
         self.role = role
         self.priority = 0
@@ -50,7 +54,7 @@ class Character:
     def __str__(self) -> str:
         res = f"{self.name} E{self.eidolon} | {self.element.name}-{self.path.name} | {self.role.name} | POS:{self.pos}\n"
         res += f"{self.lightcone}\n"
-        res += f"{self.relic1}" + (f"| {self.relic2}\n" if self.relic2 != None else "\n")
+        res += f"{self.relic1}" + (f"| {self.relic2}\n" if self.relic2 is not None else "\n")
         res += f"{self.planar}"
         return res
         
@@ -95,7 +99,7 @@ class Character:
     def allyTurn(self, turn: Turn, result: Result):
         return *self.parseEquipment("ALLY", turn=turn, result=result), []
         
-    def parseEquipment(self, actionType: str, turn=None, result=None, special=None, enemyID=-1):
+    def parseEquipment(self, actionType, turn=None, result=None, special=None, enemyID=-1):
         buffList, debuffList, advList, delayList = [], [], [], []
         equipmentList = [self.lightcone, self.relic1, self.planar]
         if self.relic2:

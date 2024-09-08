@@ -43,7 +43,7 @@ class Moze(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, rotation = None) -> None:
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Swordplay(role)
         self.relic1 = r1 if r1 else DukeMoze(role, 4)

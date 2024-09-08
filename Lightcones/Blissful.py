@@ -23,7 +23,7 @@ class Blissful(Lightcone):
         buffList.append(Buff("BlissfulDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, [AtkType.FUA], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
-    def useFua(self, enemyID):
+    def useFua(self, enemyID=-1):
         bl, dbl, al, dl = super().useFua(enemyID)
         cdBuff = self.level * 0.02 + 0.10
         dbl.append(Debuff(f"BlissfulTame{self.wearerRole.name}", self.wearerRole, Pwr.CD_PERCENT, cdBuff, self.defaultTarget, [AtkType.ALL], 1000, 2, False, [0, 0], False))

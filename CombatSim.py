@@ -30,7 +30,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
 
     # Character Settings
-    if all([a == None for a in [s1, s2, s3, s4]]):
+    if all([a is None for a in [s1, s2, s3, s4]]):
         slot1 = Feixiao(0, Role.DPS, 0, eidolon=0, rotation=["E"])
         slot2 = Aventurine(1, Role.SUS, 0, eidolon=0)
         slot3 = RuanMei(2, Role.SUP1, 0, eidolon=1)

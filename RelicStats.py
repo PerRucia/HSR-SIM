@@ -19,7 +19,7 @@ class RelicStats:
         self.sphere = sphereMain
         self.rope = ropeMain
         
-    def findMains(self, query: str):
+    def findMains(self, query: Pwr):
         return sum([1 for item in [self.body, self.boots, self.sphere, self.rope] if item == query])
     
     def getScalingValue(self, scaling: str) -> tuple[float, float]: # returns Scaling%, ScalingFlat

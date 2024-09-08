@@ -44,7 +44,7 @@ class Hunt7th(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: str, defaultTarget: int = -1, masterRole = Role.DPS, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, rotation = None) -> None:
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, masterRole = Role.DPS, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Swordplay(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)

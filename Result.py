@@ -1,5 +1,7 @@
+from Misc import *
+
 class Result:
-    def __init__(self, charName: str, charRole: str, atkType: list, eleType: list, broken: bool, turnDmg: float, wbDmg: float, errGain: float, turnName: str, enemiesHit: list[int], preHitStatus: list[bool]):
+    def __init__(self, charName: str, charRole: Role, atkType: list, eleType: list, broken: list, turnDmg: float, wbDmg: float, errGain: float, turnName: str, enemiesHit: list[int], preHitStatus: list[bool]):
         self.charName = charName
         self.charRole = charRole
         self.atkType = atkType

@@ -46,7 +46,7 @@ class Feixiao(Character):
     # Default = RelicStats(0, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     # Bronya Tuning = RelicStats(3, 3, 0, 3, 3, 0, 4, 4, 4, 4, 6, 18, "CR%", "SPD", Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     
-    def __init__(self, pos: int, role: str, defaultTarget: int= -1, eidolon: int = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None, rotation = None):
+    def __init__(self, pos: int, role: Role, defaultTarget: int= -1, eidolon: int = 0, lc = None, r1 = None, r2 = None, pl = None, subs = None, rotation = None):
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else VentureForthFeixiao(role) 
         self.relic1 = r1 if r1 else WindSoaringYunli(role, setType=4) # same as yunli, ult also counts as FuA

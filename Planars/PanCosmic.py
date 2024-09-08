@@ -9,7 +9,7 @@ class PanCosmic(Planar):
     def __init__(self, wearerRole: str):
         super().__init__(wearerRole)
         
-    def equip(self, enemyID=-1):
+    def equip(self):
         bl, dbl, al, dl = super().equip(enemyID)
         bl.append(Buff("PanCosmicEHR", Pwr.EHR_PERCENT, 0.10, self.wearerRole))
         return bl, dbl, al, dl

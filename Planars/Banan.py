@@ -10,7 +10,7 @@ class Banan(Planar):
         super().__init__(wearerRole)
         self.summon = summon
         
-    def equip(self, enemyID=-1):
+    def equip(self):
         bl, dbl, al, dl = super().equip(enemyID)
         bl.append(Buff("BananCD", Pwr.CD_PERCENT, 0.16, self.wearerRole))
         if self.summon:

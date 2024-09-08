@@ -10,7 +10,7 @@ class Belobog(Planar):
         super().__init__(wearerRole)
         self.userEHR = userEHR
         
-    def equip(self, enemyID=-1):
+    def equip(self):
         bl, dbl, al, dl = super().equip(enemyID)
         bl.append(Buff("BelobogDEF", Pwr.DEF_PERCENT, 0.15, self.wearerRole))
         if self.userEHR >= 0.5:

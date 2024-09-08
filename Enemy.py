@@ -57,7 +57,7 @@ class Enemy:
         return False
     
     def reduceAV(self, reduceValue: float):
-        self.currAV = max(0, self.currAV - reduceValue)
+        self.currAV = max(0.0, self.currAV - reduceValue)
         
     def hasAdj(self) -> bool:
         return len(self.adjacent) > 0
@@ -66,7 +66,7 @@ class Enemy:
         return 0 if element in self.weakness else 0.2
     
     def standardAVred(self, av: float):
-        self.currAV = max(0, self.currAV - av)
+        self.currAV = max(0.0, self.currAV - av)
         
     def addDebuffDMG(self, dmg: float):
         self.debuffDMG = self.debuffDMG + dmg

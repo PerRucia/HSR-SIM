@@ -16,7 +16,7 @@ class Btbio(Lightcone):
         super().__init__(wearerRole, level)
         self.targetRole = targetRole
     
-    def equip(self, enemyID=-1):
+    def equip(self):
         bl, dbl, al, dl = super().equip(enemyID)
         bl.append(Buff("BtbioERR", Pwr.ERR_PERCENT, self.level * 0.02 + 0.8, self.wearerRole))
         return bl, dbl, al, dl

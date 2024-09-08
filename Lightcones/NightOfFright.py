@@ -13,7 +13,7 @@ class Night(Lightcone):
     def __init__(self, wearerRole, level = 5):
         super().__init__(wearerRole, level)
     
-    def equip(self, enemyID=-1):
+    def equip(self):
         bl, dbl, al, dl = super().equip(enemyID)
         err = self.level * 0.02 + 0.10
         bl.append(Buff("NightERR", Pwr.ERR_PERCENT, err, self.wearerRole))
@@ -24,7 +24,7 @@ class NightHuoHuo(Night):
         super().__init__(wearerRole, level)
         self.uptime = uptime
     
-    def equip(self, enemyID=-1):
+    def equip(self):
         bl, dbl, al, dl = super().equip(enemyID)
         atk = (self.level * 0.02 + 0.10) * self.uptime
         bl.append(Buff("NightATK", Pwr.ERR_PERCENT, atk, self.wearerRole))

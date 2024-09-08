@@ -5,7 +5,7 @@ from Misc import *
 
 class Lushaka(Planar):
     name = "Lushaka, the Sunken Seas"
-    def __init__(self, wearerRole: str, slot1Role = Role.DPS):
+    def __init__(self, wearerRole: Role, slot1Role = Role.DPS):
         super().__init__(wearerRole)
         self.slot1Role = slot1Role
         

@@ -1,7 +1,7 @@
 from Misc import *
 
 class Buff:
-    def __init__(self, name: str, buffType: str, val: float, target: Role, atkType: list = [AtkType.ALL], turns: int = 1, stackLimit: int = 1, tickDown: Role = Role.SELF, tdType: TickDown = TickDown.PERM, reqBroken: bool = False):
+    def __init__(self, name: str, buffType: Pwr, val: float, target: Role, atkType: list = [AtkType.ALL], turns: int = 1, stackLimit: int = 1, tickDown: Role = Role.SELF, tdType: TickDown = TickDown.PERM, reqBroken: bool = False):
         self.name = name
         self.buffType = buffType
         self.val = val
@@ -43,7 +43,7 @@ class Buff:
         self.val = val
         
 class Debuff:
-    def __init__(self, name: str, charRole: Role, debuffType: str, val: float, target: list, atkType: list, turns: int, stackLimit: int = 1, isDot: bool = False, dotSplit: list[float] = [0, 0], isBlast: bool = False):
+    def __init__(self, name: str, charRole: Role, debuffType: Pwr, val: float, target, atkType: list, turns: int, stackLimit: int = 1, isDot: bool = False, dotSplit: list[float] = [0, 0], isBlast: bool = False):
         self.name = name
         self.charRole = charRole
         self.debuffType = debuffType

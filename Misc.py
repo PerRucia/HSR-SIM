@@ -61,7 +61,7 @@ class Element(Enum):
     
 class Path(Enum):
     HUNT = 3
-    ERUDTION = 3
+    ERUDITION = 3
     HARMONY = 4
     NIHILITY = 4
     ABUNDANCE = 4

@@ -8,7 +8,7 @@
 from Misc import *
 
 class Turn:
-    def __init__(self, charName: str, charRole: str, targetID: int, targeting: str, atkType: list, element: list, 
+    def __init__(self, charName: str, charRole: Role, targetID: int, targeting: Targeting, atkType: list, element: list,
                  dmgSplit: list, brkSplit: list, errGain: float, scaling: Scaling, spChange: int, moveName: str,
                  omniBreak: bool = False, omniBreakMod: float = 1.0):
         self.charName = charName

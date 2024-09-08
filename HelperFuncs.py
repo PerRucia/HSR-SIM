@@ -347,7 +347,7 @@ def addSummons(playerTeam: list[Character]) -> list:
         elif char.name == "Lingsha":
             summons.append(Fuyuan(char.role, Role.FUYUAN))
         elif char.name == "Firefly":
-            summons.append(deHenshin(char.role, Role.HENSHIN))
+            summons.append(DeHenshin(char.role, Role.HENSHIN))
     return summons
         
 def handleAdditions(playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], advList: list[Advance], delayList: list[Delay], 
