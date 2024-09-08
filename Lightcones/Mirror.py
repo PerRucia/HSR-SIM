@@ -1,7 +1,7 @@
-from Lightcone import Lightcone
 from Buff import Buff
-from Misc import *
 from Delay import *
+from Lightcone import Lightcone
+
 
 class Mirror(Lightcone):
     name = "Past Self in Mirror"
@@ -14,7 +14,7 @@ class Mirror(Lightcone):
         super().__init__(wearerRole, level)
     
     def equip(self):
-        bl, dbl, al, dl = super().equip(enemyID)
+        bl, dbl, al, dl = super().equip()
         be = self.level * 0.1 + 0.5
         bl.append(Buff("MirrorBE", Pwr.BE_PERCENT, be, self.wearerRole))
         bl.append(Buff("MirrorERR", Pwr.ERR_T, self.level * 0.025 + 0.075, Role.ALL))

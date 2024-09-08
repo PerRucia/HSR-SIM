@@ -18,7 +18,7 @@ class Journey(Lightcone):
         buffList.append(Buff("JourneyATK", Pwr.ATK_PERCENT, atkBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
-    def useUlt(self, enemyID):
+    def useUlt(self, enemyID=-1):
         buffList, debuffList, advList, delayList = super().useUlt(enemyID)
         dmgBuff = self.level * 0.03 + 0.15
         buffList.append(Buff("JourneyUltDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.END))

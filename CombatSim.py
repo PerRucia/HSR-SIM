@@ -1,20 +1,12 @@
-import logging
-from Enemy import Enemy
-from Summons import *
+from Characters.Aventurine import Aventurine
+from Characters.Feixiao import Feixiao
+from Characters.Moze import Moze
+from Characters.RuanMei import RuanMei
 from HelperFuncs import *
 from Misc import *
 from Trackers import *
 
-from Characters.Feixiao import Feixiao
-from Characters.Robin import Robin
-from Characters.Jiaoqiu import Jiaoqiu
-from Characters.Aventurine import Aventurine
-from Characters.Moze import Moze
-from Characters.Sparkle import Sparkle
-from Characters.Hunt7th import Hunt7th
-from Characters.RuanMei import RuanMei
-
-cycleLimit = 5 # comment out this line if running the simulator from an external script
+cycles = 5 # comment out this line if running the simulator from an external script
 log = True
 
 def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, weak = None) -> str:
@@ -232,7 +224,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     charDMG = 0
     dmgList = []
     for char in playerTeam:
-        res, currCharDMG = char.gettotalDMG()
+        res, currCharDMG = char.getTotalDMG()
         dmgList.append(currCharDMG)
         charDMG += currCharDMG
     dpavList = [i / avLimit for i in dmgList]
@@ -251,7 +243,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     logging.critical(f"{res}\n")
 
     for char in playerTeam:
-        res, charDMG = char.gettotalDMG()
+        res, charDMG = char.getTotalDMG()
         logging.critical(f"{char.name} > Total DMG: {charDMG:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV if char.currAV < 500 else char.charge:.3f} | Excess Energy: {char.currEnergy:.3f}")
         logging.critical(res)
     
@@ -259,4 +251,4 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
 if __name__ == "__main__":
     # Start the simulator with logging output to a file
-    print(startSimulator(cycleLimit=cycleLimit, outputLog=log))
+    print(startSimulator(cycleLimit=cycles, outputLog=log))

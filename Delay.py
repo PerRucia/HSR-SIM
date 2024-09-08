@@ -1,5 +1,7 @@
+from Misc import *
+
 class Delay:
-    def __init__(self, name: str, delayPercent: str, target, reqBroken: bool, stackable: bool):
+    def __init__(self, name: str, delayPercent: float, target, reqBroken: bool, stackable: bool):
         self.name = name
         self.delayPercent = delayPercent
         self.target = target
@@ -10,7 +12,7 @@ class Delay:
         return f"{self.name} | Delay%: {self.delayPercent} | Target: {self.target} | ReqBroken: {self.reqBroken} | Stackable: {self.stackable}"
     
 class Advance:
-    def __init__(self, name: str, targetRole: str, advPercent: float):
+    def __init__(self, name: str, targetRole: Role, advPercent: float):
         self.name = name
         self.targetRole = targetRole
         self.advPercent = advPercent

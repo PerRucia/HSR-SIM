@@ -1,7 +1,6 @@
-from Lightcone import Lightcone
-from Buff import Buff
-from Misc import *
 from Delay import *
+from Lightcone import Lightcone
+
 
 class Dance3(Lightcone):
     name = "Dance! Dance! Dance!"
@@ -13,7 +12,7 @@ class Dance3(Lightcone):
     def __init__(self, wearerRole, level = 5):
         super().__init__(wearerRole, level)
     
-    def useUlt(self, enemyID):
+    def useUlt(self, enemyID=-1):
         bl, dbl, al, dl = super().useUlt(enemyID)
         adv = self.level * 0.02 + 0.14
         al.append(Advance(f"Dance3{self.wearerRole}", Role.ALL, adv))

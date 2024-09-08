@@ -1,7 +1,7 @@
-from Lightcone import Lightcone
 from Buff import Buff
-from Misc import *
 from Delay import *
+from Lightcone import Lightcone
+
 
 class Night(Lightcone):
     name = "Night of Fright"
@@ -14,7 +14,7 @@ class Night(Lightcone):
         super().__init__(wearerRole, level)
     
     def equip(self):
-        bl, dbl, al, dl = super().equip(enemyID)
+        bl, dbl, al, dl = super().equip()
         err = self.level * 0.02 + 0.10
         bl.append(Buff("NightERR", Pwr.ERR_PERCENT, err, self.wearerRole))
         return bl, dbl, al, dl
@@ -25,7 +25,7 @@ class NightHuoHuo(Night):
         self.uptime = uptime
     
     def equip(self):
-        bl, dbl, al, dl = super().equip(enemyID)
+        bl, dbl, al, dl = super().equip()
         atk = (self.level * 0.02 + 0.10) * self.uptime
         bl.append(Buff("NightATK", Pwr.ERR_PERCENT, atk, self.wearerRole))
         return bl, dbl, al, dl

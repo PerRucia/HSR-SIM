@@ -18,7 +18,7 @@ class Nightglow(Lightcone):
         buffList.append(Buff("NightglowERR", Pwr.ERR_PERCENT, err, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
-    def useUlt(self, enemyID):
+    def useUlt(self, enemyID=-1):
         buffList, debuffList, advList, delayList = super().useUlt(enemyID)
         atk = self.level * 0.12 + 0.36
         dmg = self.level * 0.04 + 0.20

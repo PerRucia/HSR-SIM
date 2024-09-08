@@ -1,7 +1,7 @@
-from Lightcone import Lightcone
 from Buff import Buff
-from Misc import *
 from Delay import *
+from Lightcone import Lightcone
+
 
 class Earthly(Lightcone):
     name = "Earthly Escapade"
@@ -14,7 +14,7 @@ class Earthly(Lightcone):
         super().__init__(wearerRole, level)
     
     def equip(self):
-        bl, dbl, al, dl = super().equip(enemyID)
+        bl, dbl, al, dl = super().equip()
         cd = self.level * 0.07 + 0.25
         teamCR = self.level * 0.01 + 0.09
         teamCD = self.level * 0.07 + 0.21

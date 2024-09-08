@@ -18,7 +18,7 @@ class VentureForth(Lightcone):
         buffList.append(Buff("VentureCR", Pwr.CR_PERCENT, crBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
-    def useFua(self, enemyID):
+    def useFua(self, enemyID=-1):
         bl, dbl, al, dl = super().useFua(enemyID)
         shredBuff = self.level * 0.03 + 0.24
         bl.append(Buff("VentureSHRED", Pwr.SHRED, shredBuff, self.wearerRole, [AtkType.ULT], 2, 2, Role.SELF, TickDown.END))
@@ -40,7 +40,7 @@ class VentureForthFeixiao(VentureForth):
         bl.append(Buff("VentureSHRED", Pwr.SHRED, shredBuff, self.wearerRole, [AtkType.ALL], 3, 2, Role.SELF, TickDown.END))
         return bl, dbl, al, dl
     
-    def useUlt(self, enemyID):
+    def useUlt(self, enemyID=-1):
         bl, dbl, al, dl = super().useUlt(enemyID)
         shredBuff = self.level * 0.03 + 0.24
         bl.append(Buff("VentureSHRED", Pwr.SHRED, shredBuff, self.wearerRole, [AtkType.ULT], 2, 2, Role.SELF, TickDown.END))

@@ -1,11 +1,11 @@
-from Lightcone import Lightcone
 from Buff import *
-from Result import Result
+from Lightcone import Lightcone
 from Misc import *
+
 
 class Breakfast(Lightcone):
     name = "The Seriousness of Breakfast"
-    path = Path.ERUDTION
+    path = Path.ERUDITION
     baseHP = 846.7
     baseATK = 476.28
     baseDEF = 396.90

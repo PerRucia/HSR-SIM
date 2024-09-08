@@ -6,11 +6,11 @@ from Misc import *
 
 class Celestial(Planar):
     name = "Celestial Differentiator"
-    def __init__(self, wearerRole: str):
+    def __init__(self, wearerRole: Role):
         super().__init__(wearerRole)
         
     def equip(self):
-        bl, dbl, al, dl = super().equip(enemyID)
+        bl, dbl, al, dl = super().equip()
         bl.append(Buff("CelestialCD", Pwr.CD_PERCENT, 0.16, self.wearerRole))
         bl.append(Buff("CelestialCR", Pwr.CR_PERCENT, 0.60, self.wearerRole))
         return bl, dbl, al, dl

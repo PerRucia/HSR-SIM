@@ -1,15 +1,15 @@
-from Character import Character
-from RelicStats import RelicStats
-from Lightcones.Whereabouts import WhereaboutsFF
-from Relics.IronCavalry import CavalryFirefly
-from Planars.Kalpagni import KalpagniFirefly
+import logging
+
 from Buff import *
+from Character import Character
+from Delay import *
+from Lightcones.Whereabouts import WhereaboutsFF
+from Planars.Kalpagni import KalpagniFirefly
+from RelicStats import RelicStats
+from Relics.IronCavalry import CavalryFirefly
 from Result import *
 from Result import Special
 from Turn import Turn
-from Misc import *
-from Delay import *
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +51,7 @@ class Firefly(Character):
         self.planar = pl if pl else KalpagniFirefly(role)
         self.relicStats = subs if subs else RelicStats(7, 4, 0, 4, 4, 0, 4, 27, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.BE_PERCENT)
         self.rotation = rotation if rotation else ["E"]
+        self.enemyStatus = []
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

@@ -1,10 +1,10 @@
-'''
+"""
 Returns 4 lists:
 - list of buffs added
 - list of debuffs added
 - list of adv% adjustments
 - list of enemy debuffs to be applied
-'''
+"""
 from Turn import *
 from Result import *
 from Misc import *
@@ -36,14 +36,17 @@ class Equipment:
     
     def ownTurn(self, turn: Turn, result: Result):
         return [], [], [], []
-    
-    def specialStart(self, special: Special):
+
+    @staticmethod
+    def specialStart(special: Special):
         return [], [], [], []
-    
-    def specialEnd(self, special: Special):
+
+    @staticmethod
+    def specialEnd(special: Special):
         return [], [], [], []
-    
-    def extendLists(self, bl: list, dbl: list, al: list, dl: list, nbl: list, ndbl: list, nal: list, ndl: list):
+
+    @staticmethod
+    def extendLists(bl: list, dbl: list, al: list, dl: list, nbl: list, ndbl: list, nal: list, ndl: list):
         bl.extend(nbl)
         dbl.extend(ndbl)
         al.extend(nal)

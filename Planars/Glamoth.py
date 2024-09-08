@@ -1,13 +1,12 @@
 from Buff import Buff
-from Planar import Planar
-from Result import Result
-from Turn import Turn
 from Misc import *
+from Planar import Planar
+
 
 class Glamoth(Planar):
     name = "Firmament Frontline: Glamoth"
 
-    def __init__(self, wearerRole: str, wearerSPD: int = 120):
+    def __init__(self, wearerRole: Role, wearerSPD: int = 120):
         super().__init__(wearerRole)
         self.wearerSPD = wearerSPD
         

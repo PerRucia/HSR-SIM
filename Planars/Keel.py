@@ -4,7 +4,7 @@ from Misc import *
 
 class Keel(Planar):
     name = "Broken Keel"
-    def __init__(self, wearerRole: str):
+    def __init__(self, wearerRole: Role):
         super().__init__(wearerRole)
         
     def equip(self):

@@ -2,6 +2,8 @@ from Lightcone import Lightcone
 from Buff import Buff
 from Misc import *
 
+
+# noinspection PyDefaultArgument
 class PoisedToBloom(Lightcone):
     name = "Poised to Bloom"
     path = Path.HARMONY

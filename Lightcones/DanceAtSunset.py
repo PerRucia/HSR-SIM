@@ -18,7 +18,7 @@ class Sunset(Lightcone):
         buffList.append(Buff("SunsetCD", Pwr.CD_PERCENT, cdBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
-    def useUlt(self, enemyID):
+    def useUlt(self, enemyID=-1):
         buffList, debuffList, advList, delayList = super().useUlt(enemyID)
         dmgBuff = self.level * 0.06 + 0.3
         buffList.append(Buff("SunsetDMG", Pwr.DMG_PERCENT, dmgBuff, self.wearerRole, [AtkType.ULT, AtkType.FUA], 2, 2, Role.SELF, TickDown.END))

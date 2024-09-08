@@ -49,11 +49,13 @@ class Enemy:
         res = self.turn
         self.turn = self.turn + 1
         return self.actionOrder[res % len(self.actionOrder)]
-    
-    def isChar(self) -> bool:
+
+    @staticmethod
+    def isChar() -> bool:
         return False
-    
-    def isSummon(self) -> bool:
+
+    @staticmethod
+    def isSummon() -> bool:
         return False
     
     def reduceAV(self, reduceValue: float):

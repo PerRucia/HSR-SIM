@@ -1,9 +1,8 @@
-from Relic import Relic
 from Buff import Buff
-from Delay import *
+from Relic import Relic
 from Result import Result
-from Misc import *
 from Turn import *
+
 
 class Thief(Relic):
     name = "Thief of Shooting Meteor"

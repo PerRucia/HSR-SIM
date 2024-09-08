@@ -8,7 +8,7 @@ class Duran(Planar):
     name = "Duran, Dynasty of Running Wolves"
     procs = 0
     appliedCDBuff = False
-    def __init__(self, wearerRole: str):
+    def __init__(self, wearerRole: Role):
         super().__init__(wearerRole)
         
     def allyTurn(self, turn: Turn, result: Result):

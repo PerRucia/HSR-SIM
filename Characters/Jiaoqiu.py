@@ -1,17 +1,15 @@
+import logging
+
+from Buff import *
 from Character import Character
-from Lightcones.Resolution import ResolutionJQ
+from Delay import *
 from Lightcones.Spring import Spring
-from Relics.Messenger import Messenger
-from Relics.Longevous import Longevous
 from Planars.Vonwacq import Vonwacq
 from RelicStats import RelicStats
-from Buff import *
-from Result import *
+from Relics.Longevous import Longevous
+from Relics.Messenger import Messenger
 from Result import Special
 from Turn import Turn
-from Misc import *
-from Delay import *
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +137,7 @@ class Jiaoqiu(Character):
         bl.append(Buff(self.name, Pwr.ATK_PERCENT, bonusATKStacks * 0.6, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if specialRes.attr3:
             self.fieldCount = max(0, self.fieldCount - 1) # tick down field stacks at start of turn
-        if self.fieldCount == 0: # dispell debuff once field is removed
+        if self.fieldCount == 0: # dispel debuff once field is removed
             dbl.append(Debuff("JQUltVuln", self.role, Pwr.VULN, 0.0, Role.ALL, [AtkType.ULT], 1000, 1, False, [0, 0], False))
         return bl, dbl, al, dl, tl
     

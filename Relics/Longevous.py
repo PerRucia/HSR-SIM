@@ -13,7 +13,7 @@ class Longevous(Relic):
         buffList.append(Buff("LongevousHP", Pwr.HP_PERCENT, 0.12, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
-    def useHit(self, enemyID):
+    def useHit(self, enemyID=-1):
         bl, dbl, al, dl = super().useHit(enemyID)
         if self.setType == 4:
             bl.append(Buff("LongevousCR", Pwr.CR_PERCENT, 0.08, self.wearerRole, [AtkType.ALL], 2, 2, Role.SELF, TickDown.END))

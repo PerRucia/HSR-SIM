@@ -1,18 +1,14 @@
+import logging
+
+from Buff import *
 from Character import Character
 from Lightcones.VentureForth import VentureForthFeixiao
-from Lightcones.Cruising import Cruising
-from Lightcones.Blissful import BlissfulFeixiao
-from Lightcones.Swordplay import Swordplay
-from Relics.WindSoaring import WindSoaringYunli
+from Misc import *
 from Planars.Duran import Duran
-from Planars.NoSet import NoSet
 from RelicStats import RelicStats
-from Buff import *
-from Result import *
+from Relics.WindSoaring import WindSoaringYunli
 from Result import Result, Special
 from Turn import Turn
-from Misc import *
-import logging
 
 logger = logging.getLogger(__name__)
     
@@ -68,7 +64,7 @@ class Feixiao(Character):
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         basicMul = 1.1 if self.eidolon >= 3 else 1.0
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [basicMul, 0], [10, 0], 0.5, self.scaling, 1, "FexiaoBasic"))
+        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [basicMul, 0], [10, 0], 0.5, self.scaling, 1, "FeixiaoBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -143,7 +139,7 @@ class Feixiao(Character):
             tl.append(Turn(self.name, self.role, self.defaultTarget, Targeting.AOE, [AtkType.TECH], [self.element], [2.0, 0], [20, 0], 1.5, self.scaling, 0, "FeixiaoTech"))
         elif specialRes.specialName == "Feixiao":
             if self.fuaTrigger and specialRes.attr2 and not self.firstTurn:
-                tl.append(Turn(self.name, self.role, self.defaultTarget, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 0.5, self.scaling, 0, "FeixiaPityEnergy"))
+                tl.append(Turn(self.name, self.role, self.defaultTarget, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 0.5, self.scaling, 0, "FeixiaoPityEnergy"))
         self.canUlt = specialRes.attr1
         return bl, dbl, al, dl ,tl
     

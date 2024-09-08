@@ -1,7 +1,7 @@
-from Relic import Relic
 from Buff import Buff
-from Delay import *
 from Misc import *
+from Relic import Relic
+
 
 class Glacial(Relic):
     name = "Hunter of Glacial Forest"
@@ -13,7 +13,7 @@ class Glacial(Relic):
     def equip(self):
         bl, debuffList, advList, delayList = super().equip()
         if self.wearerEle == Element.ICE:
-            bl.append(Buff("GalcialDMG", Pwr.DMG_PERCENT, 0.10, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("GlacialDMG", Pwr.DMG_PERCENT, 0.10, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, debuffList, advList, delayList
     
     def useUlt(self, enemyID=-1):

@@ -1,13 +1,12 @@
 from Buff import Buff
-from Planar import Planar
-from Result import Result
-from Turn import Turn
 from Misc import *
+from Planar import Planar
+
 
 class Rutilant(Planar):
     name = "Rutilant Arena"
 
-    def __init__(self, wearerRole: str):
+    def __init__(self, wearerRole: Role):
         super().__init__(wearerRole)
         
     def equip(self):

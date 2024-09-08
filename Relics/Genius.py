@@ -1,8 +1,7 @@
-from Relic import Relic
 from Buff import Buff
-from Delay import *
 from Misc import *
-from Result import Special
+from Relic import Relic
+
 
 class Genius(Relic):
     name = "Genius of Brilliant Stars"
@@ -20,5 +19,5 @@ class Genius(Relic):
             shred = 0.1
             if self.quaWeak:
                 shred = 0.2
-            bl.append(Buff("GeniusSHRED", Pwr.SHRED, shred, self.wearerEle, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("GeniusSHRED", Pwr.SHRED, shred, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, debuffList, advList, delayList

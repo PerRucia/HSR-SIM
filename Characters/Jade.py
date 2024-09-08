@@ -1,21 +1,21 @@
-from Character import Character
-from RelicStats import RelicStats
-from Lightcones.Breakfast import Breakfast
-from Relics.Genius import Genius
-from Planars.Duran import Duran
+import logging
+
 from Buff import *
+from Character import Character
+from Delay import *
+from Lightcones.Breakfast import Breakfast
+from Planars.Duran import Duran
+from RelicStats import RelicStats
+from Relics.Genius import Genius
 from Result import *
 from Turn import Turn
-from Misc import *
-from Delay import *
-import logging
 
 logger = logging.getLogger(__name__)
 
 class Jade(Character):
     # Standard Character Settings
     name = "Jade"
-    path = Path.ERUDTION
+    path = Path.ERUDITION
     element = Element.QUANTUM 
     scaling = Scaling.ATK
     baseHP = 1089.6

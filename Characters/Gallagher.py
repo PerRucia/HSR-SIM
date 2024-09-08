@@ -1,17 +1,15 @@
-from Character import Character
-from RelicStats import RelicStats
-from Lightcones.Multi import Multi
-from Relics.Thief import Thief
-from Relics.Messenger import Messenger
-from Planars.Keel import Keel
-from Planars.Kalpagni import KalpagniGallagher
+import logging
+
 from Buff import *
-from Result import *
+from Character import Character
+from Delay import *
+from Lightcones.Multi import Multi
+from Planars.Kalpagni import KalpagniGallagher
+from RelicStats import RelicStats
+from Relics.Messenger import Messenger
+from Relics.Thief import Thief
 from Result import Special
 from Turn import Turn
-from Misc import *
-from Delay import *
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +48,7 @@ class Gallagher(Character):
         self.relicStats = subs if subs else RelicStats(11, 4, 0, 4, 4, 0, 4, 13, 4, 4, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.HP_PERCENT, Pwr.ERR_PERCENT)
         self.breakTeam = breakTeam
         self.rotation = rotation if rotation else ["A"]
+        self.enemyStatus = []
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

@@ -1,4 +1,4 @@
-# src: Who is taking the turn DPS/SDPS/SUP/SUS
+# src: Who is taking the turn DPS/SUBDPS/SUP/SUS
 # targetID: Enemy ID to be attacked, middle enemy if it is a blast attack
 # targeting: ST, BLAST, AOE, NA | NA refers to a non-attacking move
 # atkType: BSC, SKL, ULT, FUA, NA

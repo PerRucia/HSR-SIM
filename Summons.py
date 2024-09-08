@@ -1,12 +1,8 @@
-from typing import Any
-from Buff import Buff, Debuff
-from Delay import Advance, Delay
-from Result import Result
-from Turn import *
 from Buff import *
-from Result import *
 from Delay import *
+from Result import *
 from Turn import Turn
+
 
 class Summon:
     name = "Summon"
@@ -21,10 +17,12 @@ class Summon:
         self.role = role
         self.priority = 0
         
-    def isChar(self) -> bool:
+    @staticmethod
+    def isChar() -> bool:
         return True
 
-    def isSummon(self) -> bool:
+    @staticmethod
+    def isSummon() -> bool:
         return True
 
     def takeTurn(self) -> tuple[list[Buff], list[Debuff], list[Advance], list[Delay], list[Turn]]:

@@ -1,7 +1,7 @@
-from Lightcone import Lightcone
-from Buff import Buff
 from Delay import *
+from Lightcone import Lightcone
 from Misc import *
+
 
 class Multi(Lightcone):
     name = "Multiplication"
@@ -13,7 +13,7 @@ class Multi(Lightcone):
     def __init__(self, wearerRole, level=5):
         super().__init__(wearerRole, level)
     
-    def useBsc(self, enemyID):
+    def useBsc(self, enemyID=-1):
         bl, dbl, al, dl = super().useBsc(enemyID)
         advAmount = self.level * 0.02 + 0.10
         al.append(Advance("MultiplicationADV", self.wearerRole, advAmount))

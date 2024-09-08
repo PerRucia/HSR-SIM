@@ -1,16 +1,14 @@
+import logging
+
+from Buff import *
 from Character import Character
+from Delay import *
 from Lightcones.Swordplay import Swordplay
-from Lightcones.Blissful import BlissfulMoze
-from Relics.Duke import DukeMoze
 from Planars.Duran import Duran
 from RelicStats import RelicStats
-from Buff import *
-from Result import *
+from Relics.Duke import DukeMoze
 from Result import Result, Special
 from Turn import Turn
-from Misc import *
-from Delay import *
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -126,7 +124,7 @@ class Moze(Character):
     
     def reduceAV(self, reduceValue: float):
         if self.canBeAdv:
-            self.currAV = max(0, self.currAV - reduceValue)
+            self.currAV = max(0.0, self.currAV - reduceValue)
     
     def takeTurn(self) -> str:
         self.fuaRegainSP = True

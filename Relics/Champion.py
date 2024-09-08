@@ -1,7 +1,7 @@
-from Relic import Relic
 from Buff import Buff
-from Delay import *
 from Misc import *
+from Relic import Relic
+
 
 class Champion(Relic):
     name = "Champion of Streetwise Boxing"

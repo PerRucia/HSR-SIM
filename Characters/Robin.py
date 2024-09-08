@@ -1,17 +1,15 @@
+from Buff import Buff
 from Character import Character
+from Delay import *
 from Lightcones.ForTomorrowJourney import Journey
-from Lightcones.Nightglow import Nightglow
-from Lightcones.PoisedToBloom import PoisedToBloom
+from Misc import *
+from Planars.Lushaka import Lushaka
+from RelicStats import RelicStats
 from Relics.Musketeer import Musketeer
 from Relics.Prisoner import Prisoner
-from Planars.Lushaka import Lushaka
-from Planars.Keel import Keel
-from RelicStats import RelicStats
-from Buff import Buff
 from Result import Result, Special
 from Turn import Turn
-from Delay import *
-from Misc import *
+
 
 class Robin(Character):
     # Standard Character Settings
@@ -104,7 +102,7 @@ class Robin(Character):
     
     def reduceAV(self, reduceValue: float):
         if self.canBeAdv:
-            self.currAV = max(0, self.currAV - reduceValue)
+            self.currAV = max(0.0, self.currAV - reduceValue)
     
     def takeTurn(self) -> str:
         self.canBeAdv = True

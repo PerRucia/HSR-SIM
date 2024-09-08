@@ -1,12 +1,12 @@
-from Lightcone import Lightcone
 from Buff import *
-from Delay import *
+from Lightcone import Lightcone
 from Misc import *
 from Result import Result
 from Turn import Turn
 
+
 class Whereabouts(Lightcone):
-    name = "Whereabouts Shoud Dreams Rest"
+    name = "Whereabouts Should Dreams Rest"
     path = Path.DESTRUCTION
     baseHP = 1164.2
     baseATK = 476.28
@@ -16,7 +16,7 @@ class Whereabouts(Lightcone):
         super().__init__(wearerRole, level)
     
     def equip(self):
-        bl, dbl, al, dl = super().equip(enemyID)
+        bl, dbl, al, dl = super().equip()
         beBuff = self.level * 0.1 + 0.5
         bl.append(Buff("WhereaboutsBE", Pwr.BE_PERCENT, beBuff, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl

@@ -1,8 +1,8 @@
-from Relic import Relic
 from Buff import Buff
-from Delay import *
 from Misc import *
+from Relic import Relic
 from Result import Special
+
 
 class Pioneer(Relic):
     name = "Pioneer Diver of Dead Waters"

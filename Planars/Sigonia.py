@@ -1,13 +1,12 @@
 from Buff import Buff
-from Planar import Planar
-from Result import Result
-from Turn import Turn
 from Misc import *
+from Planar import Planar
+
 
 class Sigonia(Planar):
     name = "Sigonia, the Unclaimed Desolation"
 
-    def __init__(self, wearerRole: str, uptime: float = 0.5):
+    def __init__(self, wearerRole: Role, uptime: float = 0.5):
         super().__init__(wearerRole)
         self.uptime = uptime
         

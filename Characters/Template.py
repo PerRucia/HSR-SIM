@@ -1,11 +1,9 @@
+import logging
+
 from Character import Character
 from RelicStats import RelicStats
-from Buff import *
 from Result import *
 from Turn import Turn
-from Misc import *
-from Delay import *
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +30,7 @@ class Template(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget)
+        super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else None
         self.relic1 = r1 if r1 else None
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)

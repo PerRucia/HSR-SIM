@@ -1,8 +1,5 @@
 from Relic import Relic
-from Buff import Buff
-from Delay import *
-from Misc import *
-from Result import Special
+
 
 class NoSet(Relic):
     name = "No Relic Set Bonuses"

@@ -14,7 +14,7 @@ class Messenger(Relic):
         buffList.append(Buff("MessengerSPD", Pwr.SPD_PERCENT, 0.06, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
     
-    def useUlt(self, enemyID):
+    def useUlt(self, enemyID=-1):
         bl, dbl, al, dl = super().useUlt(enemyID)
         if self.allyUlt:
             bl.append(Buff("MessengerUltSPD", Pwr.SPD_PERCENT, 0.12, Role.ALL, [AtkType.ALL], 1, 1, Role.SELF, TickDown.END))

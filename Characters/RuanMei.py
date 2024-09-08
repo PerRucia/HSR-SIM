@@ -1,17 +1,16 @@
-from Character import Character
-from RelicStats import RelicStats
-from Lightcones.MemoriesOfThePast import MOTP
-from Lightcones.Mirror import Mirror
-from Relics.Thief import Thief
-from Relics.Messenger import Messenger
-from Planars.Lushaka import Lushaka
+import logging
+
 from Buff import *
+from Character import Character
+from Delay import *
+from Lightcones.MemoriesOfThePast import MOTP
+from Planars.Lushaka import Lushaka
+from RelicStats import RelicStats
+from Relics.Messenger import Messenger
+from Relics.Thief import Thief
 from Result import *
 from Result import Special
 from Turn import Turn
-from Misc import *
-from Delay import *
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +40,7 @@ class RuanMei(Character):
     
     def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, breakTeam = False, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
+        self.enemyStatus = None
         self.lightcone = lc if lc else MOTP(role)
         self.relic1 = r1 if r1 else Thief(role, 2)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else Messenger(role, 2))

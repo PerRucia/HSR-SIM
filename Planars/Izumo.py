@@ -1,13 +1,12 @@
 from Buff import Buff
-from Planar import Planar
-from Result import Result
-from Turn import Turn
 from Misc import *
+from Planar import Planar
+
 
 class Izumo(Planar):
     name = "Izumo Gensei and Takama Divine Realm"
 
-    def __init__(self, wearerRole: str, sharedPath: bool = True):
+    def __init__(self, wearerRole: Role, sharedPath: bool = True):
         super().__init__(wearerRole)
         self.sharedPath = sharedPath
         

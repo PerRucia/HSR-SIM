@@ -1,7 +1,7 @@
 from Buff import Buff
-from Planar import Planar
-from Delay import *
 from Misc import *
+from Planar import Planar
+
 
 class Kalpagni(Planar):
     name = "Forge of the Kalpagni Lantern"

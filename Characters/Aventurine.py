@@ -1,15 +1,14 @@
+from Buff import *
 from Character import Character
 from Lightcones.ConcertForTwo import ConcertForTwo
-from Lightcones.UnjustDestiny import UnjustDestinyAven
-from Relics.Knight import Knight
-from Relics.Messenger import Messenger
 from Planars.Keel import Keel
 from RelicStats import RelicStats
-from Buff import *
+from Relics.Knight import Knight
+from Relics.Messenger import Messenger
 from Result import *
 from Result import Special
 from Turn import Turn
-from Misc import *
+
 
 class Aventurine(Character):
     # Standard Character Settings
@@ -104,7 +103,7 @@ class Aventurine(Character):
             self.extendLists(bl, dbl, al, dl, tl, *self.useFua())
         return bl, dbl, al, dl, tl
     
-    def allyTurn(self, turn: Turn, result: Turn):
+    def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
         if (AtkType.FUA in turn.atkType) and (turn.moveName not in bonusDMG) and (self.fuaTrigger > 0):
             self.fuaTrigger = self.fuaTrigger - 1

@@ -1,8 +1,7 @@
-from Relic import Relic
 from Buff import Buff
-from Delay import *
-from Result import Result
 from Misc import *
+from Relic import Relic
+
 
 class Watchmaker(Relic):
     name = "Watch, Master of Dream Machinations"

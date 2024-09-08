@@ -1,7 +1,7 @@
-from Lightcone import Lightcone
 from Buff import *
-from Result import Result
+from Lightcone import Lightcone
 from Misc import *
+
 
 class InTheNight(Lightcone):
     name = "In The Night"
@@ -12,7 +12,7 @@ class InTheNight(Lightcone):
 
     def __init__(self, wearerRole, level = 1, wearerSPD: float = 100):
         super().__init__(wearerRole, level)
-        self.bonusStacks = min(6, (wearerSPD - 100) // 10) if wearerSPD >= 100 else 0
+        self.bonusStacks = min(6.0, (wearerSPD - 100) // 10) if wearerSPD >= 100 else 0
     
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()

@@ -14,7 +14,7 @@ class WindSoaring(Relic):
             buff_lst.append(Buff("WindSoaringCR", Pwr.CR_PERCENT, 0.06, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buff_lst, [], [], []
     
-    def useFua(self, enemyID):
+    def useFua(self, enemyID=-1):
         buffList, debuffList, advList, delayList = super().useFua(enemyID)
         if self.setType == 4:
             buffList.append(Buff("WindSoaringDMG", Pwr.DMG_PERCENT, 0.36, self.wearerRole, [AtkType.ULT], 1, 1, Role.SELF, TickDown.END))
@@ -32,13 +32,13 @@ class WindSoaringYunli(Relic):
             buff_lst.append(Buff("WindSoaringCR", Pwr.CR_PERCENT, 0.06, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buff_lst, [], [], []
     
-    def useFua(self, enemyID):
+    def useFua(self, enemyID=-1):
         buffList, debuffList, advList, delayList = super().useFua(enemyID)
         if self.setType == 4:
             buffList.append(Buff("WindSoaringDMG", Pwr.DMG_PERCENT, 0.36, self.wearerRole, [AtkType.ULT], 1, 1, Role.SELF, TickDown.END))
         return buffList, debuffList, advList, delayList
     
-    def useUlt(self, enemyID):
+    def useUlt(self, enemyID=-1):
         buffList, debuffList, advList, delayList = super().useUlt(enemyID)
         if self.setType == 4:
             buffList.append(Buff("WindSoaringDMG", Pwr.DMG_PERCENT, 0.36, self.wearerRole, [AtkType.ULT], 1, 1, Role.SELF, TickDown.END))

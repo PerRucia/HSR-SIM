@@ -124,8 +124,8 @@ class AtkType(Enum):
     DUKEULT = auto()
     TOPAZULT = auto()
     TOPAZFUA = auto()
-    UEBSC = auto() # sword7th
-    EBSC = auto() # sword7th
+    UEBSC = auto() # Sword-7th
+    EBSC = auto() # Sword-7th
     ESKILL = auto() # firefly
     HMCSBK = auto() # bonus superbreak dmg from hmc
 

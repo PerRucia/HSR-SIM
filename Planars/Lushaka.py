@@ -1,7 +1,7 @@
 from Buff import Buff
-from Planar import Planar
-from Delay import *
 from Misc import *
+from Planar import Planar
+
 
 class Lushaka(Planar):
     name = "Lushaka, the Sunken Seas"
@@ -11,6 +11,6 @@ class Lushaka(Planar):
         
     def equip(self):
         buffList, debuffList, advList, delayList = super().equip()
-        buffList.append(Buff("LukshakaERR", Pwr.ERR_PERCENT, 0.05, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        buffList.append(Buff(f"LukshakaATK({self.wearerRole.name})", Pwr.ATK_PERCENT, 0.12, self.slot1Role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff("LushakaERR", Pwr.ERR_PERCENT, 0.05, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        buffList.append(Buff(f"LushakaATK({self.wearerRole.name})", Pwr.ATK_PERCENT, 0.12, self.slot1Role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList

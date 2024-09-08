@@ -1,7 +1,7 @@
-from Lightcone import Lightcone
 from Buff import *
-from Result import Result
+from Lightcone import Lightcone
 from Misc import *
+
 
 class Btbio(Lightcone):
     name = "But the Battle isn't Over"
@@ -17,7 +17,7 @@ class Btbio(Lightcone):
         self.targetRole = targetRole
     
     def equip(self):
-        bl, dbl, al, dl = super().equip(enemyID)
+        bl, dbl, al, dl = super().equip()
         bl.append(Buff("BtbioERR", Pwr.ERR_PERCENT, self.level * 0.02 + 0.8, self.wearerRole))
         return bl, dbl, al, dl
     

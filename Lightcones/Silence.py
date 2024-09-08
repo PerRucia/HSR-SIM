@@ -1,7 +1,7 @@
-from Lightcone import Lightcone
 from Buff import *
-from Result import Result
+from Lightcone import Lightcone
 from Misc import *
+
 
 class Silence(Lightcone):
     name = "Only Silence Remains"

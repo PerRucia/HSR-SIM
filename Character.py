@@ -1,8 +1,3 @@
-from Buff import *
-from Lightcone import Lightcone
-from Relic import Relic
-from RelicStats import RelicStats
-from Planar import Planar
 from Turn import Turn
 from Result import *
 from Misc import *
@@ -19,14 +14,16 @@ class Character:
     baseHP = 0
     baseATK = 0
     baseDEF = 0
-    baseSPD = 100
-    maxEnergy = 100
-    ultCost = 100
+    baseSPD = 100.0
+    maxEnergy = 100.0
+    ultCost = 100.0
     currEnergy = maxEnergy / 2
     currAV = 100.0
     rotation = ["E", "A", "A"]
-    dmgDct = {AtkType.BSC: 0, AtkType.SKL: 0, AtkType.ULT: 0, AtkType.BRK: 0}
+    dmgDct = {AtkType.BSC: 0.0, AtkType.SKL: 0.0, AtkType.ULT: 0.0, AtkType.BRK: 0.0}
     hasSpecial = False
+    character = True
+    summon = False
     hasSummon = False
     specialEnergy = False
     basics = 0
@@ -44,6 +41,7 @@ class Character:
     # Relic Settings
     
     def __init__(self, pos: int, role: Role, defaultTarget: int, eidolon: int) -> None:
+        self.relicStats = None
         self.pos = pos
         self.role = role
         self.priority = 0
@@ -126,6 +124,8 @@ class Character:
                 buffs, debuffs, advs, delays = equipment.ownTurn(turn, result)    
             elif actionType == "ALLY":
                 buffs, debuffs, advs, delays = equipment.allyTurn(turn, result)
+            else:
+                buffs, debuffs, advs, delays = [], [], [], []
                 
             buffList.extend(buffs)
             debuffList.extend(debuffs)
@@ -137,7 +137,7 @@ class Character:
         self.currEnergy = min(self.maxEnergy, self.currEnergy + amount)
         
     def reduceAV(self, reduceValue: float):
-        self.currAV = max(0, self.currAV - reduceValue)
+        self.currAV = max(0.0, self.currAV - reduceValue)
         
     def getRelicScalingStats(self) -> tuple[float, float]:
         return self.relicStats.getScalingValue(self.scaling)
@@ -149,41 +149,44 @@ class Character:
         return self.currEnergy >= self.ultCost
     
     def isChar(self) -> bool:
-        return True
+        return self.character
     
     def isSummon(self) -> bool:
-        return False
+        return self.summon
     
     def takeTurn(self) -> str:
         res = self.turn
         self.turn = self.turn + 1
         return self.rotation[res % len(self.rotation)]
     
-    def gettotalDMG(self) -> tuple[str, float]:
+    def getTotalDMG(self) -> tuple[str, float]:
         ttl = sum(self.dmgDct.values())
         res = ""
         for key, val in self.dmgDct.items():
             res += f"-{key.name}: {val:.3f} | {val / ttl * 100 if ttl > 0 else 0:.3f}%\n"
         return res, ttl
     
-    def getBaseStat(self) -> tuple[float, float, float]:
+    def getBaseStat(self):
         if self.scaling == Scaling.ATK:
             baseStat = self.baseATK + self.lightcone.baseATK
-        if self.scaling == Scaling.HP:
+        elif self.scaling == Scaling.HP:
             baseStat = self.baseHP + self.lightcone.baseHP
-        if self.scaling == Scaling.DEF:
+        elif self.scaling == Scaling.DEF:
             baseStat = self.baseDEF + self.lightcone.baseDEF
+        else:
+            baseStat = 0.0
         return baseStat, *self.getRelicScalingStats()
     
     def standardAVred(self, av: float):
-        self.currAV = max(0, self.currAV - av)
+        self.currAV = max(0.0, self.currAV - av)
         
     def getTargetID(self, enemyID: int):
         if enemyID == -1:
             return self.defaultTarget
         return enemyID
-    
-    def extendLists(self, bl: list, dbl: list, al: list, dl: list, tl: list, nbl: list, ndbl: list, nal: list, ndl: list, ntl: list):
+
+    @staticmethod
+    def extendLists(bl: list, dbl: list, al: list, dl: list, tl: list, nbl: list, ndbl: list, nal: list, ndl: list, ntl: list):
         bl.extend(nbl)
         dbl.extend(ndbl)
         al.extend(nal)

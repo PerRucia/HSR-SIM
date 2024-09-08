@@ -1,16 +1,11 @@
-import logging
-from Enemy import Enemy
-from Summons import *
+from Characters.Firefly import Firefly
+from Characters.Gallagher import Gallagher
+from Characters.HatBlazer import HatBlazer
+from Characters.RuanMei import RuanMei
 from HelperFuncs import *
 from Misc import *
 
-from Characters.Firefly import Firefly
-from Characters.RuanMei import RuanMei
-from Characters.HatBlazer import HatBlazer
-from Characters.Gallagher import Gallagher
-from Characters.Lingsha import Lingsha
-
-cycleLimit = 5 # comment out this line if running the simulator from an external script
+cycles = 5 # comment out this line if running the simulator from an external script
 log = True
 
 def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, weak = None) -> str:
@@ -26,7 +21,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
 
     # Character Settings
-    if all([a == None for a in [s1, s2, s3, s4]]):
+    if all([a is None for a in [s1, s2, s3, s4]]):
         slot1 = Firefly(0, Role.DPS, 0, eidolon=0)
         slot2 = RuanMei(1, Role.SUP1, 0, eidolon=0)
         slot3 = HatBlazer(2, Role.SUP2, 0, eidolon=6)
@@ -246,7 +241,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     for enemy in eTeam:
         debuffDMG += enemy.debuffDMG
     for char in playerTeam:
-        res, currCharDMG = char.gettotalDMG()
+        res, currCharDMG = char.getTotalDMG()
         dmgList.append(currCharDMG)
         charDMG += currCharDMG
     dpavList = [i / avLimit for i in dmgList]
@@ -265,7 +260,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     logging.critical(f"{res}\n")
 
     for char in playerTeam:
-        res, charDMG = char.gettotalDMG()
+        res, charDMG = char.getTotalDMG()
         logging.critical(f"{char.name} > Total DMG: {charDMG:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV if char.currAV < 500 else char.charge:.3f} | Excess Energy: {char.currEnergy:.3f}")
         logging.critical(res)
     
@@ -273,4 +268,4 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
 if __name__ == "__main__":
     # Start the simulator with logging output to a file
-    print(startSimulator(cycleLimit=cycleLimit, outputLog=log))
+    print(startSimulator(cycleLimit=cycles, outputLog=log))

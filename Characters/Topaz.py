@@ -1,16 +1,13 @@
+from Buff import *
 from Character import Character
+from Delay import *
 from Lightcones.Swordplay import Swordplay
-from Lightcones.Cruising import Cruising
-from Lightcones.Blissful import BlissfulTopaz
-from Relics.Duke import DukeTopaz
 from Planars.Duran import Duran
 from RelicStats import RelicStats
-from Buff import *
-from Result import *
+from Relics.Duke import DukeTopaz
 from Result import Result, Special
 from Turn import Turn
-from Misc import *
-from Delay import *
+
 
 class Topaz(Character):
     # Standard Character Settings

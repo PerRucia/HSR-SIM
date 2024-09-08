@@ -1,6 +1,7 @@
 from Misc import *
 
 class Buff:
+    # noinspection PyDefaultArgument
     def __init__(self, name: str, buffType: Pwr, val: float, target: Role, atkType: list = [AtkType.ALL], turns: int = 1, stackLimit: int = 1, tickDown: Role = Role.SELF, tdType: TickDown = TickDown.PERM, reqBroken: bool = False):
         self.name = name
         self.buffType = buffType
@@ -43,6 +44,7 @@ class Buff:
         self.val = val
         
 class Debuff:
+    # noinspection PyDefaultArgument
     def __init__(self, name: str, charRole: Role, debuffType: Pwr, val: float, target, atkType: list, turns: int, stackLimit: int = 1, isDot: bool = False, dotSplit: list[float] = [0, 0], isBlast: bool = False):
         self.name = name
         self.charRole = charRole
@@ -78,7 +80,7 @@ class Debuff:
         
     def getDebuffVal(self) -> float:
         if self.name == "AshenRoasted":
-            return self.val + (self.stacks) * (self.val / 2)
+            return self.val + self.stacks * (self.val / 2)
         return self.val * self.stacks
 
     def atMaxStacks(self) -> bool:

@@ -1,12 +1,12 @@
 from Buff import Buff
-from Planar import Planar
-from Delay import *
 from Misc import *
+from Planar import Planar
+
 
 class Penacony(Planar):
     name = "Penacony, Land of the Dreams"
     
-    def __init__(self, wearerRole: str, sameEleTeammates: list[Role]):
+    def __init__(self, wearerRole: Role, sameEleTeammates: list[Role]):
         super().__init__(wearerRole)
         self.sameEle = sameEleTeammates
         
