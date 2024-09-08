@@ -42,7 +42,7 @@ class Aventurine(Character):
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else ConcertForTwo(role) 
         self.relic1 = r1 if r1 else Knight(role, 2)
-        self.relic2 = r2 if r2 else Messenger(role, 2, False)
+        self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else Messenger(role, 2, False))
         self.planar = pl if pl else Keel(role)
         body = Pwr.CD_PERCENT if self.lightcone.name == "Inherently Unjust Destiny" else Pwr.DEF_PERCENT
         self.relicStats = subs if subs else RelicStats(6, 2, 2, 0, 4, 4, 6, 4, 4, 4, 12, 0, body, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.DEF_PERCENT) # 6 spd default

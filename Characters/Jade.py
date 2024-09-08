@@ -41,7 +41,7 @@ class Jade(Character):
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Breakfast(role)
         self.relic1 = r1 if r1 else Genius(role, 4)
-        self.relic2 = r2 if r2 else None
+        self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
         self.planar = pl if pl else Duran(role)
         self.relicStats = subs if subs else RelicStats(0, 2, 0, 2, 4, 0, 4, 4, 4, 4, 15, 9, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
         self.debtCollector = debtCollector

@@ -35,7 +35,7 @@ class Template(Character):
         super().__init__(pos, role, defaultTarget)
         self.lightcone = lc if lc else None
         self.relic1 = r1 if r1 else None
-        self.relic2 = r2 if r2 else None
+        self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
         self.planar = pl if pl else None
         self.relicStats = subs if subs else RelicStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT, Pwr.HP_PERCENT)
         self.eidolon = eidolon

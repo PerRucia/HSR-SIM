@@ -17,6 +17,7 @@ class Mirror(Lightcone):
         bl, dbl, al, dl = super().equip(enemyID)
         be = self.level * 0.1 + 0.5
         bl.append(Buff("MirrorBE", Pwr.BE_PERCENT, be, self.wearerRole))
+        bl.append(Buff("MirrorERR", Pwr.ERR_T, self.level * 0.025 + 0.075, Role.ALL))
         return bl, dbl, al, dl
     
     def useUlt(self, enemyID=-1):

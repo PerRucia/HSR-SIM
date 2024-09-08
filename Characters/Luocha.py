@@ -40,7 +40,7 @@ class Luocha(Character):
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Multi(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)
-        self.relic2 = r2 if r2 else None
+        self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
         self.planar = pl if pl else Keel(role)
         self.relicStats = subs if subs else RelicStats(13, 2, 3, 2, 4, 8, 4, 4, 4, 4, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
         self.rotation = rotation if rotation else ["A"]

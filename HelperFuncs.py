@@ -7,6 +7,7 @@ from Character import *
 from Summons import *
 import logging
 from Misc import *
+from Trackers import *
 
 logger = logging.getLogger(__name__)
 
@@ -504,15 +505,15 @@ def handleEnergyFromBuffs(buffList: list[Buff], debuffList: list[Debuff], player
         logger.info(f"ERR    > {errToAdd:.3f} energy added to {char.name} from {eb.name} | {char.name} Energy: {char.currEnergy:.3f}")
     return newList
 
-def handleSPFromBuffs(buffList: list[Buff], spGain: int, spUsed: int) -> tuple[list[Buff], int, int]:
+def handleSPFromBuffs(buffList: list[Buff], spTracker: SpTracker) -> tuple[list[Buff], int, int]:
     newList = []
     for buff in buffList:
         if buff.buffType == Pwr.SKLPT:
-            spGain = buff.getBuffVal() + spGain if buff.getBuffVal() > 0 else spGain
-            spUsed = -buff.getBuffVal() + spUsed if buff.getBuffVal() < 0 else spUsed
+            spTracker.addSP(buff.getBuffVal() if buff.getBuffVal() > 0 else 0)
+            spTracker.redSP(buff.getBuffVal() if buff.getBuffVal() < 0 else 0)
         else:
             newList.append(buff)
-    return newList, spGain, spUsed
+    return newList
 
 def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str, manualMode = False) -> Special:
     if typ == "START":
@@ -731,14 +732,14 @@ def getScalingValues(char: Character, buffList: list[Buff], atkType: list[str]) 
             flat += buff.getBuffVal()
     return base * (1 + mul) + flat
 
-def processTurnList(turnList: list[Turn], playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG, manualMode=False, simAV=0):
+def processTurnList(turnList: list[Turn], playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmgTracker: DmgTracker, manualMode=False, simAV=0):
     
     while turnList:
         turn = turnList[0]
-        if turn.spChange < 0:
-            spUsed = spUsed - turn.spChange
-        elif turn.spChange > 0:
-            spGain = spGain + turn.spChange
+        
+        spTracker.addSP(turn.spChange if turn.spChange > 0 else 0)
+        spTracker.redSP(turn.spChange if turn.spChange < 0 else 0)
+        
         logging.warning(f"    TURN   - {turn}")
         logging.debug("\n        ----------Char Buffs----------")
         [logging.debug(f"        {buff}") for buff in teamBuffs if (buff.target == turn.charRole and checkValidList(turn.atkType, buff.atkType))]
@@ -748,7 +749,8 @@ def processTurnList(turnList: list[Turn], playerTeam, summons, eTeam, teamBuffs,
         logging.debug("        ----------End of Debuff List----------")
 
         res, newDebuffs, newDelays = handleTurn(turn, playerTeam, eTeam, teamBuffs, enemyDebuffs, manualMode=manualMode)
-        totalDMG += res.turnDmg + res.wbDmg
+        dmgTracker.addActionDMG(res.turnDmg)
+        dmgTracker.addWeaknessBreakDMG(res.wbDmg)
         char = findCharRole(playerTeam, res.charRole)
         result = f"RESULT - {res} | {char.name} Energy: {min(char.maxEnergy, char.currEnergy + res.errGain):.0f}/{char.maxEnergy}"
         logging.warning(f"    {result}")
@@ -765,9 +767,9 @@ def processTurnList(turnList: list[Turn], playerTeam, summons, eTeam, teamBuffs,
 
         turnList = turnList[1:]
     
-    return teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG
+    return teamBuffs, enemyDebuffs, advList, delayList, turnList
     
-def handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG, manualMode = False, simAV = 0):
+def handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmgTracker, manualMode = False, simAV = 0):
     
     turnList = []
     # Check if any unit can ult
@@ -775,7 +777,7 @@ def handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, del
         if char.canUseUlt():
             action, target = "Y", -1
             if manualMode:
-                action, target = manualModule(spGain, spUsed, playerTeam, summons, eTeam, simAV, char, "ULT")
+                action, target = manualModule(spTracker, playerTeam, summons, eTeam, simAV, char, "ULT")
             if action == "Y":
                 ult = f"ULT    > {char.name} used their ultimate"
                 logging.critical(ult)
@@ -786,17 +788,17 @@ def handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, del
                 turnList.extend(tl)
 
         # Handle any new attacks from unit ults  
-        teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG, manualMode=manualMode, simAV=simAV)
+        teamBuffs, enemyDebuffs, advList, delayList, turnList = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmgTracker, manualMode=manualMode, simAV=simAV)
         
         # Handle any errGain from unit ults
         teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
         
         # Add/Minus any SP changes from special effects
-        teamBuffs, spGain, spUsed = handleSPFromBuffs(teamBuffs, spGain, spUsed)
+        teamBuffs = handleSPFromBuffs(teamBuffs, spTracker)
 
-    return teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG
+    return teamBuffs, enemyDebuffs, advList, delayList
 
-def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, checkType, spGain, spUsed, totalDMG, manualMode = False):
+def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, checkType, spTracker, dmgTracker, manualMode = False):
     
     turnList = []
     # Apply any special effects
@@ -812,19 +814,19 @@ def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuf
             turnList.extend(tl)    
 
     # Handle any attacks from special attacks  
-    teamBuffs, enemyDebuffs, advList, delayList, turnList, spGain, spUsed, totalDMG = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG, manualMode)      
+    teamBuffs, enemyDebuffs, advList, delayList, turnList = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmgTracker, manualMode)      
     
     # Add Energy if any was provided from special effects
     teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
     
     # Add/Minus any SP changes from special effects
-    teamBuffs, spGain, spUsed = handleSPFromBuffs(teamBuffs, spGain, spUsed)
+    teamBuffs = handleSPFromBuffs(teamBuffs, spTracker)
 
-    return teamBuffs, enemyDebuffs, advList, delayList, spGain, spUsed, totalDMG
+    return teamBuffs, enemyDebuffs, advList, delayList
 
-def manualModule(spGain: int, spUsed: int, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], simAV: float, unit, actionType) -> tuple[str, int]:
+def manualModule(spTracker: SpTracker, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], simAV: float, unit, actionType) -> tuple[str, int]:
     print("===============================================================================================================================================================")
-    print(f"INFO   > CURRENT AV: {simAV:.3f} | SP: {3 + spGain - spUsed}\n")
+    print(f"INFO   > CURRENT AV: {simAV:.3f} | SP: {spTracker.getDisp()}\n")
     res1 = "TEAMAV > "
     res2 = "ENERGY > "
     for char in [p for p in (playerTeam + summons)]:

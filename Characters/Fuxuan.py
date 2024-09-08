@@ -41,7 +41,7 @@ class Fuxuan(Character):
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Texture(role, 5)
         self.relic1 = r1 if r1 else Messenger(role, 2, False)
-        self.relic2 = r2 if r2 else Longevous(role, 2)
+        self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else Longevous(role, 2))
         self.planar = pl if pl else Keel(role)
         rope = Pwr.HP_PERCENT if eidolon >= 4 else Pwr.ERR_PERCENT
         self.relicStats = subs if subs else RelicStats(8, 0, 4, 4, 12, 4, 4, 4, 4, 4, 0, 0, Pwr.HP_PERCENT, Pwr.SPD, Pwr.HP_PERCENT, rope)

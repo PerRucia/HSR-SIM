@@ -83,10 +83,10 @@ class Firefly(Character):
             scgAdj = self.beStat * 0.1 + (1.1 if self.eidolon >= 3 else 1.0)
             superBrkScale = 0.50 if self.beStat >= 3.6 else (0.35 if self.beStat >= 2.0 else 0)
             for _ in range(4):
-                tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, superBrkScale], [30 * 0.15, 10 * 0.15], 0, self.scaling, 0, "SamSkillSB"))
-                tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.SKL], [self.element], [scgMain * 0.15, scgAdj * 0.15], [30 * 0.15, 10 * 0.15], 0, self.scaling, 0, "SamSkill", True, 0.55))
-            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, superBrkScale], [30 * 0.4, 10 * 0.4], 0, self.scaling, 0, "SamSkillSB"))
-            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.SKL], [self.element], [scgMain * 0.4, scgAdj * 0.4], [30 * 0.4, 10 * 0.4], 0, self.scaling, -spUsed, "SamSkillFinal", True, 0.55))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, superBrkScale], [30 * 0.15, 15 * 0.15], 0, self.scaling, 0, "SamSkillSB"))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.SKL], [self.element], [scgMain * 0.15, scgAdj * 0.15], [30 * 0.15, 15 * 0.15], 0, self.scaling, 0, "SamSkill", True, 0.55))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [superBrkScale, superBrkScale], [30 * 0.4, 15 * 0.4], 0, self.scaling, 0, "SamSkillSB"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.SKL], [self.element], [scgMain * 0.4, scgAdj * 0.4], [30 * 0.4, 15 * 0.4], 0, self.scaling, -spUsed, "SamSkillFinal", True, 0.55))
         else:
             e3Err = 0.62 if self.eidolon >= 3 else 0.6
             e3Scg = 2.2 if self.eidolon >= 3 else 2.0

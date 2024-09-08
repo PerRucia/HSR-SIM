@@ -48,7 +48,7 @@ class Hunt7th(Character):
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Swordplay(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)
-        self.relic2 = r2 if r2 else None
+        self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
         self.planar = pl if pl else Rutilant(role)
         self.masterRole = masterRole
         self.relicStats = subs if subs else RelicStats(10, 2, 0, 2, 4, 0, 4, 4, 4, 4, 10, 4, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)

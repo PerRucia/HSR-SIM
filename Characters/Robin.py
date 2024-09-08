@@ -44,7 +44,7 @@ class Robin(Character):
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Journey(role)
         self.relic1 = r1 if r1 else Musketeer(role, 2)
-        self.relic2 = r2 if r2 else Prisoner(role, 2)
+        self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else Prisoner(role, 2))
         self.planar = pl if pl else Lushaka(role, Role.DPS)
         self.relicStats = subs if subs else RelicStats(10, 4, 4, 4, 4, 10, 3, 3, 3, 3, 0, 0, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
         self.rotation = rotation if rotation else ["E", "A", "A"]

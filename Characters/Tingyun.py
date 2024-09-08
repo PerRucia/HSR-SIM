@@ -32,7 +32,7 @@ class Tingyun(Character):
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else MOTP(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)
-        self.relic2 = r2 if r2 else None
+        self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
         self.planar = pl if pl else Vonwacq(role)
         self.relicStats = subs if subs else RelicStats(14, 2, 0, 2, 4, 10, 4, 4, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
         self.beneTarget = beneTarget if beneTarget else Role.DPS
