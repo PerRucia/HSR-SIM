@@ -95,9 +95,9 @@ class Robin(Character):
             else: # in concerto state, provide both additional dmg and extra ERR
                 if self.eidolon == 6 and self.moonlessMidnight > 0:
                     self.moonlessMidnight = self.moonlessMidnight - 1
-                    tl.append(Turn(self.name, self.role, result.enemiesHit[0], Targeting.SPECIAL, [AtkType.SPECIAL], [self.element], [e3Mul, 0], [0, 0], e2ERR, self.scaling, 0, "RobinMoonlessMidnight"))
+                    tl.append(Turn(self.name, self.role, result.enemiesHit[0].enemyID, Targeting.SPECIAL, [AtkType.SPECIAL], [self.element], [e3Mul, 0], [0, 0], e2ERR, self.scaling, 0, "RobinMoonlessMidnight"))
                 else:
-                    tl.append(Turn(self.name, self.role, result.enemiesHit[0], Targeting.SPECIAL, [AtkType.SPECIAL], [self.element], [e3Mul, 0], [0, 0], e2ERR, self.scaling, 0, "RobinConcertoDMG"))
+                    tl.append(Turn(self.name, self.role, result.enemiesHit[0].enemyID, Targeting.SPECIAL, [AtkType.SPECIAL], [self.element], [e3Mul, 0], [0, 0], e2ERR, self.scaling, 0, "RobinConcertoDMG"))
         return bl, dbl, al, dl, tl
     
     def reduceAV(self, reduceValue: float):

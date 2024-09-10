@@ -45,7 +45,7 @@ class Buff:
         
 class Debuff:
     # noinspection PyDefaultArgument
-    def __init__(self, name: str, charRole: Role, debuffType: Pwr, val: float, target, atkType: list, turns: int, stackLimit: int = 1, isDot: bool = False, dotSplit: list[float] = [0, 0], isBlast: bool = False):
+    def __init__(self, name: str, charRole: Role, debuffType: Pwr, val: float, target, atkType: list, turns: int, stackLimit: int = 1, isDot: bool = False, dotSplit: list[float] = [0, 0], isBlast: bool = False, validFor = [Role.ALL]):
         self.name = name
         self.charRole = charRole
         self.debuffType = debuffType
@@ -60,6 +60,7 @@ class Debuff:
         self.dotSplit = dotSplit
         self.isBlast = isBlast
         self.dotMul = 0
+        self.validFor = validFor
         
     def __str__(self) -> str:
         res = f"{self.name} | From: {self.charRole.name} | {self.debuffType.value} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "

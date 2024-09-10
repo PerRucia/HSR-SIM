@@ -26,8 +26,25 @@ class CavalryFirefly(Cavalry):
             self.beStat = special.attr2
             brkShred = 0.1 if self.beStat >= 1.5 else 0
             sbrkShred = 0.15 if self.beStat >= 2.5 else 0
-            bl.append(Buff("CavalryBRKSHRED", Pwr.SHRED, brkShred, self.wearerRole, [AtkType.BRK], 1, 1, Role.SELF, TickDown.PERM))
-            bl.append(Buff("CavalrySBRKSHRED", Pwr.SHRED, sbrkShred, self.wearerRole, [AtkType.SBK], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("CavalryBRKSHRED", Pwr.SHRED, brkShred, self.wearerRole, [AtkType.BRK]))
+            bl.append(Buff("CavalrySBRKSHRED", Pwr.SHRED, sbrkShred, self.wearerRole, [AtkType.SBK]))
+        return bl, dbl, al, dl
+
+
+class CavalryRappa(Cavalry):
+    rappaBE = 0
+
+    def __init__(self, wearerRole, setType):
+        super().__init__(wearerRole, setType)
+
+    def specialStart(self, special: Special):
+        bl, dbl, al, dl = super().specialStart(special)
+        if special.specialName == "Rappa":
+            self.rappaBE = special.attr1
+            brkShred = 0.1 if self.rappaBE >= 1.5 else 0
+            sbrkShred = 0.15 if self.rappaBE >= 2.5 else 0
+            bl.append(Buff("CavalryBRKSHRED", Pwr.SHRED, brkShred, self.wearerRole, [AtkType.BRK]))
+            bl.append(Buff("CavalrySBRKSHRED", Pwr.SHRED, sbrkShred, self.wearerRole, [AtkType.SBK]))
         return bl, dbl, al, dl
     
     

@@ -28,11 +28,11 @@ class WhereaboutsFF(Whereabouts):
     
     def ownTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl = super().ownTurn(turn, result)
-        for enemyID in result.brokenEnemy:
-            dbl.append(Debuff("RoutedVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemyID, [AtkType.BRK], 2, 1, False, [0, 0], False))
-            dbl.append(Debuff("RoutedSPD", self.wearerRole, Pwr.SPD, -0.2, enemyID, [AtkType.ALL], 2, 1, False, [0, 0], False))
-        for enemyID in result.enemiesHit:
-            if result.preHitStatus[enemyID]:
-                dbl.append(Debuff("RoutedVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemyID, [AtkType.BRK], 2, 1, False, [0, 0], False))
-                dbl.append(Debuff("RoutedSPD", self.wearerRole, Pwr.SPD, -0.2, enemyID, [AtkType.ALL], 2, 1, False, [0, 0], False))
+        for enemy in result.brokenEnemy:
+            dbl.append(Debuff("RoutedVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemy.enemyID, [AtkType.BRK], 2, 1, validFor=[self.wearerRole]))
+            dbl.append(Debuff("RoutedSPD", self.wearerRole, Pwr.SPD, -0.2, enemy.enemyID, [AtkType.ALL], 2, 1, False, [0, 0], False))
+        for enemy in result.enemiesHit:
+            if result.preHitStatus[enemy.enemyID]:
+                dbl.append(Debuff("RoutedVULN", self.wearerRole, Pwr.VULN, self.vulnBuff, enemy.enemyID, [AtkType.BRK], 2, 1, validFor=[self.wearerRole]))
+                dbl.append(Debuff("RoutedSPD", self.wearerRole, Pwr.SPD, -0.2, enemy.enemyID, [AtkType.ALL], 2, 1, False, [0, 0], False))
         return bl, dbl, al, dl

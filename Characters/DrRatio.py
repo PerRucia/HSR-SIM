@@ -100,7 +100,7 @@ class DrRatio(Character):
         if self.wisemanFolly > 0:
             if turn.moveName not in bonusDMG and turn.targeting != Targeting.NA:
                 self.wisemanFolly = max(0, self.wisemanFolly - 1)
-                bl, dbl, al, dl, tl = self.useFua(result.enemiesHit[0])
+                bl, dbl, al, dl, tl = self.useFua(result.enemiesHit[0].enemyID)
         return bl, dbl, al, dl, tl
     
     def special(self):

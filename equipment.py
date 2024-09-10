@@ -41,6 +41,7 @@ class Equipment:
     def specialStart(special: Special):
         return [], [], [], []
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def specialEnd(special: Special):
         return [], [], [], []

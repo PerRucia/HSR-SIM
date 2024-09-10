@@ -111,15 +111,15 @@ class Moze(Character):
         if turn.targeting != Targeting.NA and turn.moveName not in bonusDMG:
             self.charge = self.charge - 1
             if self.charge < 9 and self.charge % 3 == 0 and not self.canBeAdv: #0, 3, 6, use Fua
-                bl, dbl, al, dl, tl = self.useFua(result.enemiesHit[0])
+                bl, dbl, al, dl, tl = self.useFua(result.enemiesHit[0].enemyID)
             if self.charge >= 0:
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], Targeting.SINGLE, [AtkType.SPECIAL], [self.element], [e3Bonus, 0], [0, 0], e1ERR, self.scaling, 0, "MozeBonusDMG"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0].enemyID, Targeting.SINGLE, [AtkType.SPECIAL], [self.element], [e3Bonus, 0], [0, 0], e1ERR, self.scaling, 0, "MozeBonusDMG"))
             if self.charge == 0 and not self.canBeAdv: # charge reaches 0 while in departed state
                 self.canBeAdv = True # exit departed state
                 self.currAV = 10000 / self.currSPD # rest AV to his current speed
                 al.append(Advance("MozeDepartedADV", self.role, 0.20))
-                dbl.append(Debuff("MozePreyVULN", self.role, Pwr.VULN, 0.00, self.getTargetID(result.enemiesHit[0]), [AtkType.FUA], 1000, 1, False, [0, 0], False)) 
-                dbl.append(Debuff("MozePrey", self.role, Pwr.CD_PERCENT, 0.00, self.getTargetID(result.enemiesHit[0]), [AtkType.ALL], 1000, 1, False, [0, 0], False)) # remove 40% CD when not in departed state
+                dbl.append(Debuff("MozePreyVULN", self.role, Pwr.VULN, 0.00, self.getTargetID(result.enemiesHit[0].enemyID), [AtkType.FUA], 1000, 1, False, [0, 0], False)) 
+                dbl.append(Debuff("MozePrey", self.role, Pwr.CD_PERCENT, 0.00, self.getTargetID(result.enemiesHit[0].enemyID), [AtkType.ALL], 1000, 1, False, [0, 0], False)) # remove 40% CD when not in departed state
         return bl, dbl, al, dl, tl
     
     def reduceAV(self, reduceValue: float):

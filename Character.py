@@ -61,11 +61,11 @@ class Character:
     
     def useSkl(self, enemyID=-1):
         self.skills = self.skills + 1
-        return *self.parseEquipment(AtkType.BSC, enemyID=enemyID), []
+        return *self.parseEquipment(AtkType.SKL, enemyID=enemyID), []
     
     def useBsc(self, enemyID=-1):
         self.basics = self.basics + 1
-        return *self.parseEquipment(AtkType.SKL, enemyID=enemyID), []
+        return *self.parseEquipment(AtkType.BSC, enemyID=enemyID), []
     
     def useUlt(self, enemyID=-1):
         self.ults = self.ults + 1

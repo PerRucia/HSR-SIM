@@ -23,5 +23,9 @@ class MOTP(Lightcone):
         errGain = self.level + 3
         buffList.append(Buff("MotpBonusEnergy", Pwr.ERR_T, errGain, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return buffList, debuffList, advList, delayList
-    
-    
+
+class MotpHMC(MOTP):
+    def useSkl(self, enemyID=-1):
+        bl, dbl, al, dl = super().useSkl(enemyID)
+        bl.append(Buff("MotpBonusEnergy", Pwr.ERR_T, self.level + 3, self.wearerRole))
+        return bl, dbl, al, dl

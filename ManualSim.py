@@ -4,21 +4,26 @@ from Characters.HatBlazer import HatBlazer
 from Characters.RuanMei import RuanMei
 from HelperFuncs import *
 from Misc import *
+from Enemy import *
 
 cycles = 5 # comment out this line if running the simulator from an external script
 log = True
 
-def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, weak = None) -> str:
+
+# noinspection PyUnboundLocalVariable,PyUnusedLocal
+def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, enemyModule = None) -> str:
     
     # =============== SETTINGS ===============
     # Enemy Settings
     enemyLevel = 95
     numEnemies = 2
+    enemyTypes = [EnemyType.ELITE, EnemyType.ELITE]  # make sure that the number of entries in this list is the same as "numEnemies"
     enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies"
     toughness = [100, 100] # make sure that the number of entries in this list is the same as "numEnemies"
-    attackTypeRatio = atkRatio # from Misc.py
-    weaknesses = weak if weak else [Element.FIRE]
+    attackRatio = atkRatio # from Misc.py
+    weaknesses = [Element.FIRE]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
+    enemyModule = enemyModule if enemyModule else EnemyModule(enemyLevel, numEnemies, enemyTypes, enemySPD, toughness, attackRatio, weaknesses, actionOrder)
 
     # Character Settings
     if all([a is None for a in [s1, s2, s3, s4]]):
@@ -71,14 +76,20 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
     # Print Enemy Info
     eTeam = []
-    for i in range(numEnemies):
+    for i in range(enemyModule.numEnemies):
         adjList = []
         if (i - 1) >= 0:
             adjList.append(i - 1)
         if (i + 1) < numEnemies:
             adjList.append(i + 1)
+        eLevel = enemyModule.enemyLevel
+        eType = enemyTypes[i]
+        eSPD = enemyModule.enemySPD[i]
+        eToughness = enemyModule.toughness[i]
+        eAction = enemyModule.actionOrder
+        eWeaknesses = enemyModule.weaknesses
 
-        eTeam.append(Enemy(i, enemyLevel, enemySPD[i], toughness[i], actionOrder, weaknesses, adjList))
+        eTeam.append(Enemy(i, eLevel, eType, eSPD, eToughness, eAction, eWeaknesses, adjList))
 
     print("===============================================================================================================================================================")
     logging.critical("Enemy Team:")
@@ -130,7 +141,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         # Reduce AV of all chars
         for u in allUnits:
             u.standardAVred(av)
-            logging.info(f"-    {u.name} AV: {u.currAV:.3f}")
+            logging.info(f"-   {u.name} AV: {u.currAV:.3f} ENERGY: {u.currEnergy if u.isChar() and not u.isSummon() else 0:.3f}")
         logging.info("")
             
         # Apply any special effects
@@ -151,8 +162,11 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
                     bl, dbl, al, dl, tl = char.useHit(unit.enemyID)
                     teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
                     turnList.extend(tl)
-            energyList = addEnergy(playerTeam, eTeam, numAttacks, attackTypeRatio, teamBuffs) # might be useful someday lol
-            logging.warning(f"    CharEnergy - {playerTeam[0].name}: {playerTeam[0].currEnergy:.3f} | {playerTeam[1].name}: {playerTeam[1].currEnergy:.3f} | {playerTeam[2].name}: {playerTeam[2].currEnergy:.3f} | {playerTeam[3].name}: {playerTeam[3].currEnergy:.3f}")
+            energyList = addEnergy(playerTeam, eTeam, numAttacks, enemyModule.attackRatios, teamBuffs) # might be useful someday lol
+            energyMsg = "    CharEnergy -"
+            for i in range(4):
+                energyMsg += f" {playerTeam[i].name}: Hit {energyList[i] * 10:.3f} Total: {playerTeam[i].currEnergy:.3f} |"
+            logging.warning(energyMsg)
             dmg.addDebuffDMG(takeDebuffDMG(unit, playerTeam, teamBuffs, enemyDebuffs))
         elif unit.isChar() and not unit.isSummon(): # Character Turn
             moveType, target = manualModule(spTracker, playerTeam, summons, eTeam, simAV, unit, "TURN")
@@ -166,6 +180,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
                 bl, dbl, al, dl, tl = unit.useBsc(target)
             else:
                 print("Invalid move type!")
+                bl, dbl, al, dl, tl = [], [], [], [], []
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
         elif unit.isChar() and unit.isSummon():
@@ -177,7 +192,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
             turnList.extend(tl)
             
         # Handle any pending attacks:
-        teamBuffs, enemyDebuffs, advList, delayList, turnList = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmg, manualMode=True, simAV=simAV)
+        teamBuffs, enemyDebuffs, advList, delayList, turnList = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmg, manualMode=True)
         
         # Handle any errGain from unit turns
         teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
@@ -261,7 +276,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
     for char in playerTeam:
         res, charDMG = char.getTotalDMG()
-        logging.critical(f"{char.name} > Total DMG: {charDMG:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV if char.currAV < 500 else char.charge:.3f} | Excess Energy: {char.currEnergy:.3f}")
+        logging.critical(f"{char.name} > Total DMG: {charDMG:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
         logging.critical(res)
     
     return f"DPAV: {dmg.getTotalDMG() / avLimit:.3f} | SP Used: {spTracker.getSPUsed()}, SP Gain: {spTracker.getSPGain()}"

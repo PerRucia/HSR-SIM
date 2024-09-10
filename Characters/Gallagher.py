@@ -39,14 +39,14 @@ class Gallagher(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, breakTeam = False, rotation = None) -> None:
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, targetPrio = Priority.DEFAULT, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Multi(role)
         self.relic1 = r1 if r1 else Thief(role, 2)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else Messenger(role, 2))
         self.planar = pl if pl else KalpagniGallagher(role)
         self.relicStats = subs if subs else RelicStats(11, 4, 0, 4, 4, 0, 4, 13, 4, 4, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.HP_PERCENT, Pwr.ERR_PERCENT)
-        self.breakTeam = breakTeam
+        self.targetPrio = targetPrio
         self.rotation = rotation if rotation else ["A"]
         self.enemyStatus = []
         
@@ -107,9 +107,12 @@ class Gallagher(Character):
         return bl, dbl, al, dl, tl
     
     def bestEnemy(self, enemyID) -> int:
-        if all(x == self.enemyStatus[0] for x in self.enemyStatus) or not self.breakTeam: # all enemies have the same toughness, choose default target
+        if self.targetPrio == Priority.DEFAULT:
+            return self.getTargetID(enemyID)
+        if all(x == self.enemyStatus[0] for x in self.enemyStatus):
             return self.defaultTarget if enemyID == -1 else enemyID
-        return self.enemyStatus.index(max(self.enemyStatus)) if enemyID == -1 else enemyID
+        chooseEnemy = min(self.enemyStatus) if self.targetPrio == Priority.BROKEN else max(self.enemyStatus)
+        return self.enemyStatus.index(chooseEnemy) if enemyID == -1 else enemyID
         
     
     

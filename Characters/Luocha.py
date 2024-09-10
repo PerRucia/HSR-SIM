@@ -29,13 +29,15 @@ class Luocha(Character):
     dmgDct = {AtkType.BSC: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
+    hasSpecial = True
     stackCount = 2
     canStack = True
+    enemyStatus = []
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None, targetPrio = Priority.DEFAULT) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else Multi(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)
@@ -43,6 +45,7 @@ class Luocha(Character):
         self.planar = pl if pl else Keel(role)
         self.relicStats = subs if subs else RelicStats(13, 2, 3, 2, 4, 8, 4, 4, 4, 4, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.ERR_PERCENT)
         self.rotation = rotation if rotation else ["A"]
+        self.targetPrio = targetPrio
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
@@ -54,7 +57,7 @@ class Luocha(Character):
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         e3Mul = 1.1 if self.eidolon >= 3 else 1.0
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Mul, 0], [10, 0], 20, self.scaling, 1, "LuochaBasic"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Mul, 0], [10, 0], 20, self.scaling, 1, "LuochaBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -70,7 +73,7 @@ class Luocha(Character):
         self.currEnergy = self.currEnergy - self.ultCost
         if self.canStack == 0:
             self.stackCount += 1
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.ULT], [self.element], [e5Mul, 0], [20, 0], 5, self.scaling, 0, "LuochaUlt"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.AOE, [AtkType.ULT], [self.element], [e5Mul, 0], [20, 0], 5, self.scaling, 0, "LuochaUlt"))
         if self.eidolon == 6:
             dbl.append(Debuff("LuochaE6PEN", self.role, Pwr.PEN, 0.20, Role.ALL, [AtkType.ALL], 2))
         return bl, dbl, al, dl, tl
@@ -92,7 +95,11 @@ class Luocha(Character):
     
     def special(self):
         return "Luocha"
-    
+
+    def handleSpecialStart(self, specialRes: Special):
+        self.enemyStatus = specialRes.attr1
+        return super().handleSpecialStart(specialRes)
+
     def handleSpecialEnd(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecialEnd(specialRes)
         self.canStack = max(0, self.canStack - 1)
@@ -101,6 +108,14 @@ class Luocha(Character):
             if self.eidolon >= 4:
                 dbl.append(Debuff("LuochaE4Weaken", self.role, Pwr.GENERIC, 0, Role.ALL, [AtkType.ALL], 1000))
         return bl, dbl, al, dl, tl
+
+    def bestEnemy(self, enemyID) -> int:
+        if self.targetPrio == Priority.DEFAULT:
+            return self.getTargetID(enemyID)
+        if all(x == self.enemyStatus[0] for x in self.enemyStatus):
+            return self.defaultTarget if enemyID == -1 else enemyID
+        chooseEnemy = min(self.enemyStatus) if self.targetPrio == Priority.BROKEN else max(self.enemyStatus)
+        return self.enemyStatus.index(chooseEnemy) if enemyID == -1 else enemyID
         
     
     

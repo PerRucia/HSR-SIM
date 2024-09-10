@@ -132,7 +132,7 @@ class Hunt7th(Character):
                 logger.warning(f"ALERT: H7 gained 1 charge from MarchFUA | Total: {self.charges}")
                 self.fuaTrigger = False
                 self.fuas = self.fuas + 1
-                tl.append(Turn(self.name, self.role, result.enemiesHit[0], Targeting.SINGLE, [AtkType.FUA], [self.element, self.masterElement], [0.6, 0], [1, 0], 5, self.scaling, 0, "MarchFUA"))
+                tl.append(Turn(self.name, self.role, result.enemiesHit[0].enemyID, Targeting.SINGLE, [AtkType.FUA], [self.element, self.masterElement], [0.6, 0], [1, 0], 5, self.scaling, 0, "MarchFUA"))
         if self.charges >= 7 and not self.advanced:
             self.advanced = True
             al.append(Advance("H7EnhancedADV", self.role, 1.0))

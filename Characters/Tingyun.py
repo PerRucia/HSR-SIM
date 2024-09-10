@@ -78,7 +78,7 @@ class Tingyun(Character):
         e4BeneBonus = 0.2 if self.eidolon >= 4 else 0
         e5BeneBonus = 0.44 if self.eidolon >= 5 else 0.4
         if (turn.charRole == self.beneTarget) and (turn.moveName not in bonusDMG) and result.enemiesHit:
-            tl.append(Turn(self.name, self.beneTarget, result.enemiesHit[0], Targeting.SPECIAL, [AtkType.SPECIAL], [self.element], [e5BeneBonus + e4BeneBonus  , 0], [0, 0], 0, Scaling.ATK, 0, "TYBeneBonus"))
+            tl.append(Turn(self.name, self.beneTarget, result.enemiesHit[0].enemyID, Targeting.SPECIAL, [AtkType.SPECIAL], [self.element], [e5BeneBonus + e4BeneBonus  , 0], [0, 0], 0, Scaling.ATK, 0, "TYBeneBonus"))
         return bl, dbl, al, dl, tl
     
     

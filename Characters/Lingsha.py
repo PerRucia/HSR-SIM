@@ -3,6 +3,7 @@ import logging
 from Buff import *
 from Character import Character
 from Delay import *
+from Lightcones import PostOp
 from Lightcones.Scent import ScentLingsha
 from Planars.Kalpagni import KalpagniLingsha
 from RelicStats import RelicStats
@@ -40,16 +41,16 @@ class Lingsha(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, breakTeam = False, rotation = None) -> None:
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, targetPrio = Priority.DEFAULT, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.enemyStatus = None
-        self.lightcone = lc if lc else ScentLingsha(role)
+        self.lightcone = lc if lc else PostOp(role)
         self.relic1 = r1 if r1 else Thief(role, 4)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
         self.planar = pl if pl else KalpagniLingsha(role)
         rope = Pwr.BE_PERCENT if self.lightcone.name == "Post-Op Conversation" else Pwr.ERR_PERCENT
         self.relicStats = subs if subs else RelicStats(12, 4, 0, 4, 4, 0, 4, 12, 4, 4, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, rope)
-        self.breakTeam = breakTeam
+        self.targetPrio = targetPrio
         self.rotation = rotation if rotation else ["E", "A", "A"]
         
     def equip(self):
@@ -140,9 +141,12 @@ class Lingsha(Character):
         return super().canUseUlt() if self.canUlt else False
     
     def bestEnemy(self, enemyID) -> int:
-        if all(x == self.enemyStatus[0] for x in self.enemyStatus) or not self.breakTeam: # all enemies have the same toughness, choose default target
+        if self.targetPrio == Priority.DEFAULT:
+            return self.getTargetID(enemyID)
+        if all(x == self.enemyStatus[0] for x in self.enemyStatus):
             return self.defaultTarget if enemyID == -1 else enemyID
-        return self.enemyStatus.index(max(self.enemyStatus)) if enemyID == -1 else enemyID
+        chooseEnemy = min(self.enemyStatus) if self.targetPrio == Priority.BROKEN else max(self.enemyStatus)
+        return self.enemyStatus.index(chooseEnemy) if enemyID == -1 else enemyID
     
     
     

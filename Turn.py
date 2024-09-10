@@ -29,7 +29,7 @@ class Turn:
     def __str__(self) -> str:
         res = f"{self.moveName} | {self.charName} | {self.charRole.name} | "
         res += f"{self.targeting.value} attack | {[e.value for e in self.element]} | {[a.name for a in self.atkType]} | "
-        res += f"Scaling: {self.scaling.name} | Enemy Target: {self.targetID} | "
+        res += f"Scaling: {self.scaling.name} | TargetID: {self.targetID} | "
         res += f"DMG/BREAK Splits: {self.dmgSplit}/{self.brkSplit} | "
         res += f"Energy Gained: {self.errGain}"
         return res

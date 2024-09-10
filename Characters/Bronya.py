@@ -104,6 +104,6 @@ class Bronya(Character):
         if AtkType.BSC in turn.atkType and turn.moveName not in bonusDMG and self.e4Trigger and result.enemiesHit:
             self.e4Trigger = False
             e5Mul = 1.1 if self.eidolon >= 5 else 1.0
-            tl.append(Turn(self.name, self.role, result.enemiesHit[0], Targeting.SINGLE, [AtkType.FUA, AtkType.BSC], [self.element], [0.8 * e5Mul, 0], [10, 0], 0, self.scaling, 0, "BronyaFUA"))
+            tl.append(Turn(self.name, self.role, result.enemiesHit[0].enemyID, Targeting.SINGLE, [AtkType.FUA, AtkType.BSC], [self.element], [0.8 * e5Mul, 0], [10, 0], 0, self.scaling, 0, "BronyaFUA"))
         return bl, dbl, al, dl, tl
     

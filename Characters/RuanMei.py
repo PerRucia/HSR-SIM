@@ -3,8 +3,10 @@ import logging
 from Buff import *
 from Character import Character
 from Delay import *
+from Lightcones import Mirror
 from Lightcones.MemoriesOfThePast import MOTP
 from Planars.Lushaka import Lushaka
+from Planars.Vonwacq import Vonwacq
 from RelicStats import RelicStats
 from Relics.Messenger import Messenger
 from Relics.Thief import Thief
@@ -14,6 +16,8 @@ from Turn import Turn
 
 logger = logging.getLogger(__name__)
 
+
+# noinspection DuplicatedCode
 class RuanMei(Character):
     # Standard Character Settings
     name = "RuanMei"
@@ -33,26 +37,28 @@ class RuanMei(Character):
     # Unique Character Properties
     hasSpecial = True
     beStat = 0
+    enemyStatus = []
     
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, breakTeam = False, rotation = None) -> None:
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, targetPrio = Priority.DEFAULT, rotation = None) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.enemyStatus = None
         self.lightcone = lc if lc else MOTP(role)
         self.relic1 = r1 if r1 else Thief(role, 2)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else Messenger(role, 2))
-        self.planar = pl if pl else Lushaka(role)
+        self.planar = pl if pl else Vonwacq(role)
         self.relicStats = subs if subs else RelicStats(10, 4, 0, 4, 4, 0, 4, 14, 4, 4, 0, 0, Pwr.HP_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.ERR_PERCENT)
-        self.breakTeam = breakTeam
+        self.targetPrio = targetPrio
         self.rotation = rotation if rotation else ["A", "A", "E"]
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
         teamSPD = 0.104 if self.eidolon >= 3 else 0.10
         bl.append(Buff("RuanSPD", Pwr.SPD_PERCENT, teamSPD, Role.ALL))
+        bl.append(Buff("RuanNerfSPD", Pwr.SPD_PERCENT, -teamSPD, self.role))
         bl.append(Buff("RuanTech", Pwr.ERR_T, 30,  self.role))
         bl.append(Buff("RuanDMG", Pwr.DMG_PERCENT, 0.68, Role.ALL, [AtkType.ALL], 3, 1, self.role, TickDown.START))
         bl.append(Buff("RuanWBE", Pwr.WB_EFF, 0.50, Role.ALL, [AtkType.ALL], 3, 1, self.role, TickDown.START))
@@ -90,25 +96,26 @@ class RuanMei(Character):
             bl.append(Buff("RuanE1Shred", Pwr.SHRED, 0.20, Role.ALL, [AtkType.ALL], ultTurns, 1, self.role, TickDown.START))
         dl.append(Delay("RuanThanatoplum", 0.1 + self.beStat * 0.2, Role.ALL, True, False))
         return bl, dbl, al, dl, tl
-    
+
+    # noinspection DuplicatedCode
     def ownTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().ownTurn(turn, result)
         if result.brokenEnemy and self.eidolon >= 4:
             bl.append(Buff("RuanE4BE", Pwr.BE_PERCENT, 1.0, self.role, turns=4, tdType=TickDown.END))
-        for enemyID in result.brokenEnemy:
+        for enemy in result.brokenEnemy:
             breakMul = 1.32 if self.eidolon >= 3 else 1.2
             e6 = 2.0 if self.eidolon == 6 else 0
-            tl.append(Turn(self.name, self.role, enemyID, Targeting.STBREAK, [AtkType.BRK], [self.element], [breakMul + e6, 0], [0, 0], 0, self.scaling, 0, "RuanAllyBreak"))
+            tl.append(Turn(self.name, self.role, enemy.enemyID, Targeting.STBREAK, [AtkType.BRK], [self.element], [breakMul + e6, 0], [0, 0], 0, self.scaling, 0, "RuanAllyBreak"))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
         if result.brokenEnemy and self.eidolon >= 4:
             bl.append(Buff("RuanE4BE", Pwr.BE_PERCENT, 1.0, self.role, turns=3, tdType=TickDown.END))
-        for enemyID in result.brokenEnemy:
+        for enemy in result.brokenEnemy:
             breakMul = 1.32 if self.eidolon >= 3 else 1.2
             e6 = 2.0 if self.eidolon == 6 else 0
-            tl.append(Turn(self.name, self.role, enemyID, Targeting.STBREAK, [AtkType.BRK], [self.element], [breakMul + e6, 0], [0, 0], 0, self.scaling, 0, "RuanAllyBreak"))
+            tl.append(Turn(self.name, self.role, enemy.enemyID, Targeting.STBREAK, [AtkType.BRK], [self.element], [breakMul + e6, 0], [0, 0], 0, self.scaling, 0, "RuanAllyBreak"))
         return bl, dbl, al, dl, tl
     
     def special(self):
@@ -121,9 +128,12 @@ class RuanMei(Character):
         return bl, dbl, al, dl, tl
     
     def bestEnemy(self, enemyID) -> int:
-        if all(x == self.enemyStatus[0] for x in self.enemyStatus) or not self.breakTeam: # all enemies have the same toughness, choose default target
+        if self.targetPrio == Priority.DEFAULT:
+            return self.getTargetID(enemyID)
+        if all(x == self.enemyStatus[0] for x in self.enemyStatus):
             return self.defaultTarget if enemyID == -1 else enemyID
-        return self.enemyStatus.index(min(self.enemyStatus)) if enemyID == -1 else enemyID
+        chooseEnemy = min(self.enemyStatus) if self.targetPrio == Priority.BROKEN else max(self.enemyStatus)
+        return self.enemyStatus.index(chooseEnemy) if enemyID == -1 else enemyID
 
     
     

@@ -5,10 +5,11 @@ class Enemy:
     broken = False
     role = Role.ENEMY
     
-    def __init__(self, enemyID: int, level: int, spd: float, toughness: int, actionOrder: list, weakness: list, adjacent: list):
+    def __init__(self, enemyID: int, level: int, enemyType: EnemyType, spd: float, toughness: int, actionOrder: list, weakness: list, adjacent: list):
         self.enemyID = enemyID
         self.name = f"Enemy {self.enemyID}"
         self.level = level
+        self.enemyType = enemyType
         self.spd = spd
         self.currSPD = self.spd
         self.toughness = toughness
@@ -72,6 +73,17 @@ class Enemy:
         
     def addDebuffDMG(self, dmg: float):
         self.debuffDMG = self.debuffDMG + dmg
+
+class EnemyModule:
+    def __init__(self, enemyLevel: int, numEnemies: int, enemyTypes: list[EnemyType], enemySPD: list[float], toughness: list[int], attackRatios: list[float], weaknesses: list[Element], actionOrder: list[int]):
+        self.enemyLevel = enemyLevel
+        self.numEnemies = numEnemies
+        self.enemyTypes = enemyTypes
+        self.enemySPD = enemySPD
+        self.toughness = toughness
+        self.attackRatios = attackRatios
+        self.weaknesses = weaknesses
+        self.actionOrder = actionOrder
         
         
         

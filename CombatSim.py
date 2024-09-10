@@ -1,36 +1,44 @@
-from Characters.Aventurine import Aventurine
-from Characters.Feixiao import Feixiao
-from Characters.Moze import Moze
+import logging
+
+from Characters.Rappa import Rappa
 from Characters.RuanMei import RuanMei
+from Characters.HatBlazer import HatBlazer
+from Characters.Gallagher import Gallagher
+from Characters.Lingsha import Lingsha
 from HelperFuncs import *
 from Misc import *
 from Trackers import *
+from Enemy import *
 
 cycles = 5 # comment out this line if running the simulator from an external script
 log = True
 
-def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, weak = None) -> str:
+
+# noinspection PyUnboundLocalVariable,PyUnusedLocal
+def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, enemyModule = None) -> str:
     
     # =============== SETTINGS ===============
     # Enemy Settings
     enemyLevel = 95
     numEnemies = 2
-    enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies"
-    toughness = [100, 100] # make sure that the number of entries in this list is the same as "numEnemies"
-    attackTypeRatio = atkRatio # from Misc.py
-    weaknesses = weak if weak else [Element.WIND, Element.FIRE, Element.IMAGINARY, Element.LIGHTNING]
+    enemyTypes = [EnemyType.ELITE, EnemyType.ELITE] # make sure that the number of entries in this list is the same as "numEnemies"
+    enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies" [120, 144, 158.4, 145.2, 100]
+    toughness = [160, 100] # make sure that the number of entries in this list is the same as "numEnemies" [30, 30, 100, 30, 30]
+    attackRatio = atkRatio # from Misc.py
+    weaknesses = [Element.IMAGINARY]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
+    enemyModule = enemyModule if enemyModule else EnemyModule(enemyLevel, numEnemies, enemyTypes, enemySPD, toughness, attackRatio, weaknesses, actionOrder)
 
     # Character Settings
     if all([a is None for a in [s1, s2, s3, s4]]):
-        slot1 = Feixiao(0, Role.DPS, 0, eidolon=0, rotation=["E"])
-        slot2 = Aventurine(1, Role.SUS, 0, eidolon=0)
-        slot3 = RuanMei(2, Role.SUP1, 0, eidolon=1)
-        slot4 = Moze(3, Role.SUBDPS, 0, eidolon=6)
+        slot1 = Rappa(0, Role.DPS, 0, eidolon=0, targetPrio=Priority.BROKEN)
+        slot2 = RuanMei(1, Role.SUP1, 0, eidolon=0, targetPrio=Priority.BROKEN)
+        slot3 = HatBlazer(2, Role.SUP2, 0, eidolon=6, targetPrio=Priority.BROKEN, rotation=["E"])
+        slot4 = Gallagher(3, Role.SUS, 0, eidolon=6, targetPrio=Priority.BROKEN, rotation=["A"])
         
     # Simulation Settings   
     totalEnemyAttacks = 0
-    logLevel = logging.CRITICAL
+    logLevel = logging.INFO
     # CRITICAL: Only prints the main action taken during each turn + ultimates
     # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
     # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
@@ -72,14 +80,20 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
     # Print Enemy Info
     eTeam = []
-    for i in range(numEnemies):
+    for i in range(enemyModule.numEnemies):
         adjList = []
         if (i - 1) >= 0:
             adjList.append(i - 1)
         if (i + 1) < numEnemies:
             adjList.append(i + 1)
+        eLevel = enemyModule.enemyLevel
+        eType = enemyTypes[i]
+        eSPD = enemyModule.enemySPD[i]
+        eToughness = enemyModule.toughness[i]
+        eAction = enemyModule.actionOrder
+        eWeaknesses = enemyModule.weaknesses
 
-        eTeam.append(Enemy(i, enemyLevel, enemySPD[i], toughness[i], actionOrder, weaknesses, adjList))
+        eTeam.append(Enemy(i, eLevel, eType, eSPD, eToughness, eAction, eWeaknesses, adjList))
         
     logging.critical("Enemy Team:")
     for enemy in eTeam:
@@ -125,7 +139,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         # Reduce AV of all chars
         for u in allUnits:
             u.standardAVred(av)
-            logging.info(f"-    {u.name} AV: {u.currAV:.3f}")
+            logging.info(f"-   {u.name} AV: {u.currAV:.3f} ENERGY: {u.currEnergy if u.isChar() and not u.isSummon() else 0:.3f}")
         logging.info("")
             
         # Apply any special effects
@@ -144,8 +158,11 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
                     bl, dbl, al, dl, tl = char.useHit(unit.enemyID)
                     teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
                     turnList.extend(tl)
-            energyList = addEnergy(playerTeam, eTeam, numAttacks, attackTypeRatio, teamBuffs) # might be useful someday lol
-            logging.warning(f"    CharEnergy - {playerTeam[0].name}: {playerTeam[0].currEnergy:.3f} | {playerTeam[1].name}: {playerTeam[1].currEnergy:.3f} | {playerTeam[2].name}: {playerTeam[2].currEnergy:.3f} | {playerTeam[3].name}: {playerTeam[3].currEnergy:.3f}")
+            energyList = addEnergy(playerTeam, eTeam, numAttacks, enemyModule.attackRatios, teamBuffs) # might be useful someday lol
+            energyMsg = "    CharEnergy -"
+            for i in range(4):
+                energyMsg += f" {playerTeam[i].name}: Hit {energyList[i] * 10:.3f} Total: {playerTeam[i].currEnergy:.3f} |"
+            logging.warning(energyMsg)
             dmg.addDebuffDMG(takeDebuffDMG(unit, playerTeam, teamBuffs, enemyDebuffs))
         elif unit.isChar() and not unit.isSummon(): # Character Turn
             moveType = unit.takeTurn()
@@ -157,6 +174,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
                 bl, dbl, al, dl, tl = unit.useBsc()
             else:
                 print("Invalid move type!")
+                bl, dbl, al, dl, tl = [], [], [], [], []
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
         elif unit.isChar() and unit.isSummon():
@@ -197,7 +215,6 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         allUnits = sortUnits(allUnits)
         # Reset priorities
         setPriority(allUnits)
-        
         # Apply any enemy delays
         delayList = delayAdjustment(eTeam, delayList, enemyDebuffs)
         

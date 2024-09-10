@@ -128,8 +128,8 @@ class Jade(Character):
             bl.append(Buff("PawnedAssetCD", Pwr.CD_PERCENT, self.pawnAsset * (0.024 + e3CD), self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
             bl.append(Buff("PawnedAssetATK", Pwr.ATK_PERCENT, self.pawnAsset * 0.005, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
             e3Bonus = 0.02 if self.eidolon >= 3 else 0
-            for i in result.enemiesHit:
-                tl.append(Turn(self.name, self.role, i, Targeting.SINGLE, [AtkType.SPECIAL], [self.element], [0.25 + e3Bonus, 0], [0, 0], 0, self.scaling, 0, "JadeBonusDMG"))
+            for enemy in result.enemiesHit:
+                tl.append(Turn(self.name, self.role, enemy.enemyID, Targeting.SINGLE, [AtkType.SPECIAL], [self.element], [0.25 + e3Bonus, 0], [0, 0], 0, self.scaling, 0, "JadeBonusDMG"))
         return bl, dbl, al, dl, tl
     
     
