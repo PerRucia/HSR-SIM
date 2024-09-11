@@ -44,7 +44,7 @@ class Firefly(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None, targetPrio = Priority.BROKEN) -> None:
         super().__init__(pos, role, defaultTarget, eidolon)
         self.lightcone = lc if lc else WhereaboutsFF(role)
         self.relic1 = r1 if r1 else CavalryFirefly(role, 4)
@@ -52,6 +52,7 @@ class Firefly(Character):
         self.planar = pl if pl else KalpagniFirefly(role)
         self.relicStats = subs if subs else RelicStats(7, 4, 0, 4, 4, 4, 4, 13, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.BE_PERCENT)
         self.rotation = rotation if rotation else ["E"]
+        self.targetPrio = targetPrio
         
     def equip(self):
         bl, dbl, al, dl = super().equip()

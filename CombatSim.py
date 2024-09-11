@@ -1,50 +1,46 @@
-import logging
-
-from Characters.Rappa import Rappa
-from Characters.RuanMei import RuanMei
-from Characters.HatBlazer import HatBlazer
+from Characters.Firefly import Firefly
 from Characters.Gallagher import Gallagher
-from Characters.Lingsha import Lingsha
+from Characters.HatBlazer import HatBlazer
+from Characters.RuanMei import RuanMei
 from HelperFuncs import *
 from Misc import *
-from Trackers import *
 from Enemy import *
 
 cycles = 5 # comment out this line if running the simulator from an external script
 log = True
-
+manual = False
 
 # noinspection PyUnboundLocalVariable,PyUnusedLocal
-def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, enemyModule = None) -> str:
+def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s3: Character = None, s4: Character = None, outputLog: bool = False, enemyModule = None, manualMode = False) -> str:
     
     # =============== SETTINGS ===============
     # Enemy Settings
-    enemyLevel = 95
     numEnemies = 2
-    enemyTypes = [EnemyType.ELITE, EnemyType.ELITE] # make sure that the number of entries in this list is the same as "numEnemies"
-    enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies" [120, 144, 158.4, 145.2, 100]
-    toughness = [160, 100] # make sure that the number of entries in this list is the same as "numEnemies" [30, 30, 100, 30, 30]
+    enemyLevel = [95, 95] # make sure that the number of entries in this list is the same as "numEnemies"
+    enemyTypes = [EnemyType.BOSS, EnemyType.ELITE]  # make sure that the number of entries in this list is the same as "numEnemies"
+    enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies"
+    toughness = [160, 100] # make sure that the number of entries in this list is the same as "numEnemies"
     attackRatio = atkRatio # from Misc.py
-    weaknesses = [Element.IMAGINARY]
+    weaknesses = [Element.FIRE]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
-    enemyModule = enemyModule if enemyModule else EnemyModule(enemyLevel, numEnemies, enemyTypes, enemySPD, toughness, attackRatio, weaknesses, actionOrder)
+    enemyModule = enemyModule if enemyModule else EnemyModule(numEnemies, enemyLevel, enemyTypes, enemySPD, toughness, attackRatio, weaknesses, actionOrder)
 
     # Character Settings
     if all([a is None for a in [s1, s2, s3, s4]]):
-        slot1 = Rappa(0, Role.DPS, 0, eidolon=0, targetPrio=Priority.BROKEN)
+        slot1 = Firefly(0, Role.DPS, 0, eidolon=0, targetPrio=Priority.BROKEN)
         slot2 = RuanMei(1, Role.SUP1, 0, eidolon=0, targetPrio=Priority.BROKEN)
-        slot3 = HatBlazer(2, Role.SUP2, 0, eidolon=6, targetPrio=Priority.BROKEN, rotation=["E"])
-        slot4 = Gallagher(3, Role.SUS, 0, eidolon=6, targetPrio=Priority.BROKEN, rotation=["A"])
+        slot3 = HatBlazer(2, Role.SUP2, 0, eidolon=6, rotation = ["E", "E", "A"], targetPrio=Priority.BROKEN)
+        slot4 = Gallagher(3, Role.SUBDPS, 0, eidolon=6, targetPrio=Priority.BREAKER)
         
     # Simulation Settings   
     totalEnemyAttacks = 0
-    logLevel = logging.INFO
+    logLevel = logging.CRITICAL
     # CRITICAL: Only prints the main action taken during each turn + ultimates
     # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
     # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
     # DEBUG: Prints the above plus all associated buffs and debuffs present during each turn
     # =============== END OF SETTINGS ===============
-    
+
     # Logging Config
     if not s1:
         playerTeam = [slot1, slot2, slot3, slot4]
@@ -86,7 +82,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
             adjList.append(i - 1)
         if (i + 1) < numEnemies:
             adjList.append(i + 1)
-        eLevel = enemyModule.enemyLevel
+        eLevel = enemyModule.enemyLevel[i]
         eType = enemyTypes[i]
         eSPD = enemyModule.enemySPD[i]
         eToughness = enemyModule.toughness[i]
@@ -94,15 +90,20 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         eWeaknesses = enemyModule.weaknesses
 
         eTeam.append(Enemy(i, eLevel, eType, eSPD, eToughness, eAction, eWeaknesses, adjList))
-        
+
+    manualPrint(manualMode, "===============================================================================================================================================================")
     logging.critical("Enemy Team:")
+    manualPrint(manualMode, "Enemy Team:")
     for enemy in eTeam:
         logging.critical(enemy)
+        manualPrint(manualMode, enemy)
         
     # Print Char Info
     logging.critical("\nPlayer Team:")
+    manualPrint(manualMode, "\nPlayer Team:")
     for char in playerTeam:
         logging.critical(f"{char}\n")
+        manualPrint(manualMode, f"{char}\n")
 
     # Setup equipment and char traces
     teamBuffs, enemyDebuffs, advList, delayList = [], [], [], []
@@ -126,7 +127,8 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
     # Simulator Loop
     logging.critical("\n==========COMBAT SIMULATION STARTED==========")
-
+    
+    
     while simAV < avLimit:
 
         unit = allUnits[0] # Find next turn
@@ -141,18 +143,21 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
             u.standardAVred(av)
             logging.info(f"-   {u.name} AV: {u.currAV:.3f} ENERGY: {u.currEnergy if u.isChar() and not u.isSummon() else 0:.3f}")
         logging.info("")
-            
+
         # Apply any special effects
-        teamBuffs, enemyDebuffs, advList, delayList = handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, "START", spTracker, dmg)
-        
-        # Check if any unit can ult
-        teamBuffs, enemyDebuffs, advList, delayList = handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmg)
+        teamBuffs, enemyDebuffs, advList, delayList = handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, "START", spTracker, dmg, manualMode=manualMode)
+
+        if unit.isChar() and not unit.isSummon():
+            # Check if any unit can ult
+            teamBuffs, enemyDebuffs, advList, delayList = handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmg, manualMode=manualMode, simAV=simAV)
         
         # Handle unit Turns
         if not unit.isChar(): # Enemy turn
             numAttacks = unit.takeTurn()
             totalEnemyAttacks += numAttacks
-            logging.critical(f"ACTION > [ENEMY] TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {numAttacks} attacks")
+            action = f"ACTION > [ENEMY] TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {numAttacks} attacks"
+            logging.critical(action)
+            manualPrint(manualMode, action)
             for i in range(numAttacks):
                 for char in playerTeam:
                     bl, dbl, al, dl, tl = char.useHit(unit.enemyID)
@@ -165,32 +170,39 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
             logging.warning(energyMsg)
             dmg.addDebuffDMG(takeDebuffDMG(unit, playerTeam, teamBuffs, enemyDebuffs))
         elif unit.isChar() and not unit.isSummon(): # Character Turn
-            moveType = unit.takeTurn()
-            logging.critical(f"ACTION > [CHAR] TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move")
+            if manualMode:
+                moveType, target = manualModule(spTracker, playerTeam, summons, eTeam, simAV, unit, "TURN")
+            else:
+                moveType, target = unit.takeTurn(), unit.defaultTarget
+            action = f"ACTION > [CHAR] TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name} | {moveType}-move"
+            logging.critical(action)
+            manualPrint(manualMode, action)
             teamBuffs = tickBuffs(unit, teamBuffs, "START")
             if moveType == "E":
-                bl, dbl, al, dl, tl = unit.useSkl()
+                bl, dbl, al, dl, tl = unit.useSkl(target)
             elif moveType == "A":
-                bl, dbl, al, dl, tl = unit.useBsc()
+                bl, dbl, al, dl, tl = unit.useBsc(target)
             else:
-                print("Invalid move type!")
+                manualPrint(manualMode, "Invalid move type!")
                 bl, dbl, al, dl, tl = [], [], [], [], []
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
         elif unit.isChar() and unit.isSummon():
-            logging.critical(f"ACTION > [SUMMON] TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name}") # Summon logic
+            action = f"ACTION > [SUMMON] TotalAV: {simAV:.3f} | TurnAV: {av:.3f} | {unit.name}"
+            logging.critical(action) # Summon logic
+            manualPrint(manualMode, action)
             bl, dbl, al, dl, tl = unit.takeTurn()
             teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
             turnList.extend(tl)
             
         # Handle any pending attacks:
-        teamBuffs, enemyDebuffs, advList, delayList, turnList = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmg)
+        teamBuffs, enemyDebuffs, advList, delayList, turnList = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmg, manualMode=manualMode)
         
         # Handle any errGain from unit turns
         teamBuffs = handleEnergyFromBuffs(teamBuffs, enemyDebuffs, playerTeam, eTeam)
         
         # Check if any unit can ult
-        teamBuffs, enemyDebuffs, advList, delayList = handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmg)
+        teamBuffs, enemyDebuffs, advList, delayList = handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmg, manualMode=manualMode, simAV=simAV)
         
         if unit.isChar() and not unit.isSummon(): 
             teamBuffs = tickBuffs(unit, teamBuffs, "END") # THIS MARKS THE END OF THE PLAYER TURN
@@ -198,10 +210,10 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
             enemyDebuffs = tickDebuffs(unit, enemyDebuffs) # THIS MARKS THE END OF THE ENEMY TURN
         
         # Apply any special effects
-        teamBuffs, enemyDebuffs, advList, delayList = handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, "END", spTracker, dmg)
+        teamBuffs, enemyDebuffs, advList, delayList = handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, "END", spTracker, dmg, manualMode=manualMode)
         
         # Check if any unit can ult
-        teamBuffs, enemyDebuffs, advList, delayList = handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmg)
+        teamBuffs, enemyDebuffs, advList, delayList = handleUlts(playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmg, manualMode=manualMode, simAV=simAV)
         
         # Apply any speed adjustments
         spdAdjustment(playerTeam, teamBuffs)
@@ -210,11 +222,14 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         # Reset the AV of the current unit by checking its current speed
         if not unit.isChar() or not unit.isSummon():
             resetUnitAV(unit, teamBuffs, enemyDebuffs)
-            logging.warning(f"AV     > {unit.name} AV reset to {unit.currAV:.3f} | {unit.currSPD:.3f} SPD")
+            avLog = f"AV     > {unit.name} AV reset to {unit.currAV:.3f} | {unit.currSPD:.3f} SPD"
+            logging.warning(avLog)
+            manualPrint(manualMode, avLog)
         
         allUnits = sortUnits(allUnits)
         # Reset priorities
         setPriority(allUnits)
+        
         # Apply any enemy delays
         delayList = delayAdjustment(eTeam, delayList, enemyDebuffs)
         
@@ -224,7 +239,9 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         
         if unit.isChar() and unit.isSummon():
             resetUnitAV(unit, [], []) # summons cannot be advanced during their own turn
-            logging.warning(f"AV     > {unit.name} AV reset to {unit.currAV:.3f} | {unit.currSPD:.3f} SPD")
+            avLog = f"AV     > {unit.name} AV reset to {unit.currAV:.3f} | {unit.currSPD:.3f} SPD"
+            logging.warning(avLog)
+            manualPrint(manualMode, avLog)
             
         allUnits = sortUnits(allUnits)
         
@@ -238,8 +255,10 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     logging.critical("\n==========SIMULATION RESULTS==========")
     
     # Print damage info
-    charDMG = 0
+    debuffDMG, charDMG = 0, 0
     dmgList = []
+    for enemy in eTeam:
+        debuffDMG += enemy.debuffDMG
     for char in playerTeam:
         res, currCharDMG = char.getTotalDMG()
         dmgList.append(currCharDMG)
@@ -261,11 +280,11 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
     for char in playerTeam:
         res, charDMG = char.getTotalDMG()
-        logging.critical(f"{char.name} > Total DMG: {charDMG:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV if char.currAV < 500 else char.charge:.3f} | Excess Energy: {char.currEnergy:.3f}")
+        logging.critical(f"{char.name} > Total DMG: {charDMG:.3f} | Basics: {char.basics} | Skills: {char.skills} | Ults: {char.ults} | FuAs: {char.fuas} | Leftover AV: {char.currAV:.3f} | Excess Energy: {char.currEnergy:.3f}")
         logging.critical(res)
     
     return f"DPAV: {dmg.getTotalDMG() / avLimit:.3f} | SP Used: {spTracker.getSPUsed()}, SP Gain: {spTracker.getSPGain()}"
 
 if __name__ == "__main__":
     # Start the simulator with logging output to a file
-    print(startSimulator(cycleLimit=cycles, outputLog=log))
+    print(startSimulator(cycleLimit=cycles, outputLog=log, manualMode=manual))

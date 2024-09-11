@@ -75,9 +75,9 @@ class Enemy:
         self.debuffDMG = self.debuffDMG + dmg
 
 class EnemyModule:
-    def __init__(self, enemyLevel: int, numEnemies: int, enemyTypes: list[EnemyType], enemySPD: list[float], toughness: list[int], attackRatios: list[float], weaknesses: list[Element], actionOrder: list[int]):
-        self.enemyLevel = enemyLevel
+    def __init__(self, numEnemies: int, enemyLevel: list[int], enemyTypes: list[EnemyType], enemySPD: list[float], toughness: list[int], attackRatios: list[float], weaknesses: list[Element], actionOrder: list[int]):
         self.numEnemies = numEnemies
+        self.enemyLevel = enemyLevel
         self.enemyTypes = enemyTypes
         self.enemySPD = enemySPD
         self.toughness = toughness

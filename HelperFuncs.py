@@ -8,6 +8,9 @@ from Trackers import *
 
 logger = logging.getLogger(__name__)
 
+def manualPrint(prnt, msg: any):
+    print(msg) if prnt else 0
+
 def getBuffNames(lst: list) -> list:
     return [entry.name for entry in lst]
 
