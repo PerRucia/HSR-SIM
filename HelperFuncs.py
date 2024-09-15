@@ -525,162 +525,132 @@ def handleSPFromBuffs(buffList: list[Buff], spTracker: SpTracker) -> list[Buff]:
 
 
 # noinspection DuplicatedCode,PyUnusedLocal
-def handleSpec(specStr: str, unit, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str, manualMode = False) -> Special:
+def handleSpec(specStr: str, unit: Character, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], typ: str, manualMode = False) -> Special:
+    gauge = enemyTeam
+    specChar = findCharName(playerTeam, specStr)
+    placeHolderTurn = Turn(specChar.name, specChar.role, -1, Targeting.NA, [AtkType.SPECIAL], [specChar.element], [0, 0], [0, 0], 0, specChar.scaling, 0, "PH Turn")
     if typ == "START":
-        
-        if specStr == "updateRobinATK":
-            char = findCharName(playerTeam, "Robin")
-            res = getBaseValue(char, buffList, Turn(char.name, char.role, -1, Targeting.NA, ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateRobinATK"))
-            if "RobinUltBuff" in getBuffNames(buffList):
-                res -= findBuffName(buffList, "RobinUltBuff").getBuffVal()
-            return Special(name=specStr, attr1=res)
-        
-        elif specStr == "Sparkle":
-            sparkle = findCharName(playerTeam, "Sparkle")
-            phTurn = Turn(sparkle.name, sparkle.role, sparkle.defaultTarget, Targeting.NA, [AtkType.SPECIAL], [sparkle.element], [0, 0], [0, 0], 0, sparkle.scaling, 0, "updateSparkleCD")
-            cdStat = getCharStat(Pwr.CD_PERCENT, sparkle, enemyTeam[sparkle.defaultTarget], buffList, [], phTurn)
-            if "EarthlyTeamCD" in getBuffNames(buffList):
-                cdStat -= findBuffName(buffList, "EarthlyTeamCD").getBuffVal()
-            return Special(name=specStr, attr1=cdStat)
-            
-        elif specStr == "HuoHuo":
-            lst = []
-            for char in [char for char in playerTeam if char.name != "HuoHuo"]:
-                lst.append([0 if char.specialEnergy else char.maxEnergy, char.role])
-            return Special(name=specStr, attr1=lst[0], attr2=lst[1], attr3=lst[2])
-        
-        elif specStr == "Yunli":
-            yunliSlot = findCharName(playerTeam, "Yunli").pos
-            lst = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
-            return Special(name=specStr, attr1=lst[yunliSlot], attr2=len(enemyTeam))
-        
-        elif specStr == "FeixiaoTech" or specStr == "Feixiao":
-            feixiao = findCharName(playerTeam, "Feixiao")
-            numDebuffs = countDebuffs(feixiao.defaultTarget, debuffList)
-            feixiaoTurn = True if unit.name == "Feixiao" else False
-            if inTeam(playerTeam, "Robin") and inTeam(playerTeam, "Bronya"):
-                res = ("RobinFuaCD" in getBuffNames(buffList) and "BronyaUltATK" in getBuffNames(buffList))
-            elif inTeam(playerTeam, "Robin"):
-                res = "RobinFuaCD" in getBuffNames(buffList)
-            elif inTeam(playerTeam, "Bronya"):
-                res = "BronyaUltATK" in getBuffNames(buffList)
-            else:
-                res = True
-            return Special(name=specStr, attr1=res, attr2=feixiaoTurn, attr3=numDebuffs)
-        
-        elif specStr == "Aven":
-            char = findCharName(playerTeam, "Aventurine")
-            avenDef = getBaseValue(char, buffList, Turn(char.name, char.role, -1, Targeting.NA, ["ULT"], [char.element], [0, 0], [0, 0], 0, char.scaling, 0, "updateAvenDEF"))
-            aggroList = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
-            bbList = [2 * aggroList[i] if i == char.pos else 1 * aggroList[i] for i in range(4)]
-            gauge = [e.gauge for e in enemyTeam]
-            return Special(name=specStr, attr1=avenDef, attr2=sum(bbList), attr3=gauge)
-        
-        elif specStr == "TopazFireCheck":
-            res = hasWeakness(Element.FIRE, enemyTeam)
-            return Special(name=specStr, attr1=res)
-        
-        elif specStr == "TopazUltCheck":
-            res = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else True
-            return Special(name=specStr, attr1=res)
-        
-        elif specStr == "H7Special":
-            masterRole = findCharName(playerTeam, "HuntM7").masterRole
-            master = findCharRole(playerTeam, masterRole)
-            return Special(name=specStr, attr1=master.element)
-        
-        elif specStr == "Gallagher":
-            gally = findCharName(playerTeam, "Gallagher")
-            phTurn = Turn(gally.name, gally.role, gally.defaultTarget, Targeting.NA, [AtkType.ALL], [gally.element], [0, 0], [0, 0], 0, gally.scaling, 0, "updateGalBE")
-            beStat = getCharStat(Pwr.BE_PERCENT, gally, enemyTeam[gally.defaultTarget], buffList, debuffList, phTurn)
-            res = False if unit.name == "Gallagher" else True
-            enemyGauge = [e.gauge for e in enemyTeam]
-            return Special(name=specStr, attr1=beStat, attr2=res, attr3=enemyGauge)
-        
-        elif specStr == "MozeCheckRobin":
-            res = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else True
-            return Special(name=specStr, attr1=res)
-        
-        elif specStr == "RuanMei":
-            rm = findCharName(playerTeam, "RuanMei")
-            be = getCharStat(Pwr.BE_PERCENT, rm, enemyTeam[0], buffList, debuffList, Turn(rm.name, rm.role, rm.defaultTarget, Targeting.NA, [AtkType.ALL], [rm.element], [0, 0], [0, 0], 0, rm.scaling, 0, "updateRMBE"))
-            enemyGauge = [e.gauge for e in enemyTeam]
-            return Special(name=specStr, attr1=be, attr2=enemyGauge)
-        
-        elif specStr == "Jiaoqiu":
-            jq = findCharName(playerTeam, "Jiaoqiu")
-            ashenList = [db.stacks for db in debuffList if db.name == "AshenRoasted"]
-            maxStacks = max(ashenList) if len(ashenList) > 0 else 0
-            tickField = True if unit.name == "Jiaoqiu" else False
-            targetStatus = []
-            for enemy in enemyTeam:
-                targetStatus.append("SpringVULN" in getBuffNames([debuff for debuff in debuffList if debuff.target == enemy.enemyID]))
-            ehr = getCharStat(Pwr.EHR_PERCENT, jq, enemyTeam[0], buffList, debuffList, Turn(jq.name, jq.role, -1, Targeting.NA, [AtkType.ALL], [jq.element], [0, 0], [0, 0], 0, jq.scaling, 0, "updateJQEHR"))
-            return Special(name=specStr, attr1=ehr, attr2=maxStacks, attr3=tickField, attr4=targetStatus)
-        
-        elif specStr == "Bronya":
-            bronya = findCharName(playerTeam, "Bronya")
-            cd = getCharStat(Pwr.CD_PERCENT, bronya, enemyTeam[0], buffList, [], Turn(bronya.name, bronya.role, -1, Targeting.NA, [AtkType.ALL], [bronya.element], [0, 0], [0, 0], 0, bronya.scaling, 0, "updateBronyaCD"))
-            if "BronyaUltATK" in getBuffNames(buffList):
-                cd -= findBuffName(buffList, "BronyaUltCD").getBuffVal()
-            return Special(name=specStr, attr1=cd)
-        
-        elif specStr == "Ratio":
-            ratioTarget = findCharName(playerTeam, "DrRatio").defaultTarget
-            res = countDebuffs(ratioTarget, debuffList)
-            res2 = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else True
-            return Special(name=specStr, attr1=res, attr2=res2)
-        
-        elif specStr == "Firefly":
-            firefly = findCharName(playerTeam, "Firefly")
-            res1 = getScalingValues(firefly, buffList, [AtkType.ALL])
-            phTurn = Turn(firefly.name, firefly.role, firefly.defaultTarget, Targeting.NA, [AtkType.ALL], [firefly.element], [0, 0], [0, 0], 0, firefly.scaling, 0, "updateFFBE")
-            res2 = getCharStat(Pwr.BE_PERCENT, firefly, enemyTeam[firefly.defaultTarget], buffList, debuffList, phTurn)
-            enemyGauge = [e.gauge for e in enemyTeam]
-            return Special(name=specStr, attr1=res1, attr2=res2, attr3=enemyGauge)
+        match specStr:
+            case "Aventurine":
+                avenDef = getBaseValue(specChar, buffList, placeHolderTurn)
+                aggroList = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
+                bbList = [2 * aggroList[i] if i == specChar.pos else 1 * aggroList[i] for i in range(4)]
+                return Special(name=specStr, attr1=avenDef, attr2=sum(bbList), enemies=gauge)
 
-        elif specStr == "Rappa":
-            rappa = findCharName(playerTeam, "Rappa")
-            atkStat = getScalingValues(rappa, buffList, [AtkType.ALL])
-            enemyGauge = [e.gauge for e in enemyTeam]
-            canUlt = ("HMCBackupDancer" in getBuffNames(buffList)) if inTeam(playerTeam, "HarmonyMC") else True
-            return Special(name=specStr, attr1=atkStat, attr2=canUlt, attr3=enemyGauge, attr4=inTeam(playerTeam, "RuanMei"))
+            case "Bronya":
+                cd = getCharStat(Pwr.CD_PERCENT, specChar, enemyTeam[0], buffList, [], placeHolderTurn)
+                cd = cd - findBuffName(buffList, "BronyaUltCD").getBuffVal() if "BronyaUltATK" in getBuffNames(buffList) else cd
+                return Special(name=specStr, attr1=cd, enemies=gauge)
 
-        elif specStr == "Luocha":
-            return Special(name=specStr, attr1=[e.gauge for e in enemyTeam])
+            case "DrRatio":
+                enemyDebuffs = [countDebuffs(e.enemyID, debuffList) for e in enemyTeam]
+                canUlt = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else True
+                return Special(name=specStr, attr1=enemyDebuffs, attr2=canUlt, enemies=gauge)
 
-        elif specStr == "HMC":
-            hmc = findCharName(playerTeam, "HarmonyMC")
-            phTurn = Turn(hmc.name, hmc.role, hmc.defaultTarget, Targeting.NA, [AtkType.ALL], [hmc.element], [0, 0], [0, 0], 0, hmc.scaling, 0, "updateHMCBE")
-            hmcBE = getCharStat(Pwr.BE_PERCENT, hmc, enemyTeam[hmc.defaultTarget], buffList, debuffList, phTurn)
-            enemyGauge = [e.gauge for e in enemyTeam]
-            return Special(name=specStr, attr1=len(enemyTeam), attr2=hmcBE, attr3=enemyGauge)
-        
-        elif specStr == "Lingsha":
-            fuyuan = findCharName(summons, "Fuyuan")
-            res = True if fuyuan.currAV > max([char.currAV for char in playerTeam]) else False
-            res2 = [e.gauge for e in enemyTeam]
-            ling = findCharName(playerTeam, "Lingsha")
-            phTurn = Turn(ling.name, ling.role, ling.defaultTarget, Targeting.NA, [AtkType.ALL], [ling.element], [0, 0], [0, 0], 0, ling.scaling, 0, "updateFFBE")
-            charBE = getCharStat(Pwr.BE_PERCENT, ling, enemyTeam[ling.defaultTarget], buffList, debuffList, phTurn)
-            return Special(name=specStr, attr1=res, attr2=res2, attr3=charBE)
-        
-        elif specStr == "Fuxuan":
-            lst = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
-            return Special(name=specStr, attr1=lst)
-        
-        else:
-            return Special(name=specStr)
+            case "Feixiao":
+                enemyDebuffs = [countDebuffs(e.enemyID, debuffList) for e in enemyTeam]
+                feixiaoTurn = True if specChar.name == "Feixiao" else False
+                if inTeam(playerTeam, "Robin") and inTeam(playerTeam, "Bronya"):
+                    canUlt = ("RobinFuaCD" in getBuffNames(buffList) and "BronyaUltATK" in getBuffNames(buffList))
+                elif inTeam(playerTeam, "Robin"):
+                    canUlt = "RobinFuaCD" in getBuffNames(buffList)
+                elif inTeam(playerTeam, "Bronya"):
+                    canUlt = "BronyaUltATK" in getBuffNames(buffList)
+                else:
+                    canUlt = True
+                return Special(name=specStr, attr1=canUlt, attr2=feixiaoTurn, attr3=enemyDebuffs, enemies=gauge)
+
+            case "Firefly":
+                res1 = getScalingValues(specChar, buffList, [AtkType.ALL])
+                res2 = getCharStat(Pwr.BE_PERCENT, specChar, enemyTeam[specChar.defaultTarget], buffList, debuffList, placeHolderTurn)
+                return Special(name=specStr, attr1=res1, attr2=res2, enemies=gauge)
+
+            case "Fuxuan":
+                lst = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
+                return Special(name=specStr, attr1=lst, enemies=gauge)
+
+            case "Gallagher":
+                beStat = getCharStat(Pwr.BE_PERCENT, specChar, enemyTeam[0], buffList, debuffList, placeHolderTurn)
+                canUlt = False if unit.name == "Gallagher" else True
+                return Special(name=specStr, attr1=beStat, attr2=canUlt, enemies=gauge)
+
+            case "HarmonyMC":
+                hmcBE = getCharStat(Pwr.BE_PERCENT, specChar, enemyTeam[specChar.defaultTarget], buffList, debuffList, placeHolderTurn)
+                return Special(name=specStr, attr1=hmcBE, enemies=gauge)
+
+            case "HuntM7":
+                master = findCharRole(playerTeam, findCharName(playerTeam, "HuntM7").masterRole)
+                return Special(name=specStr, attr1=master.element, enemies=gauge)
+
+            case "HuoHuo":
+                lst = []
+                for char in [char for char in playerTeam if char.name != "HuoHuo"]:
+                    lst.append([0 if char.specialEnergy else char.maxEnergy, char.role])
+                return Special(name=specStr, attr1=lst[0], attr2=lst[1], attr3=lst[2], enemies=gauge)
+
+            case "Jiaoqiu":
+                ashenList = [db.stacks for db in debuffList if db.name == "AshenRoasted"]
+                maxStacks = max(ashenList) if len(ashenList) > 0 else 0
+                tickField = True if unit.name == "Jiaoqiu" else False
+                targetStatus = []
+                for enemy in enemyTeam:
+                    targetStatus.append("SpringVULN" in getBuffNames([debuff for debuff in debuffList if debuff.target == enemy.enemyID]))
+                ehr = getCharStat(Pwr.EHR_PERCENT, specChar, enemyTeam[0], buffList, debuffList, placeHolderTurn)
+                return Special(name=specStr, attr1=ehr, attr2=maxStacks, attr3=tickField, attr4=targetStatus, enemies=gauge)
+
+            case "Lingsha":
+                fuyuan = findCharName(summons, "Fuyuan")
+                canUlt = True if fuyuan.currAV > max([char.currAV for char in playerTeam]) else False
+                charBE = getCharStat(Pwr.BE_PERCENT, specChar, enemyTeam[0], buffList, debuffList, placeHolderTurn)
+                return Special(name=specStr, attr1=canUlt, enemies=gauge, attr3=charBE)
+
+            case "Moze":
+                res = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else True
+                return Special(name=specStr, attr1=res, enemies=gauge)
+
+            case "Rappa":
+                atkStat = getScalingValues(specChar, buffList, [AtkType.ALL])
+                canUlt = ("HMCBackupDancer" in getBuffNames(buffList)) if inTeam(playerTeam, "HarmonyMC") else True
+                return Special(name=specStr, attr1=atkStat, attr2=canUlt, enemies=gauge, attr4=inTeam(playerTeam, "RuanMei"))
+
+            case "Robin":
+                atk = getBaseValue(specChar, buffList, placeHolderTurn)
+                if "RobinUltBuff" in getBuffNames(buffList):
+                    atk -= findBuffName(buffList, "RobinUltBuff").getBuffVal()
+                return Special(name=specStr, attr1=atk, enemies=gauge)
+
+            case "RuanMei":
+                be = getCharStat(Pwr.BE_PERCENT, specChar, enemyTeam[0], buffList, debuffList, placeHolderTurn)
+                return Special(name=specStr, attr1=be, enemies=gauge)
+
+            case "Sparkle":
+                cdStat = getCharStat(Pwr.CD_PERCENT, specChar, enemyTeam[0], buffList, [], placeHolderTurn)
+                if "EarthlyTeamCD" in getBuffNames(buffList):
+                    cdStat -= findBuffName(buffList, "EarthlyTeamCD").getBuffVal()
+                return Special(name=specStr, attr1=cdStat, enemies=gauge)
+
+            case "Topaz":
+                fireWeak = hasWeakness(Element.FIRE, enemyTeam)
+                canUlt = ("RobinFuaCD" in getBuffNames(buffList)) if inTeam(playerTeam, "Robin") else True
+                return Special(name=specStr, attr1=fireWeak, attr2=canUlt, enemies=gauge)
+
+            case "Yunli":
+                yunliSlot = specChar.pos
+                lst = addEnergy(playerTeam, enemyTeam, 0, atkRatio, buffList)
+                return Special(name=specStr, attr1=lst[yunliSlot], enemies=gauge)
+
+            case _:
+                return Special(specStr, enemies=gauge)
         
     elif typ == "END":
-        if specStr == "updateRobinATK":
-            slowestChar = sorted([char for char in playerTeam if char.name != "Robin"], key=lambda x: x.currSPD)[0]
-            res = True if slowestChar.name == "Yunli" else unit.role == slowestChar.role
-            return Special(name=specStr, attr1=res)
+        match specStr:
+            case "Robin":
+                slowestChar = sorted([char for char in playerTeam if char.name != "Robin"], key=lambda x: x.currSPD)[0]
+                res = True if slowestChar.name == "Yunli" else unit.role == slowestChar.role
+                return Special(name=specStr, attr1=res)
 
-        
-        else:
-            return Special(name=specStr)
+            case _:
+                return Special(name=specStr)
         
 def wbDelay(ele: Element, charBE: float, enemy: Enemy) -> list[Delay]:
     res = [Delay("STDBreakDelay", 0.25, enemy.enemyID, True, False)]
@@ -824,15 +794,14 @@ def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuf
     turnList = []
     # Apply any special effects
     for char in playerTeam:
-        if char.hasSpecial:
-            spec = char.special()
-            specRes = handleSpec(spec, unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, checkType, manualMode=manualMode)
-            if checkType == "START":
-                bl, dbl, al, dl, tl = char.handleSpecialStart(specRes)
-            else:
-                bl, dbl, al, dl, tl = char.handleSpecialEnd(specRes)
-            teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
-            turnList.extend(tl)    
+        spec = char.special()
+        specRes = handleSpec(spec, unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, checkType, manualMode=manualMode)
+        if checkType == "START":
+            bl, dbl, al, dl, tl = char.handleSpecialStart(specRes)
+        else:
+            bl, dbl, al, dl, tl = char.handleSpecialEnd(specRes)
+        teamBuffs, enemyDebuffs, advList, delayList = handleAdditions(playerTeam, eTeam, teamBuffs, enemyDebuffs, advList, delayList, bl, dbl, al, dl)
+        turnList.extend(tl)
 
     # Handle any attacks from special attacks  
     teamBuffs, enemyDebuffs, advList, delayList, turnList = processTurnList(turnList, playerTeam, summons, eTeam, teamBuffs, enemyDebuffs, advList, delayList, spTracker, dmgTracker, manualMode)      

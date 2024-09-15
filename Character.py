@@ -21,9 +21,6 @@ class Character:
     currAV = 100.0
     rotation = ["E", "A", "A"]
     dmgDct = {AtkType.BSC: 0.0, AtkType.SKL: 0.0, AtkType.ULT: 0.0, AtkType.BRK: 0.0}
-    hasSpecial = False
-    character = True
-    summon = False
     hasSummon = False
     specialEnergy = False
     basics = 0
@@ -35,12 +32,13 @@ class Character:
     relic1 = None
     relic2 = None
     planar = None
+    enemyStatus = []
 
     # Unique Character Properties
     
     # Relic Settings
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int, eidolon: int) -> None:
+    def __init__(self, pos: int, role: Role, defaultTarget: int, eidolon: int, targetPrio: Priority) -> None:
         self.relicStats = None
         self.pos = pos
         self.role = role
@@ -48,6 +46,7 @@ class Character:
         self.currSPD = 100
         self.defaultTarget = defaultTarget
         self.eidolon = min(6, eidolon)
+        self.targetPrio = targetPrio
         
     def __str__(self) -> str:
         res = f"{self.name} E{self.eidolon} | {self.element.name}-{self.path.name} | {self.role.name} | POS:{self.pos}\n"
@@ -86,9 +85,10 @@ class Character:
         return *self.parseEquipment("OWN", turn=turn, result=result), []
     
     def special(self):
-        return ""
+        return self.name
     
     def handleSpecialStart(self, specialRes: Special):
+        self.enemyStatus = specialRes.enemies
         return *self.parseEquipment("SPECIALS", special=specialRes), []
     
     def handleSpecialEnd(self, specialRes: Special):
@@ -148,12 +148,6 @@ class Character:
     def canUseUlt(self) -> bool:
         return self.currEnergy >= self.ultCost
     
-    def isChar(self) -> bool:
-        return self.character
-    
-    def isSummon(self) -> bool:
-        return self.summon
-    
     def takeTurn(self) -> str:
         res = self.turn
         self.turn = self.turn + 1
@@ -180,10 +174,22 @@ class Character:
     def standardAVred(self, av: float):
         self.currAV = max(0.0, self.currAV - av)
         
-    def getTargetID(self, enemyID: int):
-        if enemyID == -1:
+    def bestEnemy(self, enemyID) -> int:
+        if enemyID != -1:
+            return enemyID
+        elif self.targetPrio == Priority.DEFAULT:
             return self.defaultTarget
-        return enemyID
+        else:
+            sorted_enemies = sorted(self.enemyStatus, key=lambda enemy: (enemy.gauge if self.targetPrio == Priority.BROKEN else -enemy.gauge, -len(enemy.adjacent)))
+            return sorted_enemies[0].enemyID
+
+    @staticmethod
+    def isChar() -> bool:
+        return True
+
+    @staticmethod
+    def isSummon() -> bool:
+        return False
 
     @staticmethod
     def extendLists(bl: list, dbl: list, al: list, dl: list, tl: list, nbl: list, ndbl: list, nal: list, ndl: list, ntl: list):

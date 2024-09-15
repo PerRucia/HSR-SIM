@@ -35,23 +35,19 @@ class RuanMei(Character):
     dmgDct = {AtkType.BSC: 0, AtkType.BRK: 0,  AtkType.SBK: 0} # Adjust accordingly
     
     # Unique Character Properties
-    hasSpecial = True
     beStat = 0
-    enemyStatus = []
     
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, targetPrio = Priority.DEFAULT, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget, eidolon)
-        self.enemyStatus = None
+        super().__init__(pos, role, defaultTarget, eidolon, targetPrio)
         self.lightcone = lc if lc else MOTP(role)
         self.relic1 = r1 if r1 else Thief(role, 2)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else Messenger(role, 2))
         self.planar = pl if pl else Vonwacq(role)
         self.relicStats = subs if subs else RelicStats(10, 4, 0, 4, 4, 0, 4, 14, 4, 4, 0, 0, Pwr.HP_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.ERR_PERCENT)
-        self.targetPrio = targetPrio
         self.rotation = rotation if rotation else ["A", "A", "E"]
         
     def equip(self):
@@ -79,7 +75,7 @@ class RuanMei(Character):
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         e5Bonus = 0.352 if self.eidolon >= 5 else 0.32
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RuanSkill"))
+        tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RuanSkill"))
         bl.append(Buff("RuanDMG", Pwr.DMG_PERCENT, e5Bonus + 0.36, Role.ALL, [AtkType.ALL], 3, 1, self.role, TickDown.START))
         bl.append(Buff("RuanWBE", Pwr.WB_EFF, 0.50, Role.ALL, [AtkType.ALL], 3, 1, self.role, TickDown.START))
         return bl, dbl, al, dl, tl
@@ -91,7 +87,7 @@ class RuanMei(Character):
         pen = 0.27 if self.eidolon >= 3 else 0.25
         bl.append(Buff("RuanUltPEN", Pwr.PEN, pen, Role.ALL, [AtkType.ALL], ultTurns, 1, self.role, TickDown.START))
         breakMul = 0.54 if self.eidolon >= 3 else 0.50
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOEBREAK, [AtkType.BRK], [self.element], [breakMul, 0], [0, 0], 5, self.scaling, 0, "RuanUltBreak"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.AOEBREAK, [AtkType.BRK], [self.element], [breakMul, 0], [0, 0], 5, self.scaling, 0, "RuanUltBreak"))
         if self.eidolon >= 1:
             bl.append(Buff("RuanE1Shred", Pwr.SHRED, 0.20, Role.ALL, [AtkType.ALL], ultTurns, 1, self.role, TickDown.START))
         dl.append(Delay("RuanThanatoplum", 0.1 + self.beStat * 0.2, Role.ALL, True, False))
@@ -118,22 +114,11 @@ class RuanMei(Character):
             tl.append(Turn(self.name, self.role, enemy.enemyID, Targeting.STBREAK, [AtkType.BRK], [self.element], [breakMul + e6, 0], [0, 0], 0, self.scaling, 0, "RuanAllyBreak"))
         return bl, dbl, al, dl, tl
     
-    def special(self):
-        return "RuanMei"
-    
     def handleSpecialStart(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         self.beStat = specialRes.attr1
-        self.enemyStatus = specialRes.attr2
         return bl, dbl, al, dl, tl
-    
-    def bestEnemy(self, enemyID) -> int:
-        if self.targetPrio == Priority.DEFAULT:
-            return self.getTargetID(enemyID)
-        if all(x == self.enemyStatus[0] for x in self.enemyStatus):
-            return self.defaultTarget if enemyID == -1 else enemyID
-        chooseEnemy = min(self.enemyStatus) if self.targetPrio == Priority.BROKEN else max(self.enemyStatus)
-        return self.enemyStatus.index(chooseEnemy) if enemyID == -1 else enemyID
+
 
     
     

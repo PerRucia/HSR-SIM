@@ -29,7 +29,6 @@ class Bronya(Character):
     dmgDct = {AtkType.BSC: 0, AtkType.BRK: 0, AtkType.FUA: 0} # Adjust accordingly
     
     # Unique Character Properties
-    hasSpecial = True
     cdStat = 0
     targetRole = Role.DPS
     e4Trigger = True
@@ -38,8 +37,8 @@ class Bronya(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget, eidolon)
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None, targetPrio = Priority.DEFAULT) -> None:
+        super().__init__(pos, role, defaultTarget, eidolon, targetPrio)
         self.lightcone = lc if lc else Btbio(wearerRole=role, targetRole=self.targetRole)
         self.relic1 = r1 if r1 else Messenger(role, 4, True)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
@@ -55,13 +54,12 @@ class Bronya(Character):
         bl.append(Buff("BronyaTraceDMG", Pwr.DMG_PERCENT, 0.224, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         bl.append(Buff("BronyaTraceCD", Pwr.CD_PERCENT, 0.24, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         bl.append(Buff("BronyaTraceERS", Pwr.ERS_PERCENT, 0.10, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("BronyaFeixiaoUltDMG", Pwr.DMG_PERCENT, 0.66, self.targetRole, [AtkType.ULT], 1, 1, self.targetRole, TickDown.PERM))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         e5Mul = 1.1 if self.eidolon >= 5 else 1.0
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Mul, 0], [10, 0], 20, self.scaling, 1, "BronyaBasic"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Mul, 0], [10, 0], 20, self.scaling, 1, "BronyaBasic"))
         al.append(Advance("BronyaBasic", self.role, 0.33 if self.eidolon >= 3 else 0.30))
         return bl, dbl, al, dl, tl
     
@@ -70,7 +68,7 @@ class Bronya(Character):
         spGen = 0 if (self.turn % 2 == 1 and self.eidolon >= 1) else -1
         e5Mul = 0.726 if self.eidolon >= 5 else 0.66
         e6Turns = 2 if self.eidolon == 6 else 1
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.SKL], [self.element], [0.0, 0], [0, 0], 30, self.scaling, spGen, "BronyaSkill"))
+        tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.SKL], [self.element], [0.0, 0], [0, 0], 30, self.scaling, spGen, "BronyaSkill"))
         bl.append(Buff("BronyaSkillDMG", Pwr.DMG_PERCENT, e5Mul, self.targetRole, [AtkType.ALL], e6Turns, 1, self.targetRole, TickDown.END))
         if self.eidolon >= 2:
             bl.append(Buff("BronyaE2SPD", Pwr.SPD_PERCENT, 0.30, self.targetRole, tickDown=self.targetRole, tdType=TickDown.END))
@@ -87,9 +85,6 @@ class Bronya(Character):
         bl.append(Buff("BronyaUltATK", Pwr.ATK_PERCENT, 0.594 if self.eidolon >= 3 else 0.55, Role.ALL, [AtkType.ALL], 2, 1, Role.SELF, TickDown.END))
         bl.append(Buff("BronyaUltCD", Pwr.CD_PERCENT, e3Mul * self.cdStat + e3Flat, Role.ALL, [AtkType.ALL], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
-    
-    def special(self):
-        return "Bronya"
     
     def handleSpecialStart(self, specialRes: Special):
         self.cdStat = specialRes.attr1

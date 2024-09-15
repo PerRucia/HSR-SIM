@@ -30,7 +30,6 @@ class Firefly(Character):
     dmgDct = {AtkType.BSC: 0, AtkType.SKL: 0, AtkType.SBK: 0, AtkType.BRK: 0, AtkType.TECH: 0} # Adjust accordingly
     
     # Unique Character Properties
-    hasSpecial = True
     hasSummon = True
     tech = True
     
@@ -38,21 +37,19 @@ class Firefly(Character):
     beStat = 0
     enhancedState = False
     e2Counter = 0
-    enemyStatus = []
     
     # Relic Settings
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None, targetPrio = Priority.BROKEN) -> None:
-        super().__init__(pos, role, defaultTarget, eidolon)
+        super().__init__(pos, role, defaultTarget, eidolon, targetPrio)
         self.lightcone = lc if lc else WhereaboutsFF(role)
         self.relic1 = r1 if r1 else CavalryFirefly(role, 4)
         self.relic2 = r2 if r2 else None
         self.planar = pl if pl else KalpagniFirefly(role)
         self.relicStats = subs if subs else RelicStats(7, 4, 0, 4, 4, 4, 4, 13, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.BE_PERCENT)
         self.rotation = rotation if rotation else ["E"]
-        self.targetPrio = targetPrio
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
@@ -102,7 +99,7 @@ class Firefly(Character):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         self.currEnergy = self.currEnergy - self.ultCost
         self.enhancedState = True
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "FireflyUlt"))
+        tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "FireflyUlt"))
         brkBoost = 0.22 if self.eidolon >= 5 else 0.2
         spdBoost = 66 if self.eidolon >= 5 else 60
         wbeBoost = 1.0 if self.eidolon == 6 else 0.5
@@ -136,9 +133,6 @@ class Firefly(Character):
     def canUseUlt(self) -> bool:
         return False if self.enhancedState else super().canUseUlt()
     
-    def special(self):
-        return "Firefly"
-    
     def handleSpecialStart(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         self.atkStat = specialRes.attr1
@@ -148,12 +142,6 @@ class Firefly(Character):
         if self.tech:
             self.tech = False
             tl.append(Turn(self.name, self.role, 0, Targeting.AOE, [AtkType.TECH], [self.element], [2.0, 0], [20 * 2/3, 0], 0, self.scaling, 0, "FireflyTech"))
-        self.enemyStatus = specialRes.attr3
         return bl, dbl, al, dl, tl
-    
-    def bestEnemy(self, enemyID) -> int:
-        if all(x == self.enemyStatus[0] for x in self.enemyStatus): # all enemies have the same toughness, choose default target
-            return self.defaultTarget if enemyID == -1 else enemyID
-        return self.enemyStatus.index(min(self.enemyStatus)) if enemyID == -1 else enemyID
     
     

@@ -29,7 +29,6 @@ class Hunt7th(Character):
     dmgDct = {AtkType.BSC: 0, AtkType.FUA: 0, AtkType.EBSC: 0, AtkType.ULT: 0, AtkType.BRK: 0} # Adjust accordingly
     
     # Unique Character Properties
-    hasSpecial = True
     firstTurn = True
     masterElement = element
     ultEnhanced = False
@@ -43,8 +42,8 @@ class Hunt7th(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, masterRole = Role.DPS, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget, eidolon)
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, masterRole = Role.DPS, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, rotation = None, targetPrio = Priority.DEFAULT) -> None:
+        super().__init__(pos, role, defaultTarget, eidolon, targetPrio)
         self.lightcone = lc if lc else Swordplay(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
@@ -79,22 +78,22 @@ class Hunt7th(Character):
                 self.ucount += 1
                 chance = 0.8 + 0.8**2 + 0.8**3
                 # print("UltEBSC", self.ucount)
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC, AtkType.UEBSC], [self.element, self.masterElement], [eMul, 0], [5, 0], 35, self.scaling, 0, "H7UltEnhancedBSC"))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC, AtkType.UEBSC], [self.element, self.masterElement], [eMul, 0], [5, 0], 35, self.scaling, 0, "H7UltEnhancedBSC"))
                 for _ in range(4):
-                    tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC, AtkType.UEBSC], [self.element, self.masterElement], [eMul, 0], [5, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC, AtkType.UEBSC], [self.element, self.masterElement], [chance * eMul, 0], [9.76, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
+                    tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC, AtkType.UEBSC], [self.element, self.masterElement], [eMul, 0], [5, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC, AtkType.UEBSC], [self.element, self.masterElement], [chance * eMul, 0], [9.76, 0], 0, self.scaling, 0, "H7UltEnhancedBSCExtras"))
             else:
                 self.ecount += 1
                 chance = 0.6 + 0.6**2 + 0.6**3
                 # print("EBSC", self.ecount)
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC], [self.element, self.masterElement], [eMul, 0], [5, 0], 35, self.scaling, 0, "H7EnhancedBSC"))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC], [self.element, self.masterElement], [eMul, 0], [5, 0], 35, self.scaling, 0, "H7EnhancedBSC"))
                 for _ in range(2):
-                    tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC], [self.element, self.masterElement], [eMul, 0], [5, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC], [self.element, self.masterElement], [chance * eMul, 0], [5.88, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
+                    tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC], [self.element, self.masterElement], [eMul, 0], [5, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
+                tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.EBSC, AtkType.BSC], [self.element, self.masterElement], [chance * eMul, 0], [5.88, 0], 0, self.scaling, 0, "H7EnhancedBSCExtras"))
         else:
             self.charges = min(10, self.charges + 1)
             logger.warning(f"ALERT: H7 gained 1 charge from MarchBasic | Total: {self.charges}")
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element, self.masterElement], [e3basic + e3bonus, 0], [10, 0], 25, self.scaling, 1, "H7Basic"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element, self.masterElement], [e3basic + e3bonus, 0], [10, 0], 25, self.scaling, 1, "H7Basic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
@@ -104,7 +103,7 @@ class Hunt7th(Character):
         bl.append(Buff("H7MasterSPD", Pwr.SPD_PERCENT, e3SPD, self.masterRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon >= 1:
             bl.append(Buff("H7SelfSPD", Pwr.SPD_PERCENT, 0.10, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.ALL], [self.element, self.masterElement], [0, 0], [0, 0], 35 + extraErr, self.scaling, -1, "H7Skill")) # e4 energy buff 30 + 5
+        tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ALL], [self.element, self.masterElement], [0, 0], [0, 0], 35 + extraErr, self.scaling, -1, "H7Skill")) # e4 energy buff 30 + 5
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -112,7 +111,7 @@ class Hunt7th(Character):
         self.currEnergy = self.currEnergy - self.ultCost
         self.ultEnhanced = True
         e5Mul = 2.592 if self.eidolon >= 5 else 2.4
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.ULT], [self.element, self.masterElement], [e5Mul, 0], [30, 0], 5, self.scaling, 0, "H7Ult"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.ULT], [self.element, self.masterElement], [e5Mul, 0], [30, 0], 5, self.scaling, 0, "H7Ult"))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, turn: Turn, result: Result):
@@ -147,14 +146,11 @@ class Hunt7th(Character):
             return "E"
         return res
     
-    def special(self):
-        self.hasSpecial = False
-        return "H7Special"
-    
     def handleSpecialStart(self, specialRes: Special):
-        self.masterElement = specialRes.attr1
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
-        bl.append(Buff("MarchBonusERR", Pwr.ERR_T, 30, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        self.masterElement = specialRes.attr1
+        if self.firstTurn:
+            bl.append(Buff("MarchBonusERR", Pwr.ERR_T, 30, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, dbl, al, dl, tl
     
     

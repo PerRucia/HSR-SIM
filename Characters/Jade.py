@@ -37,8 +37,8 @@ class Jade(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, debtCollector = None, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget, eidolon)
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, debtCollector = None, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None, targetPrio = Priority.DEFAULT) -> None:
+        super().__init__(pos, role, defaultTarget, eidolon, targetPrio)
         self.lightcone = lc if lc else Breakfast(role)
         self.relic1 = r1 if r1 else Genius(role, 4)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
@@ -66,14 +66,14 @@ class Jade(Character):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         e5Bonus = 0.09 if self.eidolon >= 5 else 0
         e5Bonus2 = 0.03 if self.eidolon >= 5 else 0
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.BLAST, [AtkType.BSC], [self.element], [0.9 + e5Bonus, 0.3 + e5Bonus2], [10, 5], 20, self.scaling, 1, "JadeBasic"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.BSC], [self.element], [0.9 + e5Bonus, 0.3 + e5Bonus2], [10, 5], 20, self.scaling, 1, "JadeBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         if self.role != self.debtCollector:
             bl.append(Buff("DebtCollectorSPD", Pwr.SPD, 30, self.debtCollector, [AtkType.ALL], 3, 1, self.role, TickDown.START))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 30, self.scaling, -1, "JadeSkill"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 30, self.scaling, -1, "JadeSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
@@ -85,7 +85,7 @@ class Jade(Character):
         bl.append(Buff("JadeUltFuaBoost", Pwr.DMG_PERCENT, 0.80 + e5DMG, self.role, [AtkType.FUA], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon >= 4:
             bl.append(Buff("JadeE4Shred", Pwr.SHRED, 0.12, self.role, [AtkType.ALL], 3, 1, Role.SELF, TickDown.END))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.ULT], [self.element], [2.4 + e5Bonus, 0], [20, 0],5, self.scaling, 0, "JadeUlt"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.AOE, [AtkType.ULT], [self.element], [2.4 + e5Bonus, 0], [20, 0],5, self.scaling, 0, "JadeUlt"))
         return bl, dbl, al, dl, tl
     
     def useFua(self, enemyID=-1):
@@ -101,7 +101,7 @@ class Jade(Character):
             bl.append(Buff("PawnedAssetE2CR", Pwr.CR_PERCENT, 0.18, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if self.ultFuaBoost < 0:
             bl.append(Buff("JadeUltFuaBoost", Pwr.DMG_PERCENT, 0.00, self.role, [AtkType.FUA], 1, 1, Role.SELF, TickDown.PERM))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.FUA], [self.element], [1.2 + e3bonus, 0], [10, 0], 10, self.scaling, 0, "JadeFua"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.AOE, [AtkType.FUA], [self.element], [1.2 + e3bonus, 0], [10, 0], 10, self.scaling, 0, "JadeFua"))
         return bl, dbl, al, dl, tl
     
     def ownTurn(self, turn: Turn, result: Result):
@@ -112,7 +112,7 @@ class Jade(Character):
                 e1Bonus = 2 if len(result.enemiesHit) == 1 else (1 if len(result.enemiesHit) == 2 else 0)
                 self.fuaStacks = self.fuaStacks + len(result.enemiesHit) + 2 * e1Bonus
         if self.fuaStacks >= 8:
-            bl, dbl, al, dl, tl = self.useFua(self.defaultTarget)
+            bl, dbl, al, dl, tl = self.useFua(self.bestEnemy(-1))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
@@ -124,7 +124,7 @@ class Jade(Character):
             e1Bonus = 2 if len(result.enemiesHit) == 1 else (1 if len(result.enemiesHit) == 2 else 0)
             self.fuaStacks = self.fuaStacks + len(result.enemiesHit) + e1Bonus
             if self.fuaStacks >= 8:
-                bl, dbl, al, dl, tl = self.useFua(self.defaultTarget)
+                bl, dbl, al, dl, tl = self.useFua(self.bestEnemy(-1))
             bl.append(Buff("PawnedAssetCD", Pwr.CD_PERCENT, self.pawnAsset * (0.024 + e3CD), self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
             bl.append(Buff("PawnedAssetATK", Pwr.ATK_PERCENT, self.pawnAsset * 0.005, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
             e3Bonus = 0.02 if self.eidolon >= 3 else 0

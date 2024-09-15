@@ -28,8 +28,8 @@ class Tingyun(Character):
     
     # Relic Settings
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, beneTarget = None, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget, eidolon)
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, beneTarget = None, rotation = None, targetPrio = Priority.DEFAULT) -> None:
+        super().__init__(pos, role, defaultTarget, eidolon, targetPrio)
         self.lightcone = lc if lc else MOTP(role, 5)
         self.relic1 = r1 if r1 else Musketeer(role, 4)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
@@ -50,13 +50,13 @@ class Tingyun(Character):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         e3Mul = 1.1 if self.eidolon >= 3 else 1.0
         e5Mul = 0.66 if self.eidolon >= 5 else 0.6
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Mul, 0], [10, 0], 25, self.scaling, 1, "TingyunBasic"))
-        tl.append(Turn(self.name, self.beneTarget, self.getTargetID(enemyID), Targeting.SPECIAL, [AtkType.SPECIAL], [self.element], [e5Mul, 0], [0, 0], 0, Scaling.ATK, 0, "TYAllyBonus"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Mul, 0], [10, 0], 25, self.scaling, 1, "TingyunBasic"))
+        tl.append(Turn(self.name, self.beneTarget, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.SPECIAL], [self.element], [e5Mul, 0], [0, 0], 0, Scaling.ATK, 0, "TYAllyBonus"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "TingyunSkill"))
+        tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "TingyunSkill"))
         bl.append(Buff("Benediction", Pwr.ATK_PERCENT, 0.55, self.beneTarget, [AtkType.ALL], 3, 1, self.beneTarget, TickDown.END))
         bl.append(Buff("TingyunSkillSPD", Pwr.SPD_PERCENT, 0.2, self.role, [AtkType.ALL], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
@@ -66,7 +66,7 @@ class Tingyun(Character):
         bl, dbl, al, dl, tl = super().useUlt(enemyID)
         errGain = 60 if self.eidolon == 6 else 50
         e3Dmg = 0.56 if self.eidolon >= 3 else 0.50
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TingyunUlt"))
+        tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "TingyunUlt"))
         bl.append(Buff("TingyunUltEnergy", Pwr.ERR_F, errGain, self.beneTarget, [AtkType.ALL], 1, 1, self.beneTarget, TickDown.PERM))
         bl.append(Buff("TingyunUltDMG", Pwr.DMG_PERCENT, e3Dmg, self.beneTarget, [AtkType.ALL], 2, 1, self.beneTarget, TickDown.END))
         if self.eidolon >= 1:

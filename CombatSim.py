@@ -1,4 +1,4 @@
-from Characters.Firefly import Firefly
+from Characters.Rappa import Rappa
 from Characters.Gallagher import Gallagher
 from Characters.HatBlazer import HatBlazer
 from Characters.RuanMei import RuanMei
@@ -21,20 +21,20 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies"
     toughness = [160, 100] # make sure that the number of entries in this list is the same as "numEnemies"
     attackRatio = atkRatio # from Misc.py
-    weaknesses = [Element.FIRE]
+    weaknesses = [Element.IMAGINARY]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
     enemyModule = enemyModule if enemyModule else EnemyModule(numEnemies, enemyLevel, enemyTypes, enemySPD, toughness, attackRatio, weaknesses, actionOrder)
 
     # Character Settings
     if all([a is None for a in [s1, s2, s3, s4]]):
-        slot1 = Firefly(0, Role.DPS, 0, eidolon=0, targetPrio=Priority.BROKEN)
+        slot1 = Rappa(0, Role.DPS, 0, eidolon=0, targetPrio=Priority.BROKEN)
         slot2 = RuanMei(1, Role.SUP1, 0, eidolon=0, targetPrio=Priority.BROKEN)
-        slot3 = HatBlazer(2, Role.SUP2, 0, eidolon=6, rotation = ["E", "E", "A"], targetPrio=Priority.BROKEN)
-        slot4 = Gallagher(3, Role.SUBDPS, 0, eidolon=6, targetPrio=Priority.BREAKER)
+        slot3 = HatBlazer(2, Role.SUP2, 0, eidolon=6, rotation = ["E"], targetPrio=Priority.BROKEN)
+        slot4 = Gallagher(3, Role.SUS, 0, eidolon=6, targetPrio=Priority.BROKEN)
         
-    # Simulation Settings   
+    # Simulation Settings
     totalEnemyAttacks = 0
-    logLevel = logging.CRITICAL
+    logLevel = logging.INFO
     # CRITICAL: Only prints the main action taken during each turn + ultimates
     # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
     # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
@@ -50,7 +50,7 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     if outputLog:
         log_folder = "Output"
         teamInfo = "".join([char.name for char in playerTeam])
-        enemyInfo = f"_{numEnemies}Enemies_{cycleLimit}Cycles"
+        enemyInfo = f"_{enemyModule.numEnemies}Enemies_{cycleLimit}Cycles"
         logging.basicConfig(
             filename=f"{log_folder}/{teamInfo}{enemyInfo}.log", 
             level=logLevel,
@@ -80,10 +80,10 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
         adjList = []
         if (i - 1) >= 0:
             adjList.append(i - 1)
-        if (i + 1) < numEnemies:
+        if (i + 1) < enemyModule.numEnemies:
             adjList.append(i + 1)
         eLevel = enemyModule.enemyLevel[i]
-        eType = enemyTypes[i]
+        eType = enemyModule.enemyTypes[i]
         eSPD = enemyModule.enemySPD[i]
         eToughness = enemyModule.toughness[i]
         eAction = enemyModule.actionOrder

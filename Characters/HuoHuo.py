@@ -25,9 +25,9 @@ class HuoHuo(Character):
     ultCost = 140
     currAV = 0
     dmgDct = {AtkType.BSC: 0, AtkType.BRK: 0} # Adjust accordingly
-    hasSpecial = True
     
     # Unique Character Properties
+    foundEnergy = False
     ally1Energy = 0
     ally2Energy = 0
     ally3Energy = 0
@@ -40,8 +40,8 @@ class HuoHuo(Character):
     # First 12 entries are sub rolls: SPD, HP, ATK, DEF, HP%, ATK%, DEF%, BE%, EHR%, RES%, CR%, CD%
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget, eidolon)
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None, targetPrio = Priority.DEFAULT) -> None:
+        super().__init__(pos, role, defaultTarget, eidolon, targetPrio)
         self.lightcone = lc if lc else PostOp(self.role, 5)
         self.relic1 = r1 if r1 else Messenger(self.role, 2, True)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else Longevous(self.role, 2))
@@ -61,13 +61,13 @@ class HuoHuo(Character):
     def useBsc(self, enemyID=-1):
         e5Mul = 0.55 if self.eidolon >= 5 else 0.5
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Mul, 0], [10, 0], 20, self.scaling, 1, "HuoHuoBasic"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Mul, 0], [10, 0], 20, self.scaling, 1, "HuoHuoBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         self.divineTrigger = 6
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0,0], 30, self.scaling, -1, "HuoHuoSkill"))
+        tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0,0], 30, self.scaling, -1, "HuoHuoSkill"))
         if self.eidolon >= 1:
             bl.append(Buff("HHDivineSPD", Pwr.SPD_PERCENT, 0.16, Role.ALL, turns=3, tickDown=self.role, tdType=TickDown.START))
         return bl, dbl, al, dl, tl
@@ -81,20 +81,18 @@ class HuoHuo(Character):
         bl.append(Buff("HuoHuoERR", Pwr.ERR_F, self.ally1Energy * errMul, self.ally1Role, [AtkType.ALL], 1, 1, self.ally1Role, TickDown.PERM))
         bl.append(Buff("HuoHuoERR", Pwr.ERR_F, self.ally2Energy * errMul, self.ally2Role, [AtkType.ALL], 1, 1, self.ally2Role, TickDown.PERM))
         bl.append(Buff("HuoHuoERR", Pwr.ERR_F, self.ally3Energy * errMul, self.ally3Role, [AtkType.ALL], 1, 1, self.ally3Role, TickDown.PERM))
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "HuoHuoULT"))
+        tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "HuoHuoULT"))
         return bl, dbl, al, dl, tl
     
-    def special(self):
-        self.hasSpecial = False
-        return "HuoHuo"
-    
     def handleSpecialStart(self, specialRes: Special):
-        self.ally1Energy = specialRes.attr1[0]
-        self.ally1Role = specialRes.attr1[1]
-        self.ally2Energy = specialRes.attr2[0]
-        self.ally2Role = specialRes.attr2[1]
-        self.ally3Energy = specialRes.attr3[0]
-        self.ally3Role = specialRes.attr3[1]
+        if not self.foundEnergy:
+            self.foundEnergy = True
+            self.ally1Energy = specialRes.attr1[0]
+            self.ally1Role = specialRes.attr1[1]
+            self.ally2Energy = specialRes.attr2[0]
+            self.ally2Role = specialRes.attr2[1]
+            self.ally3Energy = specialRes.attr3[0]
+            self.ally3Role = specialRes.attr3[1]
         return super().handleSpecialStart(specialRes)
     
     def allyTurn(self, turn: Turn, result: Result):

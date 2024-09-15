@@ -26,7 +26,6 @@ class Robin(Character):
     currEnergy = 80
     currAV = 0
     dmgDct = {AtkType.BSC: 0, AtkType.SPECIAL: 0, AtkType.BRK: 0}
-    hasSpecial = True
     
     # Unique Character Properties
     canBeAdv = True
@@ -38,8 +37,8 @@ class Robin(Character):
     
     # Relic Settings
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, eidolon=0, lc = None, r1 = None, r2 = None, pl = None, subs = None, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget, eidolon)
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, eidolon=0, lc = None, r1 = None, r2 = None, pl = None, subs = None, rotation = None, targetPrio = Priority.DEFAULT) -> None:
+        super().__init__(pos, role, defaultTarget, eidolon, targetPrio)
         self.lightcone = lc if lc else Journey(role)
         self.relic1 = r1 if r1 else Musketeer(role, 2)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else Prisoner(role, 2))
@@ -60,13 +59,13 @@ class Robin(Character):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         e2ERR = 3 if self.eidolon >= 2 else 2
         e5Mul = 1.1 if self.eidolon >= 5 else 1
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Mul, 0], [10, 0], 20 + e2ERR, self.scaling, 1, "RobinBasic"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Mul, 0], [10, 0], 20 + e2ERR, self.scaling, 1, "RobinBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         e3Dmg = 0.55 if self.eidolon >= 3 else 0.5
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RobinSkill"))
+        tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.SKL], [self.element], [0, 0], [0, 0], 35, self.scaling, -1, "RobinSkill"))
         bl.append(Buff("RobinSklDMG", Pwr.DMG_PERCENT, e3Dmg, Role.ALL, [AtkType.ALL], 3, 1, self.role, TickDown.START))
         return bl, dbl, al, dl, tl
     
@@ -81,7 +80,7 @@ class Robin(Character):
             bl.append(Buff("RobinE1Pen", Pwr.PEN, 0.24, Role.ALL, [AtkType.ALL], 1, 1, self.role, TickDown.START))
         if self.eidolon >= 2:
             bl.append(Buff("RobinE2SPD", Pwr.SPD_PERCENT, 0.16, Role.ALL, [AtkType.FUA], 1, 1, self.role, TickDown.START)) 
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinUlt"))
+        tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinUlt"))
         al.append(Advance("RobinUltADV", Role.ALL, 1.0))
         return bl, dbl, al, dl, tl
     
@@ -91,7 +90,7 @@ class Robin(Character):
         e3Mul = 1.296 if self.eidolon >= 3 else 1.2
         if (turn.moveName not in bonusDMG) and (turn.targeting != Targeting.NA):
             if self.canBeAdv: # not in concerto state, only provide extra ERR
-                tl.append(Turn(self.name, self.role, turn.targetID, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], e2ERR, self.scaling, 0, "RobinBonusERR"))
+                tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], e2ERR, self.scaling, 0, "RobinBonusERR"))
             else: # in concerto state, provide both additional dmg and extra ERR
                 if self.eidolon == 6 and self.moonlessMidnight > 0:
                     self.moonlessMidnight = self.moonlessMidnight - 1
@@ -107,18 +106,16 @@ class Robin(Character):
     def takeTurn(self) -> str:
         self.canBeAdv = True
         return super().takeTurn()
+
     
-    def special(self):
-        return "updateRobinATK"
-    
-    def handleSpecialStart(self, special: Special):
-        self.atkStat = special.attr1        
-        bl, dbl, al, dl, tl = super().handleSpecialStart(special)
+    def handleSpecialStart(self, specialRes: Special):
+        self.atkStat = specialRes.attr1
+        bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         e3Mul = 0.24332 if self.eidolon >= 3 else 0.228
         e3Flat = 230 if self.eidolon >= 3 else 200
         if self.techErr:
             self.techErr = False
-            tl.append(Turn(self.name, self.role, self.defaultTarget, Targeting.NA, [AtkType.BSC], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinTechEnergy"))
+            tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.BSC], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RobinTechEnergy"))
         if not self.canBeAdv:
             bl.append(Buff("RobinUltBuff", Pwr.ATK, self.atkStat * e3Mul + e3Flat, Role.ALL, [AtkType.ALL], 1, 1, self.role, TickDown.START))
             if self.eidolon >= 4:

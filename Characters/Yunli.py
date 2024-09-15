@@ -26,13 +26,13 @@ class Yunli(Character):
     
     # Unique Character Properties
     cullActive = False
-    skipHit = 0
+    skipHit = None
     hits = 0
     
     # Relic Settings
     
-    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget, eidolon)
+    def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 0, rotation = None, targetPrio = Priority.DEFAULT) -> None:
+        super().__init__(pos, role, defaultTarget, eidolon, targetPrio)
         self.numEnemies = None
         self.lightcone = lc if lc else Sunset(role, 5)
         self.relic1 = r1 if r1 else WindSoaringYunli(role, 4)
@@ -61,20 +61,20 @@ class Yunli(Character):
     def useBsc(self, enemyID=-1):
         e3Mul = 1.1 if self.eidolon >= 3 else 1.0
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Mul, 0], [10, 0], 20, self.scaling, 1, "YunliBasic"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Mul, 0], [10, 0], 20, self.scaling, 1, "YunliBasic"))
         return bl, dbl, al, dl, tl
     
     def useSkl(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useSkl(enemyID)
         e5Mul = 1.32 if self.eidolon >= 5 else 1.2
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.BLAST, [AtkType.SKL], [self.element], [e5Mul, e5Mul / 2], [20, 10], 30, self.scaling, -1, "YunliSkill"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.SKL], [self.element], [e5Mul, e5Mul / 2], [20, 10], 30, self.scaling, -1, "YunliSkill"))
         return bl, dbl, al, dl, tl
     
     def useUlt(self, enemyID=-1):
         self.currEnergy = self.currEnergy - self.ultCost
         self.cullActive = True
         bl, dbl, al, dl, *_ = super().useUlt(enemyID)
-        return bl, dbl, al, dl, [Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "YunliUlt")]
+        return bl, dbl, al, dl, [Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ULT], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "YunliUlt")]
     
     def useFua(self, enemyID=-1):
         e3Mul = 2.376 if self.eidolon >= 3 else 2.2
@@ -83,34 +83,31 @@ class Yunli(Character):
         if self.cullActive:
             self.fuas = self.fuas - 1
             self.cullActive = False
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.BLAST, [AtkType.ULT, AtkType.FUA], [self.element], [e3Mul, e3Mul / 2], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.ULT, AtkType.FUA], [self.element], [e3Mul, e3Mul / 2], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
             numHits = 9 if self.eidolon >= 1 else 6
-            for _ in range(numHits):
-                tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.SINGLE, [AtkType.ULT, AtkType.FUA], [self.element], [e3Mul2, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
+            for i in range(numHits):
+                tl.append(Turn(self.name, self.role, i % self.numEnemies, Targeting.SINGLE, [AtkType.ULT, AtkType.FUA], [self.element], [e3Mul2, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
             if self.eidolon >= 4:
                 bl.append(Buff("YunliE4ERS", Pwr.ERS_PERCENT, 0.4, self.role, turns=1, tdType=TickDown.END))
         else:
             e5Mul = 1.32 if self.eidolon >= 5 else 1.2
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.BLAST, [AtkType.FUA], [self.element], [e5Mul, e5Mul / 2], [20, 10], 5, self.scaling, 0, "YunliFUA"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.FUA], [self.element], [e5Mul, e5Mul / 2], [20, 10], 5, self.scaling, 0, "YunliFUA"))
         return bl, dbl, al, dl, tl
     
     def useHit(self, enemyID=-1):
         self.hits = self.hits + 1
         if self.hits / self.skipHit != 0:
             bl, dbl, al, dl, tl = self.useFua(enemyID)
-            tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 15, self.scaling, 0, "YunliHitERR"))
+            tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 15, self.scaling, 0, "YunliHitERR"))
             return bl, dbl, al, dl, tl
         return super().useHit(enemyID)
     
-    def special(self):
-        self.hasSpecial = False
-        return "Yunli"
-    
     def handleSpecialStart(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
-        self.skipHit = round(1 / (1 - specialRes.attr1))
-        self.numEnemies = specialRes.attr2
-        tl.append(Turn(self.name, self.role, self.defaultTarget, Targeting.BLAST, [AtkType.ULT, AtkType.FUA], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
+        if not self.skipHit:
+            self.skipHit = round(1 / (1 - specialRes.attr1))
+        self.numEnemies = len(specialRes.attr2)
+        tl.append(Turn(self.name, self.role, self.bestEnemy(-1), Targeting.BLAST, [AtkType.ULT, AtkType.FUA], [self.element], [2.2 , 1.1], [10, 10], 10, self.scaling, 0, "YunliCullMain"))
         for i in range(6):
             tl.append(Turn(self.name, self.role, i % self.numEnemies, Targeting.SINGLE, [AtkType.ULT, AtkType.FUA], [self.element], [0.72, 0], [2.5, 0], 0, self.scaling, 0, "YunliCullBounce"))
         return bl, dbl, al, dl, tl

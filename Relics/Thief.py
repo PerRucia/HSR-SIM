@@ -12,7 +12,7 @@ class Thief(Relic):
         
     def equip(self):
         bl, debuffList, advList, delayList = super().equip()
-        bl.append(Buff("ThiefBE", Pwr.BE_PERCENT, 0.16, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
+        bl.append(Buff("ThiefBE", Pwr.BE_PERCENT, 0.32 if self.setType == 4 else 0.16, self.wearerRole, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         return bl, debuffList, advList, delayList
     
     def ownTurn(self, turn: Turn, result: Result):

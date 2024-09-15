@@ -22,7 +22,7 @@ class CavalryFirefly(Cavalry):
     
     def specialStart(self, special: Special):
         bl, dbl, al, dl = super().specialStart(special)
-        if special.specialName == "Firefly":
+        if special.specialName == "Firefly" and self.setType == 4:
             self.beStat = special.attr2
             brkShred = 0.1 if self.beStat >= 1.5 else 0
             sbrkShred = 0.15 if self.beStat >= 2.5 else 0
@@ -39,7 +39,7 @@ class CavalryRappa(Cavalry):
 
     def specialStart(self, special: Special):
         bl, dbl, al, dl = super().specialStart(special)
-        if special.specialName == "Rappa":
+        if special.specialName == "Rappa" and self.setType == 4:
             self.rappaBE = special.attr1
             brkShred = 0.1 if self.rappaBE >= 1.5 else 0
             sbrkShred = 0.15 if self.rappaBE >= 2.5 else 0
@@ -55,7 +55,7 @@ class CavalryLingsha(Cavalry):
 
     def specialStart(self, special: Special):
         bl, dbl, al, dl = super().specialStart(special)
-        if special.specialName == "Lingsha":
+        if special.specialName == "Lingsha" and self.setType == 4:
             self.lingshaBE = special.attr3
             brkShred = 0.1 if self.lingshaBE >= 1.5 else 0
             sbrkShred = 0.15 if self.lingshaBE >= 2.5 else 0

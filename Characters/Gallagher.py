@@ -30,7 +30,6 @@ class Gallagher(Character):
     dmgDct = {AtkType.BSC: 0, AtkType.ULT: 0, AtkType.BRK: 0, AtkType.SBK: 0} # Adjust accordingly
     
     # Unique Character Properties
-    hasSpecial = True
     beStat = 0
     canUlt = False
     nectarBlitz = False
@@ -40,15 +39,13 @@ class Gallagher(Character):
     # Last 4 entries are main stats: Body, Boots, Sphere, Rope
     
     def __init__(self, pos: int, role: Role, defaultTarget: int = -1, lc = None, r1 = None, r2 = None, pl = None, subs = None, eidolon = 6, targetPrio = Priority.DEFAULT, rotation = None) -> None:
-        super().__init__(pos, role, defaultTarget, eidolon)
+        super().__init__(pos, role, defaultTarget, eidolon, targetPrio)
         self.lightcone = lc if lc else Multi(role)
         self.relic1 = r1 if r1 else Thief(role, 2)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else Messenger(role, 2))
         self.planar = pl if pl else KalpagniGallagher(role)
         self.relicStats = subs if subs else RelicStats(11, 4, 0, 4, 4, 0, 4, 13, 4, 4, 0, 0, Pwr.OGH_PERCENT, Pwr.SPD, Pwr.HP_PERCENT, Pwr.ERR_PERCENT)
-        self.targetPrio = targetPrio
         self.rotation = rotation if rotation else ["A"]
-        self.enemyStatus = []
         
     def equip(self):
         bl, dbl, al, dl = super().equip()
@@ -73,7 +70,7 @@ class Gallagher(Character):
             tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Enhanced * 0.25, 0], [30 * 0.25, 0], 0, self.scaling, 0, "GallagherEBSCExtras"))
             tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Enhanced * 0.15, 0], [30 * 0.15, 0], 0, self.scaling, 0, "GallagherEBSCExtras"))
             tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Enhanced * 0.60, 0], [30 * 0.6, 0], 20, self.scaling, 1, "GallagherEBSC"))
-            dbl.append(Debuff("GalNectarBlitz", self.role, Pwr.GENERIC, e3Debuff, self.getTargetID(enemyID), [AtkType.ALL], 2))
+            dbl.append(Debuff("GalNectarBlitz", self.role, Pwr.GENERIC, e3Debuff, self.bestEnemy(enemyID), [AtkType.ALL], 2))
         else:
             tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Normal * 0.5, 0], [5, 0], 0, self.scaling, 0, "GallagherBasicP1"))
             tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Normal * 0.5, 0], [5, 0], 20, self.scaling, 1, "GallagherBasicP2"))
@@ -86,13 +83,10 @@ class Gallagher(Character):
         besottedTurns = 3 if self.eidolon >= 4 else 2
         e5Vuln = 0.132 if self.eidolon >= 5 else 0.12
         e5ult = 0.165 if self.eidolon >= 5 else 0.15
-        tl.append(Turn(self.name, self.role, self.getTargetID(enemyID), Targeting.AOE, [AtkType.ULT], [self.element], [e5ult, 0], [20, 0], 5, self.scaling, 0, "GallagherUlt"))
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.AOE, [AtkType.ULT], [self.element], [e5ult, 0], [20, 0], 5, self.scaling, 0, "GallagherUlt"))
         dbl.append(Debuff("GalBesotted", self.role, Pwr.VULN, e5Vuln, Role.ALL, [AtkType.BRK], besottedTurns, 1, False, [0, 0], False))
         al.append(Advance("GallagherUltAdv", self.role, 1.0))
         return bl, dbl, al, dl, tl
-    
-    def special(self):
-        return "Gallagher"
     
     def canUseUlt(self) -> bool:
         return super().canUseUlt() if self.canUlt else False
@@ -103,16 +97,8 @@ class Gallagher(Character):
         oghBuff = min(0.75, self.beStat * 0.5)
         bl.append(Buff("GallagherBEtoOGH", Pwr.OGH_PERCENT, oghBuff, self.role, [AtkType.ALL]))
         self.canUlt = specialRes.attr2
-        self.enemyStatus = specialRes.attr3
         return bl, dbl, al, dl, tl
-    
-    def bestEnemy(self, enemyID) -> int:
-        if self.targetPrio == Priority.DEFAULT:
-            return self.getTargetID(enemyID)
-        if all(x == self.enemyStatus[0] for x in self.enemyStatus):
-            return self.defaultTarget if enemyID == -1 else enemyID
-        chooseEnemy = min(self.enemyStatus) if self.targetPrio == Priority.BROKEN else max(self.enemyStatus)
-        return self.enemyStatus.index(chooseEnemy) if enemyID == -1 else enemyID
+
         
     
     

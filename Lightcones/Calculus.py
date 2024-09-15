@@ -30,7 +30,7 @@ class CalculusRappa(Calculus):
         if result.charRole == self.wearerRole and result.turnName in {"RappaBasic", "RappaEBAP2", "RappaSkill"}:
             bl.append(Buff("CalculusHitATK", Pwr.ATK_PERCENT, (self.level * 0.01 + 0.03) * len(result.enemiesHit), self.wearerRole))
             if len(result.enemiesHit) > 2:
-                bl.append(Buff("CalculusSPD", Pwr.SPD_PERCENT, self.level * 0.02 + 0.6, self.wearerRole, turns=2, tdType=TickDown.END))
+                bl.append(Buff("CalculusSPD", Pwr.SPD_PERCENT, self.level * 0.02 + 0.06, self.wearerRole, turns=1, tdType=TickDown.END))
         return bl, dbl, al, dl
     
 
