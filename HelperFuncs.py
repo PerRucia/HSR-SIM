@@ -814,6 +814,7 @@ def handleSpecialEffects(unit, playerTeam, summons, eTeam, teamBuffs, enemyDebuf
     return teamBuffs, enemyDebuffs, advList, delayList
 
 def manualModule(spTracker: SpTracker, playerTeam: list[Character], summons: list[Summon], enemyTeam: list[Enemy], simAV: float, unit, actionType) -> tuple[str, int]:
+    unit.takeTurn()
     print("===============================================================================================================================================================")
     print(f"INFO   > CURRENT AV: {simAV:.3f} | SP: {spTracker.getDisp()}\n")
     res1 = "TEAMAV > "
