@@ -86,6 +86,12 @@ class Bronya(Character):
         bl.append(Buff("BronyaUltCD", Pwr.CD_PERCENT, e3Mul * self.cdStat + e3Flat, Role.ALL, [AtkType.ALL], 2, 1, Role.SELF, TickDown.END))
         return bl, dbl, al, dl, tl
     
+    def useFua(self, enemyID=-1):
+        bl, dbl, al, dl, tl = super().useFua(enemyID)
+        e5Mul = 1.1 if self.eidolon >= 5 else 1.0
+        tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.FUA, AtkType.BSC], [self.element], [0.8 * e5Mul, 0], [10, 0], 5, self.scaling, 0, "BronyaFUA"))
+        return bl, dbl, al, dl, tl
+
     def handleSpecialStart(self, specialRes: Special):
         self.cdStat = specialRes.attr1
         return super().handleSpecialStart(specialRes)
@@ -96,9 +102,8 @@ class Bronya(Character):
     
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        if AtkType.BSC in turn.atkType and turn.moveName not in bonusDMG and self.e4Trigger and result.enemiesHit:
+        if AtkType.BSC in turn.atkType and turn.moveName not in bonusDMG and self.e4Trigger and result.enemiesHit and self.eidolon >= 4:
             self.e4Trigger = False
-            e5Mul = 1.1 if self.eidolon >= 5 else 1.0
-            tl.append(Turn(self.name, self.role, result.enemiesHit[0].enemyID, Targeting.SINGLE, [AtkType.FUA, AtkType.BSC], [self.element], [0.8 * e5Mul, 0], [10, 0], 0, self.scaling, 0, "BronyaFUA"))
+            bl, dbl, al, dl, tl = self.useFua(result.enemiesHit[0].enemyID)
         return bl, dbl, al, dl, tl
     
