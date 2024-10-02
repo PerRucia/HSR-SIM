@@ -610,8 +610,7 @@ def handleSpec(specStr: str, unit: Character, playerTeam: list[Character], summo
 
             case "Rappa":
                 atkStat = getScalingValues(specChar, buffList, [AtkType.ALL])
-                canUlt = ("HMCBackupDancer" in getBuffNames(buffList)) if inTeam(playerTeam, "HarmonyMC") else True
-                return Special(name=specStr, attr1=atkStat, attr2=canUlt, enemies=gauge, attr4=inTeam(playerTeam, "RuanMei"))
+                return Special(name=specStr, attr1=atkStat, enemies=gauge, attr2=inTeam(playerTeam, "RuanMei"))
 
             case "Robin":
                 atk = getBaseValue(specChar, buffList, placeHolderTurn)

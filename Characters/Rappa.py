@@ -5,7 +5,6 @@ from Planars import KalpagniRappa
 from RelicStats import RelicStats
 from Lightcones.Ninjutsu import Ninjitsu
 from Relics.IronCavalry import CavalryRappa
-from Planars.Kalpagni import Kalpagni
 from Planars.Talia import Talia
 from Relics.NoSet import NoSet
 from Result import *
@@ -22,12 +21,12 @@ class Rappa(Character):
     element = Element.IMAGINARY
     scaling = Scaling.ATK
     baseHP = 1086.60
-    baseATK = 640.33
+    baseATK = 717.948
     baseDEF = 460.85
-    baseSPD = 102
-    maxEnergy = 160
-    currEnergy = 160 / 2
-    ultCost = 160
+    baseSPD = 96
+    maxEnergy = 140
+    currEnergy = 140 / 2
+    ultCost = 140
     currAV = 0
     dmgDct = {AtkType.BSC: 0, AtkType.EBSC: 0, AtkType.SKL: 0, AtkType.BRK: 0, AtkType.SBK: 0, AtkType.TECH: 0} # Adjust accordingly
     
@@ -47,31 +46,29 @@ class Rappa(Character):
         self.relic1 = r1 if r1 else CavalryRappa(role, 4)
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
         self.planar = pl if pl else KalpagniRappa(role, True)
-        self.relicStats = subs if subs else RelicStats(7, 4, 0, 4, 4, 5, 4, 12, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.BE_PERCENT)
-        self.eidolon = eidolon
+        self.relicStats = subs if subs else RelicStats(10, 4, 0, 4, 4, 5, 4, 9, 4, 4, 0, 0, Pwr.ATK_PERCENT, Pwr.SPD, Pwr.ATK_PERCENT, Pwr.BE_PERCENT)
         self.rotation = rotation if rotation else ["E"] # overridden by class-specific takeTurn method
+        self.charges = 5 if self.eidolon == 6 else 0
 
     def equip(self):
         bl, dbl, al, dl = super().equip()
         bl.append(Buff("RappaTraceATK", Pwr.ATK_PERCENT, 0.28, self.role))
         bl.append(Buff("RappaTraceSPD", Pwr.SPD, 9, self.role))
         bl.append(Buff("RappaTraceBE", Pwr.BE_PERCENT, 0.133, self.role))
-        if self.eidolon >= 1:
-            bl.append(Buff("RappaE1Shred", Pwr.SHRED, 0.15, self.role, atkType=[AtkType.EBSC]))
         return bl, dbl, al, dl
     
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         if self.sealformBasics:
             self.sealformBasics = max(0, self.sealformBasics - 1)
-            omniBreakMod = 1.0 if self.eidolon >= 2 else 0.5
+            e2TRD = 15 if self.eidolon >= 2 else 10
             e5Mul = 1.08 if self.eidolon >= 5 else 1.00
-            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [0.6, 0.6], [10, 5], 0, self.scaling, 0, "RappaEBASB"))
-            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.EBSC, AtkType.BSC], [self.element], [e5Mul, e5Mul / 2], [10, 5], 5, self.scaling, 0, "RappaEBAP1", True, omniBreakMod))
-            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [0.6, 0.6], [10, 5], 0, self.scaling, 0, "RappaEBASB"))
-            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.EBSC, AtkType.BSC], [self.element], [e5Mul, e5Mul / 2], [10, 5], 5, self.scaling, 0, "RappaEBAP1", True, omniBreakMod))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [0.6, 0.6], [e2TRD, 5], 0, self.scaling, 0, "RappaEBASB"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.EBSC, AtkType.BSC], [self.element], [e5Mul, e5Mul / 2], [e2TRD, 5], 5, self.scaling, 0, "RappaEBAP1", True, 0.5))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLASTSB, [AtkType.SBK, AtkType.BRK], [self.element], [0.6, 0.6], [e2TRD, 5], 0, self.scaling, 0, "RappaEBASB"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.BLAST, [AtkType.EBSC, AtkType.BSC], [self.element], [e5Mul, e5Mul / 2], [e2TRD, 5], 5, self.scaling, 0, "RappaEBAP1", True, 0.5))
             tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.AOESB, [AtkType.SBK, AtkType.BRK], [self.element], [0.6, 0.6], [5, 0], 0, self.scaling, 0, "RappaEBASB"))
-            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.AOE, [AtkType.EBSC, AtkType.BSC], [self.element], [e5Mul, 0], [5, 0], 10, self.scaling, 0, "RappaEBAP2", True, omniBreakMod))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.AOE, [AtkType.EBSC, AtkType.BSC], [self.element], [e5Mul, 0], [5, 0], 10, self.scaling, 0, "RappaEBAP2", True, 0.5))
         else:
             e5Mul = 1.1 if self.eidolon >= 5 else 1.0
             tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e5Mul, 0], [10, 0], 20, self.scaling, 1, "RappaBasic"))
@@ -80,6 +77,7 @@ class Rappa(Character):
             bl.append(Buff("SealformBE", Pwr.BE_PERCENT, 0.0, self.role))
             if self.eidolon >= 1:
                 bl.append(Buff("RappaE1ERR", Pwr.ERR_T, 20, self.role))
+                bl.append(Buff("SealformE1Shred", Pwr.SHRED, 0.0, self.role))
             if self.eidolon >= 4:
                 bl.append(Buff("SealformE4SPD", Pwr.SPD_PERCENT, 0.0, Role.ALL))
         return bl, dbl, al, dl, tl
@@ -98,6 +96,8 @@ class Rappa(Character):
         baseBE = 0.34 if self.eidolon >= 5 else 0.3
         bl.append(Buff("SealformBE", Pwr.BE_PERCENT, baseBE + 0.2 if self.eidolon >= 2 else 0, self.role))
         tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 5, self.scaling, 0, "RappaUlt"))
+        if self.eidolon >= 1:
+            bl.append(Buff("SealformE1Shred", Pwr.SHRED, 0.15, self.role))
         if self.eidolon >= 4:
             bl.append(Buff("SealformE4SPD", Pwr.SPD_PERCENT, 0.12, Role.ALL))
         bl, dbl, al, dl, tl = self.extendLists(bl, dbl, al, dl, tl, *self.useBsc(enemyID))
@@ -105,49 +105,42 @@ class Rappa(Character):
     
     def ownTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().ownTurn(turn, result)
-        tl.extend(self.talentTurns(result))
-        vulnBuff = min(12, (self.atkStat - 2000) // 100) * 0.01 + 0.03
+        vulnBuff = min(8, (self.atkStat - 2400) // 100) * 0.01 + 0.02
         for enemy in result.brokenEnemy:
+            self.charges = min(15 if self.eidolon == 6 else 10, self.charges + 1)
+            tl.extend(self.checkEnemyType(enemy))
             dbl.append(Debuff("RappaBrkVuln", self.role, Pwr.VULN, vulnBuff, enemy.enemyID, [AtkType.BRK], 2, 1))
+        if self.sealformBasics == 0 and turn.moveName == "RappaEBAP2": # trigger talent
+            e3Base = 0.66 if self.eidolon >= 3 else 0.6
+            e3Bonus = (0.55 if self.eidolon >= 3 else 0.5) * self.charges
+            trd = self.charges
+            self.charges = 5 if self.eidolon == 6 else 0
+            tl.append(Turn(self.name, self.role, self.bestEnemy(-1), Targeting.AOESB, [AtkType.SBK], [self.element], [e3Base + e3Bonus, 0], [trd + 2, 0], 0, self.scaling, 0, "RappaTalentSBK"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(-1), Targeting.AOEBREAK, [AtkType.BRK], [self.element], [e3Base + e3Bonus, 0], [0, 0], 0, self.scaling, 0, "RappaTalentBRK"))
+            tl.append(Turn(self.name, self.role, self.bestEnemy(-1), Targeting.AOE, [AtkType.SPECIAL], [self.element], [0, 0], [trd + 2, 0], 0, self.scaling, 0, "RappaTalentTRD"))
         return bl, dbl, al, dl, tl
 
     def allyTurn(self, turn: Turn, result: Result):
         bl, dbl, al, dl, tl = super().allyTurn(turn, result)
-        tl.extend(self.talentTurns(result))
-        vulnBuff = min(12, (self.atkStat - 2000) // 100) * 0.01 + 0.03
+        vulnBuff = min(8, (self.atkStat - 2400) // 100) * 0.01 + 0.02
         for enemy in result.brokenEnemy:
+            self.charges = min(15 if self.eidolon == 6 else 10, self.charges + 1)
+            tl.extend(self.checkEnemyType(enemy))
             dbl.append(Debuff("RappaBrkVuln", self.role, Pwr.VULN, vulnBuff, enemy.enemyID, [AtkType.BRK], 2, 1))
         return bl, dbl, al, dl, tl
-
-    def talentTurns(self, result: Result) -> list[Turn]:
-        tl = []
-        e3Mul = 1.92 if self.eidolon >= 3 else 1.8
-        e6Mul = 1.2 if self.eidolon == 6 else 0
-        for enemy in result.brokenEnemy:
-            errGain = 2 if enemy.enemyType == EnemyType.ADD else 10
-            tl.append(Turn(self.name, self.role, enemy.enemyID, Targeting.SINGLE, [AtkType.SPECIAL], [self.element], [0, 0], [0, 0], errGain, self.scaling, 0, "RappaTalentERR"))
-            if self.eidolon < 6:
-                for adjID in enemy.adjacent:
-                    tl.append(Turn(self.name, self.role, adjID, Targeting.SINGLE, [AtkType.BRK], [self.element], [e3Mul + e6Mul, 0], [0, 0], 0, self.scaling, 0, "RappaTalentBDMG"))
-                    if not result.preHitStatus[adjID]:
-                        tl.append(Turn(self.name, self.role, adjID, Targeting.SINGLE, [AtkType.SPECIAL], [self.element], [0, 0], [10, 0], 0, self.scaling, 0, "RappaTalentTRD", omniBreak=True, omniBreakMod=1.0))
-            else:
-                for i in range(len(self.enemyStatus)):
-                    if i == enemy.enemyID:
-                        continue
-                    tl.append(Turn(self.name, self.role, i, Targeting.SINGLE, [AtkType.BRK], [self.element], [e3Mul + e6Mul, 0], [0, 0], 0, self.scaling, 0, "RappaTalentBDMG"))
-                    if not result.preHitStatus[i]:
-                        tl.append(Turn(self.name, self.role, i, Targeting.SINGLE, [AtkType.SPECIAL], [self.element], [0, 0], [10, 0], 0, self.scaling, 0, "RappaTalentTRD", omniBreak=True, omniBreakMod=1.0))
-        return tl
+    
+    def checkEnemyType(self, enemy: Enemy):
+        if enemy.enemyType == EnemyType.ADD:
+            return []
+        return [Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 10, self.scaling, 0, "RappaBreakERR")]
 
     def handleSpecialStart(self, specialRes: Special):
         bl, dbl, al, dl, tl = super().handleSpecialStart(specialRes)
         if specialRes.specialName == "Rappa":
             self.atkStat = specialRes.attr1
-            self.canUlt = specialRes.attr2
         if self.tech:
             self.tech = False
-            tl.append(Turn(self.name, self.role, 0, Targeting.AOE, [AtkType.SPECIAL], [self.element], [0, 0], [20 if specialRes.attr4 else 30, 0], 20, self.scaling, 0, "RappaTech", omniBreak=True, omniBreakMod=1.0))
+            tl.append(Turn(self.name, self.role, 0, Targeting.AOE, [AtkType.SPECIAL], [self.element], [0, 0], [20 if specialRes.attr2 else 30, 0], 20, self.scaling, 0, "RappaTech", omniBreak=True, omniBreakMod=1.0))
             for i in range(len(self.enemyStatus)):
                 tl.append(Turn(self.name, self.role, i, Targeting.BLASTBREAK, [AtkType.TECH, AtkType.BRK], [self.element], [2.0, 1.8], [0, 0], 0, self.scaling, 0, "RappaTechDMG"))
         return bl, dbl, al, dl, tl
@@ -156,5 +149,5 @@ class Rappa(Character):
         return "A" if self.sealformBasics else "E"
 
     def canUseUlt(self) -> bool:
-        return super().canUseUlt() if self.canUlt and not self.sealformBasics else False
+        return super().canUseUlt() if not self.sealformBasics else False
     
