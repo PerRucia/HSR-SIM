@@ -1,7 +1,8 @@
-from Characters.Rappa import Rappa
-from Characters.Gallagher import Gallagher
-from Characters.HatBlazer import HatBlazer
-from Characters.RuanMei import RuanMei
+from Characters.Feixiao import Feixiao
+from Characters.Aventurine import Aventurine
+from Characters.Robin import Robin
+from Characters.Lingsha import Lingsha
+from Characters.Topaz import Topaz
 from HelperFuncs import *
 from Misc import *
 from Enemy import *
@@ -21,16 +22,16 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies"
     toughness = [160, 100] # make sure that the number of entries in this list is the same as "numEnemies"
     attackRatio = atkRatio # from Misc.py
-    weaknesses = [Element.IMAGINARY]
+    weaknesses = [Element.WIND, Element.FIRE, Element.IMAGINARY, Element.LIGHTNING]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
     enemyModule = enemyModule if enemyModule else EnemyModule(numEnemies, enemyLevel, enemyTypes, enemySPD, toughness, attackRatio, weaknesses, actionOrder)
 
     # Character Settings
     if all([a is None for a in [s1, s2, s3, s4]]):
-        slot1 = Rappa(0, Role.DPS, 0, eidolon=0, targetPrio=Priority.BROKEN)
-        slot2 = RuanMei(1, Role.SUP1, 0, eidolon=0, targetPrio=Priority.BROKEN)
-        slot3 = HatBlazer(2, Role.SUP2, 0, eidolon=6, rotation = ["E"], targetPrio=Priority.BROKEN)
-        slot4 = Gallagher(3, Role.SUS, 0, eidolon=6, targetPrio=Priority.BROKEN)
+        slot1 = Feixiao(0, Role.DPS, 0, eidolon=0, targetPrio=Priority.DEFAULT)
+        slot2 = Robin(1, Role.SUP1, 0, eidolon=0, targetPrio=Priority.DEFAULT)
+        slot3 = Aventurine(2, Role.SUS, 0, eidolon=0, targetPrio=Priority.DEFAULT)
+        slot4 = Topaz(3, Role.SUBDPS, 0, eidolon=0, targetPrio=Priority.DEFAULT)
         
     # Simulation Settings
     totalEnemyAttacks = 0
