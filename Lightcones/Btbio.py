@@ -18,7 +18,7 @@ class Btbio(Lightcone):
     
     def equip(self):
         bl, dbl, al, dl = super().equip()
-        bl.append(Buff("BtbioERR", Pwr.ERR_PERCENT, self.level * 0.02 + 0.8, self.wearerRole))
+        bl.append(Buff("BtbioERR", Pwr.ERR_PERCENT, self.level * 0.02 + 0.08, self.wearerRole))
         return bl, dbl, al, dl
     
     def useSkl(self, enemyID=-1):
