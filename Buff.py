@@ -2,7 +2,7 @@ from Misc import *
 
 class Buff:
     # noinspection PyDefaultArgument
-    def __init__(self, name: str, buffType: Pwr, val: float, target: Role, atkType: list = [AtkType.ALL], turns: int = 1, stackLimit: int = 1, tickDown: Role = Role.SELF, tdType: TickDown = TickDown.PERM):
+    def __init__(self, name: str, buffType: Pwr, val: float, target: Role, atkType: list = [AtkType.ALL], turns: int = 1, stackLimit: int = 1, tickDown: Role = Role.SELF, tdType: TickDown = TickDown.PERM, reqBroken: bool = False):
         self.name = name
         self.buffType = buffType
         self.val = val
@@ -14,6 +14,7 @@ class Buff:
         self.stacks = 1
         self.tickDown = tickDown
         self.tdType = tdType
+        self.reqBroken = reqBroken
         
     def __str__(self) -> str:
         res = f"{self.name} | {self.buffType.value} | Stacks: {self.stacks} | Value: {self.stacks * self.val:.3f} | "

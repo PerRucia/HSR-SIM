@@ -57,6 +57,7 @@ class Lingsha(Character):
         bl.append(Buff("LingshaTraceHP", Pwr.HP_PERCENT, 0.18, self.role, [AtkType.ALL], 1, 1, Role.SELF, TickDown.PERM))
         if self.eidolon >= 1:
             bl.append(Buff("LingshaE1WBE", Pwr.WB_EFF, 0.5, self.role))
+            bl.append(Buff("LingshaE1Shred", Pwr.SHRED, 0.20, Role.ALL, reqBroken=True))
         if self.eidolon == 6:
             bl.append(Buff("LingshaE6Pen", Pwr.PEN, 0.20, Role.ALL))
         return bl, dbl, al, dl
@@ -99,9 +100,6 @@ class Lingsha(Character):
                     tl.append(Turn(self.name, self.role, self.bestEnemy(-1), Targeting.SINGLE, [AtkType.FUA], [self.element], [0.5, 0], [5, 0], 0, self.scaling, 0, "LingshaE6Extras"))
         elif result.turnName == "FuyuanGoGo":
             return self.useFua(-1)
-        if self.eidolon >= 1:
-            for enemy in result.brokenEnemy:
-                dbl.append(Debuff("LingshaE1Shred", self.role, Pwr.SHRED, 0.2, enemy.enemyID, [AtkType.ALL], 1000, 1))
         return bl, dbl, al, dl, tl
     
     def allyTurn(self, turn: Turn, result: Result):
