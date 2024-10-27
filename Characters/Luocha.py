@@ -54,6 +54,8 @@ class Luocha(Character):
     def useBsc(self, enemyID=-1):
         bl, dbl, al, dl, tl = super().useBsc(enemyID)
         e3Mul = 1.1 if self.eidolon >= 3 else 1.0
+        if self.turn % 3 == 1:
+            tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 30, self.scaling, 0, "LuochaAutohealERR"))
         tl.append(Turn(self.name, self.role, self.bestEnemy(enemyID), Targeting.SINGLE, [AtkType.BSC], [self.element], [e3Mul, 0], [10, 0], 20, self.scaling, 1, "LuochaBasic"))
         return bl, dbl, al, dl, tl
     
@@ -80,7 +82,6 @@ class Luocha(Character):
         if result.turnName != "LuochaAutohealERR" and self.turn % 3 == 1:
             if self.canStack == 0:
                 self.stackCount += 1
-            tl.append(Turn(self.name, self.role, -1, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 30, self.scaling, 0, "LuochaAutohealERR"))
         if self.stackCount >= 2:
             self.stackCount = 0
             self.canStack = 2

@@ -105,7 +105,7 @@ class Jiaoqiu(Character):
         if self.eidolon >= 4:
             dbl.append(Debuff("JQE4Debuff", self.role, Pwr.GENERIC, 0.15, Role.ALL, [AtkType.SPECIAL], 1000))
         for _ in range(2 if self.eidolon >= 1 else 1):
-            dbl.append(Debuff("AshenRoasted", Role.ALL, Pwr.VULN, e5Vuln, self.bestEnemy(enemyID), [AtkType.ALL], 2, e6Stacks, True, [self.ashenRoastMul + e5Mul, 0], False))
+            dbl.append(Debuff("AshenRoasted", self.role, Pwr.VULN, e5Vuln, Role.ALL, [AtkType.ALL], 2, e6Stacks, True, [self.ashenRoastMul + e5Mul, 0], False))
             if self.eidolon == 6:
                 dbl.append(Debuff("JQE6AshenPen", self.role, Pwr.PEN, 0.03, self.bestEnemy(enemyID), [AtkType.ALL], 2, e6Stacks))
         for _ in range(self.maxAshenStacks):

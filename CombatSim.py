@@ -1,7 +1,11 @@
-from Characters.Rappa import Rappa
+from Characters.Jingyuan import Jingyuan
+from Characters.Sparkle import Sparkle
+from Characters.Tingyun import Tingyun
 from Characters.Gallagher import Gallagher
-from Characters.HatBlazer import HatBlazer
-from Characters.RuanMei import RuanMei
+from Characters.HuoHuo import HuoHuo
+from Characters.Sunday import Sunday
+from Characters.Jade import Jade
+from RelicStats import RelicStats
 from HelperFuncs import *
 from Misc import *
 from Enemy import *
@@ -21,20 +25,26 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     enemySPD = [158.4, 145.2] # make sure that the number of entries in this list is the same as "numEnemies"
     toughness = [160, 100] # make sure that the number of entries in this list is the same as "numEnemies"
     attackRatio = atkRatio # from Misc.py
-    weaknesses = [Element.IMAGINARY]
+    weaknesses = [Element.LIGHTNING]
     actionOrder = [1, 1, 2] # determines how many attacks enemies will have per turn
     enemyModule = enemyModule if enemyModule else EnemyModule(numEnemies, enemyLevel, enemyTypes, enemySPD, toughness, attackRatio, weaknesses, actionOrder)
 
+    fastJY = RelicStats(6, 2, 0, 2, 4, 0, 4, 4, 4, 4, 7, 11, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+    baseJY = RelicStats(0, 2, 0, 2, 4, 0, 4, 4, 4, 4, 13, 11, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+
+    fastDay = RelicStats(14, 4, 0, 4, 4, 0, 4, 4, 4, 4, 0, 6, Pwr.CD_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.HP_PERCENT)
+    slowDay = RelicStats(4, 4, 0, 4, 4, 0, 4, 4, 4, 10, 0, 10, Pwr.CD_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.HP_PERCENT)
+
     # Character Settings
     if all([a is None for a in [s1, s2, s3, s4]]):
-        slot1 = Rappa(0, Role.DPS, 0, eidolon=0, targetPrio=Priority.BROKEN)
-        slot2 = RuanMei(1, Role.SUP1, 0, eidolon=0, targetPrio=Priority.BROKEN)
-        slot3 = HatBlazer(2, Role.SUP2, 0, eidolon=6, rotation = ["E"], targetPrio=Priority.BROKEN)
-        slot4 = Gallagher(3, Role.SUS, 0, eidolon=6, targetPrio=Priority.BROKEN)
+        slot1 = Jingyuan(0, Role.DPS, 2, eidolon=0, targetPrio=Priority.DEFAULT, subs=fastJY)
+        slot2 = Sunday(1, Role.SUP1, 2, eidolon=0, targetPrio=Priority.DEFAULT, targetRole=Role.DPS, subs=fastDay)
+        slot3 = Jade(2, Role.SUBDPS, 2, eidolon=0, targetPrio=Priority.DEFAULT, debtCollector=Role.DPS)
+        slot4 = Gallagher(3, Role.SUS, 2, eidolon=0, targetPrio=Priority.DEFAULT)
         
     # Simulation Settings
     totalEnemyAttacks = 0
-    logLevel = logging.INFO
+    logLevel = logging.DEBUG
     # CRITICAL: Only prints the main action taken during each turn + ultimates
     # WARNING: Prints the above plus details on all actions recorded during the turn (FuA/Bonus attacks etc.), and all AV adjustments
     # INFO: Prints the above plus buff and debuff expiry, speed adjustments, av of all chars at the start of each turn
@@ -287,4 +297,5 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
 
 if __name__ == "__main__":
     # Start the simulator with logging output to a file
-    print(startSimulator(cycleLimit=cycles, outputLog=log, manualMode=manual))
+    fiveEnemies = EnemyModule(5, [85, 85, 85, 85, 85], [EnemyType.ADD, EnemyType.ELITE, EnemyType.BOSS, EnemyType.ADD, EnemyType.ADD], [100, 120, 144, 100, 100], [20, 60, 70, 20, 20], atkRatio, [Element.LIGHTNING], [1])
+    print(startSimulator(cycleLimit=cycles, outputLog=log, manualMode=manual, enemyModule=fiveEnemies))

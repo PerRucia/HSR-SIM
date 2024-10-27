@@ -88,3 +88,36 @@ class DeHenshin(Summon):
         if turn.moveName == "FireflyUlt":
             self.currAV = 10000 / 70
         return bl, dbl, al, dl, tl
+    
+class LightningLord(Summon):
+    name = "LightningLord"
+    element = Element.LIGHTNING
+    scaling = Scaling.ATK
+    currSPD = 90 # max of 130 at 10 stacks
+    currAV = 10000 / currSPD
+    stacks = 6
+    
+    def __init__(self, ownerRole: Role, role: Role) -> None:
+        super().__init__(ownerRole, role)
+    
+    def takeTurn(self):
+        bl, dbl, al, dl, tl = super().takeTurn()
+        paddedStacks = "0" + str(self.stacks) if self.stacks < 10 else str(self.stacks)
+        tl.append(Turn(self.name, self.ownerRole, -1, Targeting.NA, [AtkType.ALL], [self.element], [0, 0], [0, 0], 0, self.scaling, 0, f"LightningLordGoGo{paddedStacks}"))
+        self.adjSpeed(60)
+        self.stacks = 3
+        return bl, dbl, al, dl, tl
+        
+    def allyTurn(self, turn, result):
+        addStacks = 2 if turn.moveName == "JingYuanSkill" else (3 if turn.moveName == "JingYuanUlt" else 0)
+        self.stacks = min(10, self.stacks + addStacks)
+        self.adjSpeed(self.stacks * 10 + 30)
+        return super().allyTurn(turn, result)
+
+    def adjSpeed(self, spd):
+        if spd == 60:
+            self.currSPD = 60
+            self.currAV = 10000 / self.currSPD
+        else:
+            self.currAV = self.currAV * (self.currSPD / spd)
+            self.currSPD = spd

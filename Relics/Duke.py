@@ -40,6 +40,27 @@ class DukeMoze(Relic):
     def equip(self):
         bl, debuffList, advList, delayList = super().equip()
         bl.append(Buff("DukeDMG", Pwr.DMG_PERCENT, 0.20, self.wearerRole, [AtkType.FUA], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("DukeFuaATK", Pwr.ATK_PERCENT, 0.288, self.wearerRole, [AtkType.DUKEFUA], 1, 1, Role.SELF, TickDown.PERM))
-        bl.append(Buff("DukeUltATK", Pwr.ATK_PERCENT, 0.06, self.wearerRole, [AtkType.DUKEULT], 1, 1, Role.SELF, TickDown.PERM))
+        if self.setType == 4:
+            bl.append(Buff("DukeFuaATK", Pwr.ATK_PERCENT, 0.288, self.wearerRole, [AtkType.DUKEFUA], 1, 1, Role.SELF, TickDown.PERM))
+            bl.append(Buff("DukeUltATK", Pwr.ATK_PERCENT, 0.06, self.wearerRole, [AtkType.DUKEULT], 1, 1, Role.SELF, TickDown.PERM))
         return bl, debuffList, advList, delayList
+    
+class DukeJY(Relic):
+    name = "The Ashblazing Grand Duke"
+    
+    def __init__(self, wearerRole, setType):
+        super().__init__(wearerRole, setType)
+        
+    def equip(self):
+        bl, dbl, al, dl = super().equip()
+        bl.append(Buff("DukeDMG", Pwr.DMG_PERCENT, 0.20, self.wearerRole, [AtkType.FUA], 1, 1, Role.SELF, TickDown.PERM))
+        if self.setType == 4:
+            bl.append(Buff("DukeFuaATK", Pwr.ATK_PERCENT, 0.312, self.wearerRole, [AtkType.FUA], 1, 1)) # lightning lord
+        return bl, dbl, al, dl
+    
+    def ownTurn(self, turn, result):
+        bl, dbl, al, dl = super().ownTurn(turn, result)
+        if turn.moveName == "LightningLordFUA" and self.setType == 4:
+            bl.append(Buff("DukeATK", Pwr.ATK_PERCENT, 0.48, self.wearerRole, [AtkType.BSC, AtkType.SKL, AtkType.ULT], 3, 1, tdType=TickDown.END))
+        return bl, dbl, al, dl
+    

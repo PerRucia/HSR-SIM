@@ -185,7 +185,7 @@ def avAdjustment(teamList: list[Character], advList: list[Advance]):
         avRed = (10000 / char.currSPD)  * adv.advPercent
         char.reduceAV(avRed)
         char.priority = char.priority + 15
-        logger.info(f"ADV    > {char.name} advanced by {adv.advPercent * 100}% from {adv.name} | NewAV: {char.currAV:.3f} | Priority: {char.priority}")
+        logger.info(f"ADV    > {char.name} advanced by {adv.advPercent * 100:.3f}% from {adv.name} | NewAV: {char.currAV:.3f} | Priority: {char.priority}")
     return
                 
 def sortUnits(allUnits: list) -> list:
@@ -354,6 +354,8 @@ def addSummons(playerTeam: list[Character]) -> list:
             summons.append(Fuyuan(char.role, Role.FUYUAN))
         elif char.name == "Firefly":
             summons.append(DeHenshin(char.role, Role.HENSHIN))
+        elif char.name == "JingYuan":
+            summons.append(LightningLord(char.role, Role.LIGHTNINGLORD))
     return summons
         
 def handleAdditions(playerTeam: list, enemyTeam: list[Enemy], buffList: list[Buff], debuffList: list[Debuff], advList: list[Advance], delayList: list[Delay], 
@@ -627,6 +629,18 @@ def handleSpec(specStr: str, unit: Character, playerTeam: list[Character], summo
                 if "EarthlyTeamCD" in getBuffNames(buffList):
                     cdStat -= findBuffName(buffList, "EarthlyTeamCD").getBuffVal()
                 return Special(name=specStr, attr1=cdStat, enemies=gauge)
+            
+            case "Sunday":
+                if inTeam(playerTeam, "JingYuan"):
+                    summonRole = Role.LIGHTNINGLORD
+                elif inTeam(playerTeam, "Topaz"):
+                    summonRole = Role.NUMBY
+                else:
+                    summonRole = None
+                energyCap = findCharRole(playerTeam, specChar.targetRole).maxEnergy
+                cdStat = getCharStat(Pwr.CD_PERCENT, specChar, enemyTeam[0], buffList, [], placeHolderTurn)
+                sundayTurn = unit.name == "Sunday"
+                return Special(name=specStr, attr1=summonRole, attr2=energyCap, attr3=cdStat, attr4=sundayTurn, enemies=gauge)
 
             case "Topaz":
                 fireWeak = hasWeakness(Element.FIRE, enemyTeam)
@@ -648,6 +662,11 @@ def handleSpec(specStr: str, unit: Character, playerTeam: list[Character], summo
                 res = True if slowestChar.name == "Yunli" else unit.role == slowestChar.role
                 return Special(name=specStr, attr1=res)
 
+            case "Sunday":
+                targetChar = findCharRole(playerTeam, specChar.targetRole)
+                targetCRStat = getCharStat(Pwr.CR_PERCENT, targetChar, enemyTeam[0], buffList, [], placeHolderTurn)
+                return Special(name=specStr, attr1=targetCRStat)
+            
             case _:
                 return Special(name=specStr)
         

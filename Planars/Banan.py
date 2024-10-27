@@ -5,7 +5,7 @@ from Planar import Planar
 
 class Banan(Planar):
     name = "The Wondrous BananAmusement Park"
-    def __init__(self, wearerRole: Role, summon = True):
+    def __init__(self, wearerRole: Role, summon=True):
         super().__init__(wearerRole)
         self.summon = summon
         

@@ -44,7 +44,6 @@ class Jade(Character):
         self.relic2 = None if self.relic1.setType == 4 else (r2 if r2 else None)
         self.planar = pl if pl else Duran(role)
         self.relicStats = subs if subs else RelicStats(0, 2, 0, 2, 4, 0, 4, 4, 4, 4, 15, 9, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
-        self.debtCollector = debtCollector
         self.rotation = rotation if rotation else ["E", "A", "A"]
         self.debtCollector = debtCollector if debtCollector else Role.DPS
         
