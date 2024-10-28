@@ -933,7 +933,7 @@ def getMulERS(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: l
     return getCharStat(Pwr.ERS_PERCENT, char, enemy, buffList, debuffList, turn)
 
 def getMulCR(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
-    return getCharStat(Pwr.CR_PERCENT, char, enemy, buffList, debuffList, turn)
+    return min(1.0, getCharStat(Pwr.CR_PERCENT, char, enemy, buffList, debuffList, turn))
 
 def getMulCD(char: Character, enemy: Enemy, buffList: list[Buff], debuffList: list[Debuff], turn: Turn) -> float:
     return getCharStat(Pwr.CD_PERCENT, char, enemy, buffList, debuffList, turn) + 1

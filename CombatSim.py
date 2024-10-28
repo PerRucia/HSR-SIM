@@ -30,17 +30,19 @@ def startSimulator(cycleLimit = 5, s1: Character = None, s2: Character = None, s
     enemyModule = enemyModule if enemyModule else EnemyModule(numEnemies, enemyLevel, enemyTypes, enemySPD, toughness, attackRatio, weaknesses, actionOrder)
 
     fastJY = RelicStats(6, 2, 0, 2, 4, 0, 4, 4, 4, 4, 7, 11, Pwr.CR_PERCENT, Pwr.SPD, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+    jadeJY = RelicStats(6, 2, 0, 2, 4, 0, 4, 4, 4, 4, 7, 11, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
     baseJY = RelicStats(0, 2, 0, 2, 4, 0, 4, 4, 4, 4, 13, 11, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
+    sparkSunJY = RelicStats(0, 2, 0, 2, 4, 0, 4, 4, 4, 4, 7, 17, Pwr.CR_PERCENT, Pwr.ATK_PERCENT, Pwr.DMG_PERCENT, Pwr.ATK_PERCENT)
 
-    fastDay = RelicStats(14, 4, 0, 4, 4, 0, 4, 4, 4, 4, 0, 6, Pwr.CD_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.HP_PERCENT)
-    slowDay = RelicStats(4, 4, 0, 4, 4, 0, 4, 4, 4, 10, 0, 10, Pwr.CD_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.HP_PERCENT)
+    fastDay = RelicStats(14, 4, 0, 4, 4, 0, 4, 4, 4, 4, 0, 6, Pwr.CD_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.ERR_PERCENT)
+    slowDay = RelicStats(4, 4, 0, 4, 4, 0, 4, 4, 4, 10, 0, 10, Pwr.CD_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.ERR_PERCENT)
 
     # Character Settings
     if all([a is None for a in [s1, s2, s3, s4]]):
-        slot1 = Jingyuan(0, Role.DPS, 2, eidolon=0, targetPrio=Priority.DEFAULT, subs=fastJY)
+        slot1 = Jingyuan(0, Role.DPS, 2, eidolon=0, targetPrio=Priority.DEFAULT, subs=baseJY)
         slot2 = Sunday(1, Role.SUP1, 2, eidolon=0, targetPrio=Priority.DEFAULT, targetRole=Role.DPS, subs=fastDay)
-        slot3 = Jade(2, Role.SUBDPS, 2, eidolon=0, targetPrio=Priority.DEFAULT, debtCollector=Role.DPS)
-        slot4 = Gallagher(3, Role.SUS, 2, eidolon=0, targetPrio=Priority.DEFAULT)
+        slot3 = Sparkle(2, Role.SUP2, 2, eidolon=0, targetPrio=Priority.DEFAULT, targetRole=Role.DPS)
+        slot4 = HuoHuo(3, Role.SUS, 2, eidolon=0, targetPrio=Priority.DEFAULT)
         
     # Simulation Settings
     totalEnemyAttacks = 0

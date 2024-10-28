@@ -47,7 +47,7 @@ class Sunday(Character):
         self.planar = pl if pl else Keel(role)
         # Fast Sunday Build RelicStats(14, 4, 0, 4, 4, 0, 4, 4, 4, 4, 0, 6, Pwr.CD_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.HP_PERCENT)
         # Normal Sunday Build RelicStats(4, 4, 0, 4, 4, 0, 4, 4, 4, 10, 0, 10, Pwr.CD_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.HP_PERCENT)
-        self.relicStats = subs if subs else RelicStats(4, 4, 0, 4, 4, 0, 4, 4, 4, 10, 0, 10, Pwr.CD_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.HP_PERCENT)
+        self.relicStats = subs if subs else RelicStats(4, 4, 0, 4, 4, 0, 4, 4, 4, 10, 0, 10, Pwr.CD_PERCENT, Pwr.SPD, Pwr.DEF_PERCENT, Pwr.ERR_PERCENT)
         self.eidolon = eidolon
         self.rotation = rotation if rotation else ["E"]
         self.targetRole = targetRole
